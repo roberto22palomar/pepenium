@@ -1,0 +1,376 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.roberto22palomar</groupId>
+    <artifactId>pepenium</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+
+    <!-- Bloquea toda la familia Selenium a 4.25.0 -->
+    <!-- sustituye tu dependencyManagement actual por este -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-bom</artifactId>
+                <version>4.34.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Appium Java Client (excluimos Selenium para evitar mezcla de versiones) -->
+        <dependency>
+            <groupId>io.appium</groupId>
+            <artifactId>java-client</artifactId>
+            <version>9.5.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Selenium (sin versión: la marca el BOM 4.34.0) -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+        </dependency>
+
+        <!-- JUnit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.13.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.13.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ConsoleLauncher -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-console-standalone</artifactId>
+            <version>1.13.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Utilidades / logs -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.38</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.33</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.32</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.14.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.14.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.14.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- (Sin shade plugin, sin jar global duplicado) -->
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>my-app-android</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.10.1</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                    <version>1.18.34</version>
+                                </path>
+                            </annotationProcessorPaths>
+                            <compilerArgs>
+                                <arg>-parameters</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </plugin>
+
+                    <!-- tests.jar ejecutable con Class-Path apuntando a dependency-jars/ -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>tests-jar</id>
+                                <phase>package</phase>
+                                <goals><goal>jar</goal></goals>
+                                <configuration>
+                                    <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                                    <classifier>tests</classifier>
+                                    <includes>
+                                        <include>io.github.roberto22palomar/pepenium/core/**/*.class</include>
+                                        <include>io.github.roberto22palomar/pepenium/tests/myProject/aws/android/*Test.class</include>
+                                        <include>io.github.roberto22palomar/pepenium/toolkit/myProject/**/*.class</include>
+                                        <include>io.github.roberto22palomar/pepenium/toolkit/utils/**/*.class</include>
+                                    </includes>
+                                    <archive>
+                                        <manifest>
+                                            <mainClass>org.junit.platform.console.ConsoleLauncher</mainClass>
+                                            <addClasspath>true</addClasspath>
+                                            <classpathPrefix>dependency-jars/</classpathPrefix>
+                                        </manifest>
+                                    </archive>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Copia deps de runtime (Appium+Selenium) + test (ConsoleLauncher) -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-runtime-deps</id>
+                                <phase>package</phase>
+                                <goals><goal>copy-dependencies</goal></goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/dependency-jars</outputDirectory>
+                                    <includeScope>runtime</includeScope>
+                                    <includeTypes>jar</includeTypes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-test-deps</id>
+                                <phase>package</phase>
+                                <goals><goal>copy-dependencies</goal></goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/dependency-jars</outputDirectory>
+                                    <includeScope>test</includeScope>
+                                    <includeTypes>jar</includeTypes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>my-app-ios</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.10.1</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                    <version>1.18.34</version>
+                                </path>
+                            </annotationProcessorPaths>
+                            <compilerArgs>
+                                <arg>-parameters</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </plugin>
+
+                    <!-- tests.jar ejecutable con Class-Path apuntando a dependency-jars/ -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>tests-jar</id>
+                                <phase>package</phase>
+                                <goals><goal>jar</goal></goals>
+                                <configuration>
+                                    <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                                    <classifier>tests</classifier>
+                                    <includes>
+                                        <include>io.github.roberto22palomar/pepenium/core/**/*.class</include>
+                                        <include>io.github.roberto22palomar/pepenium/tests/myProject/aws/ios/*Test.class</include>
+                                        <include>io.github.roberto22palomar/pepenium/toolkit/myProject/**/*.class</include>
+                                        <include>io.github.roberto22palomar/pepenium/toolkit/utils/**/*.class</include>
+                                    </includes>
+                                    <archive>
+                                        <manifest>
+                                            <mainClass>org.junit.platform.console.ConsoleLauncher</mainClass>
+                                            <addClasspath>true</addClasspath>
+                                            <classpathPrefix>dependency-jars/</classpathPrefix>
+                                        </manifest>
+                                    </archive>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Copia deps de runtime (Appium+Selenium) + test (ConsoleLauncher) -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-runtime-deps</id>
+                                <phase>package</phase>
+                                <goals><goal>copy-dependencies</goal></goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/dependency-jars</outputDirectory>
+                                    <includeScope>runtime</includeScope>
+                                    <includeTypes>jar</includeTypes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-test-deps</id>
+                                <phase>package</phase>
+                                <goals><goal>copy-dependencies</goal></goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/dependency-jars</outputDirectory>
+                                    <includeScope>test</includeScope>
+                                    <includeTypes>jar</includeTypes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>my-web-android</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.10.1</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                    <version>1.18.34</version>
+                                </path>
+                            </annotationProcessorPaths>
+                            <compilerArgs>
+                                <arg>-parameters</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </plugin>
+
+                    <!-- tests.jar ejecutable con Class-Path apuntando a dependency-jars/ -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>tests-jar</id>
+                                <phase>package</phase>
+                                <goals><goal>jar</goal></goals>
+                                <configuration>
+                                    <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                                    <classifier>tests</classifier>
+                                    <includes>
+                                        <include>io.github.roberto22palomar/pepenium/core/**/*.class</include>
+                                        <include>io.github.roberto22palomar/pepenium/tests/myProject/aws/web/*Test.class</include>
+                                        <include>io.github.roberto22palomar/pepenium/toolkit/myProject/**/*.class</include>
+                                        <include>io.github.roberto22palomar/pepenium/toolkit/utils/**/*.class</include>
+                                    </includes>
+                                    <archive>
+                                        <manifest>
+                                            <mainClass>org.junit.platform.console.ConsoleLauncher</mainClass>
+                                            <addClasspath>true</addClasspath>
+                                            <classpathPrefix>dependency-jars/</classpathPrefix>
+                                        </manifest>
+                                    </archive>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Copia deps de runtime (Appium+Selenium) + test (ConsoleLauncher) -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-runtime-deps</id>
+                                <phase>package</phase>
+                                <goals><goal>copy-dependencies</goal></goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/dependency-jars</outputDirectory>
+                                    <includeScope>runtime</includeScope>
+                                    <includeTypes>jar</includeTypes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-test-deps</id>
+                                <phase>package</phase>
+                                <goals><goal>copy-dependencies</goal></goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/dependency-jars</outputDirectory>
+                                    <includeScope>test</includeScope>
+                                    <includeTypes>jar</includeTypes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Tus otros perfiles (catalunya-*) pueden quedarse igual,
+             pero sin shade ni jar global duplicado. -->
+    </profiles>
+</project>
