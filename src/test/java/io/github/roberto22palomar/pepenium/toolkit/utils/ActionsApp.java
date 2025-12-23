@@ -40,11 +40,10 @@ public class ActionsApp {
 
         if (element != null) {
             log.info("<<< EL ELEMENTO ESTÁ PRESENTE: {}", locator);
-            return element;
         } else {
             log.warn("<<< EL ELEMENTO NO ESTÁ PRESENTE: {}", locator);
-            return element;
         }
+        return element;
     }
 
     /**
@@ -142,7 +141,7 @@ public class ActionsApp {
 
                 org.openqa.selenium.Rectangle actual = driver.findElement(ROOT).getRect();
 
-                if (anterior != null && actual.equals(anterior)) {
+                if (actual.equals(anterior)) {
                     if (++establesSeguidos >= 3) return true; // ✔ estable
                 } else {
                     establesSeguidos = 0;

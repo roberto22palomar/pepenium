@@ -206,7 +206,7 @@ public class ActionsAppIOS {
                 }
 
                 Rectangle actual = driver.findElement(ROOT).getRect();
-                if (anterior != null && actual.equals(anterior)) {
+                if (actual.equals(anterior)) {
                     establesSeguidos++;
                     if (establesSeguidos >= 3) return true; // ~600-800ms estables
                 } else {
@@ -224,7 +224,7 @@ public class ActionsAppIOS {
                 // Fallback a viewport
                 Dimension size = driver.manage().window().getSize();
                 Rectangle fallback = new Rectangle(new Point(0,0), size);
-                if (anterior != null && fallback.equals(anterior)) {
+                if (fallback.equals(anterior)) {
                     establesSeguidos++;
                     if (establesSeguidos >= 3) return true;
                 } else {

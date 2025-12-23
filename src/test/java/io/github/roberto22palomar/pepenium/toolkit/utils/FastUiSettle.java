@@ -24,28 +24,6 @@ public final class FastUiSettle {
     }
 
     public void waitBriefly() {
-        // 0) Si ya está el flag "screen-ready" → listo
-       /* if (hasScreenReadyFlag()) {
-            sleep(settle);
-            return;
-        }*/
-
-        // 1) Si no hay spinner → settle corto
-        /*if (!hasGenericSpinner()) {
-            sleep(settle);
-            return;
-        }
-*/
-        // 2) Hay spinner → esperar a que desaparezca o a que aparezca el flag
-     /*   long end = System.nanoTime() + spinnerWait.toNanos();
-        while (System.nanoTime() < end) {
-            if (!hasGenericSpinner() || hasScreenReadyFlag()) {
-                sleep(settle);
-                return;
-            }
-            sleep(poll);
-        }*/
-
         // 3) Fallback: 2 hashes de pageSource separados 100ms (máx ~200ms)
         String h1 = safeHash(pageSourceSafe());
         sleep(Duration.ofMillis(100));
