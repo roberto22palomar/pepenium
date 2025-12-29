@@ -14,17 +14,19 @@ public class AndroidConfigAWS implements DriverConfig {
 
     @Override
     public AppiumDriverLocalService startService() {
-        // Si estamos en AWS Device Farm, NO arrancamos servicio local
+        // On AWS Device Farm, Appium is already running, so we must NOT start a local service.
         if (isRunningOnDeviceFarm()) {
-            return null; // Indicamos que NO hay Appium local arrancado
-        } else {
-            AppiumDriverLocalService service = new AppiumServiceBuilder()
-                    .usingAnyFreePort()
-                    .withArgument(() -> "--allow-insecure", "chromedriver_autodownload")
-                    .build();
-            service.start();
-            return service;
+            return null;
         }
+
+        // Local execution: start an Appium service on any free port.
+        AppiumDriverLocalService service = new AppiumServiceBuilder()
+                .usingAnyFreePort()
+                .withArgument(() -> "--allow-insecure", "chromedriver_autodownload")
+                .build();
+
+        service.start();
+        return service;
     }
 
     @Override
@@ -35,31 +37,30 @@ public class AndroidConfigAWS implements DriverConfig {
                 .setApp(System.getenv("DEVICEFARM_APP_PATH"))
                 .setAutomationName("UiAutomator2")
                 .setNewCommandTimeout(Duration.ofSeconds(300))
-
-                // 👇 Lo importante para el popup de permisos
+                // Helpful for handling runtime permission dialogs automatically.
                 .setAutoGrantPermissions(true)
-                // Opcional: si quieres asegurarte de que siempre empieza “limpia”
+                // Set to false to start with a clean state (optional).
                 .setNoReset(false);
 
-        // Si tu versión de cliente no tuviera setAutoGrantPermissions,
-        // equivalente sería:
-        // opts.amend("autoGrantPermissions", true);
+        // If your Appium Java Client version does not support setAutoGrantPermissions(),
+        // you can use: opts.amend("autoGrantPermissions", true);
 
         try {
             if (isRunningOnDeviceFarm()) {
-                // AWS: conéctate al Appium ya levantado
+                // AWS: connect to the Appium server provided by Device Farm.
                 return new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), opts);
-            } else {
-                // Local: conecta usando el servicio local (recién arrancado)
-                return new AndroidDriver(service.getUrl(), opts);
             }
+
+            // Local: connect to the locally started Appium service.
+            return new AndroidDriver(service.getUrl(), opts);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     private boolean isRunningOnDeviceFarm() {
-        // Device Farm SIEMPRE expone alguna de estas variables
+        // Device Farm exposes environment variables that can be used to detect the runtime.
         return System.getenv("DEVICEFARM_DEVICE_NAME") != null
                 || System.getenv("AWS_DEVICE_FARM") != null;
     }
