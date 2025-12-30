@@ -14,11 +14,12 @@ public class IOSConfigAWS implements DriverConfig {
 
     @Override
     public AppiumDriverLocalService startService() {
-        // En AWS Device Farm ya hay Appium levantado, no lo iniciamos localmente
+        // On AWS Device Farm, Appium is already running, so we must NOT start a local service.
         if (isRunningOnDeviceFarm()) {
             return null;
         }
 
+        // Local execution: start an Appium service on any free port.
         AppiumDriverLocalService service = new AppiumServiceBuilder()
                 .usingAnyFreePort()
                 .withArgument(() -> "--allow-insecure", "chromedriver_autodownload")
@@ -36,22 +37,25 @@ public class IOSConfigAWS implements DriverConfig {
                 .setDeviceName(getEnvOrDefault("DEVICEFARM_DEVICE_NAME", "iPhone Simulator"))
                 .setApp(getEnvOrDefault("DEVICEFARM_APP_PATH", System.getenv("IOS_APP_PATH")))
                 .setNewCommandTimeout(Duration.ofSeconds(300))
-                // Opcionales pero recomendables en AWS
+                // Recommended timeouts for remote environments (e.g., WDA startup/connection).
                 .setWdaLaunchTimeout(Duration.ofSeconds(120))
                 .setWdaConnectionTimeout(Duration.ofSeconds(120))
+                // Automatically handle common iOS system alerts.
                 .setAutoAcceptAlerts(true)
+                // Set to false to start with a clean state (optional).
                 .setNoReset(false);
 
         try {
             if (isRunningOnDeviceFarm()) {
-                // En AWS Device Farm, Appium ya escucha en localhost
+                // AWS: connect to the Appium server provided by Device Farm.
                 return new IOSDriver(new URL("http://127.0.0.1:4723/wd/hub"), opts);
-            } else {
-                // En local, usamos el servicio recién levantado
-                return new IOSDriver(service.getUrl(), opts);
             }
+
+            // Local: connect to the locally started Appium service.
+            return new IOSDriver(service.getUrl(), opts);
+
         } catch (Exception e) {
-            throw new RuntimeException("Error al crear el driver iOS", e);
+            throw new RuntimeException("Failed to create iOS driver", e);
         }
     }
 
@@ -60,6 +64,7 @@ public class IOSConfigAWS implements DriverConfig {
     // ==========================================================
 
     private boolean isRunningOnDeviceFarm() {
+        // Device Farm exposes environment variables that can be used to detect the runtime.
         return System.getenv("DEVICEFARM_DEVICE_NAME") != null
                 || System.getenv("AWS_DEVICE_FARM") != null;
     }

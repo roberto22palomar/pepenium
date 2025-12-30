@@ -16,30 +16,30 @@ public class IOSConfigBS implements DriverConfig {
 
     private final BrowserStackConfig config;
 
-    // Leemos el browserstack.yml donde está la configuración
+    // Loads BrowserStack iOS settings from a YAML file (device/app/build metadata and credentials).
     public IOSConfigBS() {
         config = YamlLoader.load("src/test/resources/browserstackIOS.yml");
     }
 
     @Override
     public AppiumDriverLocalService startService() {
-        // No arrancamos servicio local para BrowserStack: devolvemos null
+        // BrowserStack provides a remote Appium server, so we do not start a local service.
         return null;
     }
 
     @Override
     public AppiumDriver createDriver(AppiumDriverLocalService service) throws Exception {
-        BrowserStackConfig.Platform p = config.getPlatforms().get(0);
+        BrowserStackConfig.Platform platform = config.getPlatforms().get(0);
 
-        // Capabilities para UiAutomator
+        // Base Appium capabilities for iOS (XCUITest).
         XCUITestOptions opts = new XCUITestOptions()
-                .setPlatformName(p.getPlatformName())
-                .setDeviceName(p.getDeviceName())
-                .setPlatformVersion(p.getPlatformVersion())
+                .setPlatformName(platform.getPlatformName())
+                .setDeviceName(platform.getDeviceName())
+                .setPlatformVersion(platform.getPlatformVersion())
                 .setApp(config.getApp())
                 .setNewCommandTimeout(Duration.ofSeconds(300));
 
-        // Capabilities concretas de BrowserStack
+        // BrowserStack-specific capabilities (reporting, metadata, logs).
         MutableCapabilities bstackOptions = new MutableCapabilities();
         bstackOptions.setCapability("appProfiling", true);
         bstackOptions.setCapability("networkLogs", true);
@@ -48,9 +48,10 @@ public class IOSConfigBS implements DriverConfig {
 
         opts.setCapability("bstack:options", bstackOptions);
 
-        // Capability en caso de que queramos lanzar en local, se configura en el browserstack.yaml
+        // Enables BrowserStack Local if configured (useful for testing internal/staging environments).
         opts.setCapability("browserstack.local", config.isBrowserstackLocal());
 
+        // Remote hub URL with BrowserStack credentials.
         URL remoteUrl = new URL(
                 String.format(
                         "https://%s:%s@hub-cloud.browserstack.com/wd/hub",

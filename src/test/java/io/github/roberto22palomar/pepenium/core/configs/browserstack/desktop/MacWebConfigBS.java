@@ -12,25 +12,32 @@ public class MacWebConfigBS {
 
     private final BrowserStackConfigDesktop config;
 
+    // Loads BrowserStack desktop settings from a YAML file (browser/OS/build metadata and credentials).
     public MacWebConfigBS() {
         config = YamlLoaderDesktop.load("src/test/resources/browserstackMac.yml");
     }
 
     public WebDriver createDriver() throws Exception {
-        MutableCapabilities caps = new MutableCapabilities();
-        caps.setCapability("browserName", config.getPlatforms().get(0).getBrowserName());
-        caps.setCapability("browserVersion", config.getPlatforms().get(0).getBrowserVersion());
+        BrowserStackConfigDesktop.Platform platform = config.getPlatforms().get(0);
 
+        // Base Selenium capabilities (browser + version).
+        MutableCapabilities caps = new MutableCapabilities();
+        caps.setCapability("browserName", platform.getBrowserName());
+        caps.setCapability("browserVersion", platform.getBrowserVersion());
+
+        // BrowserStack-specific options (OS selection, build metadata, local testing).
         MutableCapabilities bstackOptions = new MutableCapabilities();
-        bstackOptions.setCapability("os", config.getPlatforms().get(0).getOs());
-        bstackOptions.setCapability("osVersion", config.getPlatforms().get(0).getOsVersion());
+        bstackOptions.setCapability("os", platform.getOs());
+        bstackOptions.setCapability("osVersion", platform.getOsVersion());
         bstackOptions.setCapability("projectName", config.getProjectName());
         bstackOptions.setCapability("buildName", config.getBuildName());
-        bstackOptions.setCapability("sessionName", "Prueba Mac Chrome");
+        // Human-friendly name shown in the BrowserStack dashboard.
+        bstackOptions.setCapability("sessionName", "Mac Chrome Example");
         bstackOptions.setCapability("local", config.isBrowserstackLocal());
 
         caps.setCapability("bstack:options", bstackOptions);
 
+        // Remote hub URL with BrowserStack credentials.
         URL remoteUrl = new URL(
                 String.format(
                         "https://%s:%s@hub-cloud.browserstack.com/wd/hub",

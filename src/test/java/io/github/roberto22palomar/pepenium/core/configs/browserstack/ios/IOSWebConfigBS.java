@@ -14,21 +14,25 @@ public class IOSWebConfigBS implements DriverConfig {
 
     private final BrowserStackConfigMobile config;
 
+    // Loads BrowserStack iOS mobile-web settings from a YAML file (device/build metadata and credentials).
     public IOSWebConfigBS() {
         config = YamlLoaderMobile.load("src/test/resources/browserstackIOSWEB.yml");
     }
 
     @Override
     public AppiumDriver createDriver(AppiumDriverLocalService service) throws Exception {
-        BrowserStackConfigMobile.Platform p = config.getPlatforms().get(0);
+        BrowserStackConfigMobile.Platform platform = config.getPlatforms().get(0);
 
+        // Base capabilities for iOS mobile web testing (Safari).
         MutableCapabilities caps = new MutableCapabilities();
         caps.setCapability("platformName", "iOS");
         caps.setCapability("browserName", "Safari");
 
+        // BrowserStack-specific options (device selection, logs, build metadata).
         MutableCapabilities bstackOptions = new MutableCapabilities();
-        bstackOptions.setCapability("deviceName", p.getDeviceName());
-       // bstackOptions.setCapability("platformVersion", p.getPlatformVersion());
+        bstackOptions.setCapability("deviceName", platform.getDeviceName());
+        // platformVersion can be set if you want to pin an iOS version:
+        // bstackOptions.setCapability("platformVersion", platform.getPlatformVersion());
         bstackOptions.setCapability("projectName", config.getProjectName());
         bstackOptions.setCapability("buildName", config.getBuildName());
         bstackOptions.setCapability("appProfiling", true);
@@ -37,6 +41,7 @@ public class IOSWebConfigBS implements DriverConfig {
 
         caps.setCapability("bstack:options", bstackOptions);
 
+        // Remote hub URL with BrowserStack credentials.
         URL remoteUrl = new URL(
                 String.format(
                         "https://%s:%s@hub-cloud.browserstack.com/wd/hub",
@@ -50,6 +55,7 @@ public class IOSWebConfigBS implements DriverConfig {
 
     @Override
     public AppiumDriverLocalService startService() {
+        // BrowserStack provides a remote Appium server, so we do not start a local service.
         return null;
     }
 }
