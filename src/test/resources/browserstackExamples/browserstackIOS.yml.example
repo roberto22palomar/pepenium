@@ -1,0 +1,27 @@
+# Example configuration for running iOS App tests on BrowserStack.
+# Copy this file to: browserstackIOS.yml
+# and replace the placeholder values with your real credentials and app id.
+
+userName: YOUR_BROWSERSTACK_USERNAME
+accessKey: YOUR_BROWSERSTACK_ACCESS_KEY
+
+# Test framework metadata (optional)
+framework: junit5
+
+# BrowserStack uploaded app URL (bs://...)
+app: bs://YOUR_UPLOADED_IOS_APP_ID
+
+platforms:
+  - platformName: ios
+    deviceName: iPhone 14 Pro Max
+    platformVersion: "16"
+
+# Number of parallel sessions per platform entry
+parallelsPerPlatform: 1
+
+# Enable BrowserStack Local if you need access to internal/staging environments
+browserstackLocal: false
+
+# Build and project names shown in the BrowserStack dashboard
+buildName: pepenium-ios-build-1
+projectName: Pepenium-iOS

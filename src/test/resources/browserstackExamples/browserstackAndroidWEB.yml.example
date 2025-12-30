@@ -1,0 +1,25 @@
+# Example configuration for running Android Mobile Web tests on BrowserStack.
+# Copy this file to: browserstackAndroidWEB.yml
+# and replace the placeholder values with your real credentials and settings.
+
+userName: YOUR_BROWSERSTACK_USERNAME
+accessKey: YOUR_BROWSERSTACK_ACCESS_KEY
+
+# Test framework metadata (optional)
+framework: junit5
+
+platforms:
+  - deviceName: Oppo A96
+    osVersion: "11.0"
+    browserName: chrome
+    deviceOrientation: portrait
+
+# Number of parallel sessions per platform entry
+parallelsPerPlatform: 1
+
+# Enable BrowserStack Local if you need access to internal/staging environments
+browserstackLocal: false
+
+# Build and project names shown in the BrowserStack dashboard
+buildName: pepenium-android-web-build-1
+projectName: Pepenium-Android-Web

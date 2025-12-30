@@ -1,0 +1,35 @@
+# Example configuration for running Android App tests on BrowserStack.
+# Copy this file to: browserstackAndroid.yml (or keep your own name)
+# and fill in the placeholders with your real values.
+
+userName: YOUR_BROWSERSTACK_USERNAME
+accessKey: YOUR_BROWSERSTACK_ACCESS_KEY
+
+# Test framework metadata (optional, but nice for reference)
+framework: junit5
+
+# BrowserStack uploaded app URL (bs://...)
+app: bs://YOUR_UPLOADED_APP_ID
+
+platforms:
+  - platformName: android
+    deviceName: Motorola Moto G9 Play
+    platformVersion: "10.0"
+
+  - platformName: android
+    deviceName: Samsung Galaxy S10
+    platformVersion: "9.0"
+
+  - platformName: android
+    deviceName: OnePlus 9
+    platformVersion: "11.0"
+
+# How many parallel sessions per platform entry
+parallelsPerPlatform: 1
+
+# Enable BrowserStack Local if you need access to internal/staging URLs
+browserstackLocal: false
+
+# Build and project names shown in the BrowserStack dashboard
+buildName: pepenium-android-build-1
+projectName: Pepenium-Android
