@@ -59,8 +59,6 @@ Soporta ejecución **local**, ejecución en **device farms** (AWS Device Farm / 
 Configurar `src/test/resources/browserstack.yml` con credenciales, plataformas y dispositivos.
 Una vez configurado, los tests se pueden ejecutar directamente desde el IDE.
 
-Ejecutar los tests directamente desde el IDE.
-
 ---
 
 ### AWS Device Farm
