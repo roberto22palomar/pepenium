@@ -1,58 +1,118 @@
 # 🧪 Pepenium – Test Automation Framework
 
-Pepenium es un **framework de automatización de pruebas en Java** orientado a aplicaciones **móviles (Android / iOS)** y **web**, construido sobre **Appium** y **Selenium**.
+**Pepenium** es un **framework de automatización de pruebas en Java** para aplicaciones **móviles (Android / iOS)** y **web**, construido sobre **Appium** y **Selenium**.
 
-Está diseñado para ser **simple de arrancar**, pero **robusto y escalable** cuando el proyecto crece: ejecución local, device farms, CI/CD, múltiples plataformas y configuraciones desacopladas del código.
+Está diseñado con una idea clara:  
+👉 **arrancar rápido**, pero **escalar sin romperse** cuando el proyecto crece.
+
+Soporta ejecución **local**, ejecución en **device farms** (AWS Device Farm / BrowserStack) y uso en **CI/CD**, con configuración desacoplada del código y una arquitectura pensada para proyectos reales.
 
 ---
 
 ## ✨ Características principales
 
-- Automatización **mobile-first** (Android / iOS) y **web**
-- Arquitectura limpia y reutilizable
-- Ejecución local o remota (Device Farm / CI)
-- Configuración externalizada (properties / variables de entorno)
-- Preparado para proyectos reales, no demos
-- Fácil de extender y mantener
+- 📱 **Mobile-first**: Android e iOS como foco principal
+- 🌐 Soporte **Web (desktop)** integrado
+- 🧱 Arquitectura limpia y reutilizable (**core / toolkit / tests**)
+- ☁️ Ejecución local o remota (**AWS Device Farm / BrowserStack**)
+- ⚙️ Configuración externalizada por proveedor y plataforma
+- ♻️ Extensible por proyecto sin tocar el core
+- 🧪 Preparado para pipelines CI/CD
 
 ---
 
-## 📦 Estructura del Proyecto
+## ⚙️ Requisitos y configuración
 
+### Requisitos generales
 
+- Java
+- Maven
+- Appium Server
 
+---
 
-La separación por paquetes permite crecer sin romper el core ni duplicar lógica.
+### 📱 Ejecución mobile en local
+
+#### Android
+
+- Appium Server instalado y en ejecución
+- Dispositivo físico o emulador Android configurado
+
+#### iOS
+
+- Appium Server
+- Driver **XCUITest** (driver de automatización usado por Appium en iOS)
+- Entorno iOS configurado (Xcode, simulador o dispositivo físico)
+
+---
+
+### 🌐 Ejecución web en local (desktop)
+
+- Driver del navegador (ej. ChromeDriver) en `src/test/resources`
+
+---
+
+## ☁️ Ejecución en BrowserStack y AWS Device Farm
+
+### BrowserStack
+
+Configurar `src/test/resources/browserstack.yml` con credenciales, plataformas y dispositivos.
+Una vez configurado, los tests se pueden ejecutar directamente desde el IDE.
+
+Ejecutar los tests directamente desde el IDE.
+
+---
+
+### AWS Device Farm
+
+AWS Device Farm está orientado a ejecuciones empaquetadas y CI/CD.
+
+Para empaquetar:
+```
+mvn clean package -P my-example-app-android -DskipTests
+```
+
+Subir a AWS:
+- JAR generado
+- Carpeta `dependency-jars`
 
 ---
 
 ## 🧠 Arquitectura
 
-### 🔹 Core
+### Core (`core/`)
 
-El paquete `core` contiene el corazón del framework:
-
-- **DriverFactory**  
-  Decide y construye el driver adecuado (Android, iOS, Web) según configuración.
-- **BaseTest**  
-  Clase base de todos los tests. Maneja:
-    - ciclo de vida
-    - inicialización y cierre del driver
-    - gestión de errores
-- **DriverConfig**  
-  Centraliza la lectura de properties y variables de entorno.
-
-El core es **agnóstico del dominio** y no depende de ninguna app concreta.
+Configuración por proveedor y plataforma:
+- `core/configs/aws/(android|ios)`
+- `core/configs/browserstack/(android|ios|desktop)`
 
 ---
 
-### 🔹 Toolkit
+### Toolkit (`toolkit/`)
 
-Conjunto de utilidades reutilizables que abstraen Appium/Selenium.
+- `toolkit/utils`
+- `toolkit/<proyecto>`
 
-Ejemplo:
+---
 
-```java
-androidActions.click(locator);
-androidActions.scrollToElement(locator);
-androidActions.swipeUp();
+## 🧬 Modelo Page Object Model (POM)
+
+### Pages
+
+- IDs de la app (Android `resource-id`, iOS `accessibility id`)
+- Acciones básicas
+
+### Flows
+
+- Composición de acciones de varias pages
+
+### Tests
+
+- Llaman a flows y validan resultados
+
+---
+---
+## FINALIDAD
+Pepenium intenta que automatizar sea aburrido.  
+Y en testing, eso es una virtud.
+
