@@ -369,8 +369,5 @@
                 </plugins>
             </build>
         </profile>
-
-        <!-- Tus otros perfiles (catalunya-*) pueden quedarse igual,
-             pero sin shade ni jar global duplicado. -->
     </profiles>
 </project>
