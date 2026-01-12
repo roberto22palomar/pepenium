@@ -1,29 +1,34 @@
 # 🧪 Pepenium – Test Automation Framework
 
-**Pepenium** es un **framework de automatización de pruebas en Java** para aplicaciones **móviles (Android / iOS)** y **web**, construido sobre **Appium** y **Selenium**.
+<p align="center">
+  <a href="README.md">English</a> · 
+  <a href="README.es.md">Español</a>
+</p>
 
-Está diseñado con una idea clara:  
-👉 **arrancar rápido**, pero **escalar sin romperse** cuando el proyecto crece.
+**Pepenium** is a **Java-based test automation framework** for **mobile applications (Android / iOS)** and **web**, built on top of **Appium** and **Selenium**.
 
-Soporta ejecución **local**, ejecución en **device farms** (AWS Device Farm / BrowserStack) y uso en **CI/CD**, con configuración desacoplada del código y una arquitectura pensada para proyectos reales.
+It’s designed around a clear idea:  
+👉 **start fast**, but **scale without breaking** when the project grows.
 
----
-
-## ✨ Características principales
-
-- 📱 **Mobile-first**: Android e iOS como foco principal
-- 🌐 Soporte **Web (desktop)** integrado
-- 🧱 Arquitectura limpia y reutilizable (**core / toolkit / tests**)
-- ☁️ Ejecución local o remota (**AWS Device Farm / BrowserStack**)
-- ⚙️ Configuración externalizada por proveedor y plataforma
-- ♻️ Extensible por proyecto sin tocar el core
-- 🧪 Preparado para pipelines CI/CD
+It supports **local execution**, **device farms** (AWS Device Farm / BrowserStack), and **CI/CD pipelines**, with configuration fully decoupled from code and an architecture designed for real-world projects.
 
 ---
 
-## ⚙️ Requisitos y configuración
+## ✨ Key Features
 
-### Requisitos generales
+- 📱 **Mobile-first**: Android and iOS as the primary focus
+- 🌐 Integrated **Web (desktop)** support
+- 🧱 Clean, reusable architecture (**core / toolkit / tests**)
+- ☁️ Local or remote execution (**AWS Device Farm / BrowserStack**)
+- ⚙️ Externalized configuration per provider and platform
+- ♻️ Project-level extensibility without touching the core
+- 🧪 CI/CD–ready by design
+
+---
+
+## ⚙️ Requirements & Setup
+
+### General Requirements
 
 - Java
 - Maven
@@ -31,56 +36,125 @@ Soporta ejecución **local**, ejecución en **device farms** (AWS Device Farm / 
 
 ---
 
-### 📱 Ejecución mobile en local
+### 📱 Local Mobile Execution
 
 #### Android
 
-- Appium Server instalado y en ejecución
-- Dispositivo físico o emulador Android configurado
+- Appium Server installed and running
+- Physical Android device or configured emulator
 
 #### iOS
 
 - Appium Server
-- Driver **XCUITest** (driver de automatización usado por Appium en iOS)
-- Entorno iOS configurado (Xcode, simulador o dispositivo físico)
+- **XCUITest** driver (Appium’s automation driver for iOS)
+- iOS environment properly set up (Xcode, simulator or physical device)
 
 ---
 
-### 🌐 Ejecución web en local (desktop)
+### 🌐 Local Web Execution (Desktop)
 
-- Driver del navegador (ej. ChromeDriver) en `src/test/resources`
+- Browser driver (e.g. ChromeDriver) placed in `src/test/resources`
 
 ---
 
-## ☁️ Ejecución en BrowserStack y AWS Device Farm
+## ☁️ BrowserStack & AWS Device Farm Execution
 
 ### BrowserStack
 
-Configurar `src/test/resources/browserstack.yml` con credenciales, plataformas y dispositivos.
-Una vez configurado, los tests se pueden ejecutar directamente desde el IDE.
+Configure `src/test/resources/browserstack.yml` with credentials, platforms, and devices.  
+Once configured, tests can be executed directly from the IDE.
 
 ---
 
 ### AWS Device Farm
 
-AWS Device Farm está orientado a ejecuciones empaquetadas y CI/CD.
+AWS Device Farm is focused on packaged executions and CI/CD workflows.
 
-Para empaquetar:
-```
-mvn clean package -P my-example-app-android -DskipTests
-```
+To package the tests:
 
-Subir a AWS:
-- JAR generado
-- Carpeta `dependency-jars`
+
+
+**Pepenium** is a **Java-based test automation framework** for **mobile applications (Android / iOS)** and **web**, built on top of **Appium** and **Selenium**.
+
+It’s designed around a clear idea:  
+👉 **start fast**, but **scale without breaking** when the project grows.
+
+It supports **local execution**, **device farms** (AWS Device Farm / BrowserStack), and **CI/CD pipelines**, with configuration fully decoupled from code and an architecture designed for real-world projects.
 
 ---
 
-## 🧠 Arquitectura
+## ✨ Key Features
+
+- 📱 **Mobile-first**: Android and iOS as the primary focus
+- 🌐 Integrated **Web (desktop)** support
+- 🧱 Clean, reusable architecture (**core / toolkit / tests**)
+- ☁️ Local or remote execution (**AWS Device Farm / BrowserStack**)
+- ⚙️ Externalized configuration per provider and platform
+- ♻️ Project-level extensibility without touching the core
+- 🧪 CI/CD–ready by design
+
+---
+
+## ⚙️ Requirements & Setup
+
+### General Requirements
+
+- Java
+- Maven
+- Appium Server
+
+---
+
+### 📱 Local Mobile Execution
+
+#### Android
+
+- Appium Server installed and running
+- Physical Android device or configured emulator
+
+#### iOS
+
+- Appium Server
+- **XCUITest** driver (Appium’s automation driver for iOS)
+- iOS environment properly set up (Xcode, simulator or physical device)
+
+---
+
+### 🌐 Local Web Execution (Desktop)
+
+- Browser driver (e.g. ChromeDriver) placed in `src/test/resources`
+
+---
+
+## ☁️ BrowserStack & AWS Device Farm Execution
+
+### BrowserStack
+
+Configure `src/test/resources/browserstack.yml` with credentials, platforms, and devices.  
+Once configured, tests can be executed directly from the IDE.
+
+---
+
+### AWS Device Farm
+
+AWS Device Farm is focused on packaged executions and CI/CD workflows.
+
+To package the tests:
+
+mvn clean package -P my-example-app-android -DskipTests
+
+
+Upload to AWS:
+- Generated JAR
+- `dependency-jars` folder
+
+---
+
+## 🧠 Architecture
 
 ### Core (`core/`)
 
-Configuración por proveedor y plataforma:
+Provider- and platform-specific configuration:
 - `core/configs/aws/(android|ios)`
 - `core/configs/browserstack/(android|ios|desktop)`
 
@@ -89,28 +163,29 @@ Configuración por proveedor y plataforma:
 ### Toolkit (`toolkit/`)
 
 - `toolkit/utils`
-- `toolkit/<proyecto>`
+- `toolkit/<project>`
 
 ---
 
-## 🧬 Modelo Page Object Model (POM)
+## 🧬 Page Object Model (POM)
 
 ### Pages
 
-- IDs de la app (Android `resource-id`, iOS `accessibility id`)
-- Acciones básicas
+- App IDs (Android `resource-id`, iOS `accessibility id`)
+- Basic actions
 
 ### Flows
 
-- Composición de acciones de varias pages
+- Composition of actions across multiple pages
 
 ### Tests
 
-- Llaman a flows y validan resultados
+- Call flows and validate results
 
 ---
----
-## FINALIDAD
-Pepenium intenta que automatizar sea aburrido.  
-Y en testing, eso es una virtud.
+
+## PURPOSE
+
+Pepenium aims to make automation boring.  
+And in testing, that’s a feature.
 
