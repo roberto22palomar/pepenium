@@ -72,76 +72,7 @@ AWS Device Farm is focused on packaged executions and CI/CD workflows.
 
 To package the tests:
 
-
-
-**Pepenium** is a **Java-based test automation framework** for **mobile applications (Android / iOS)** and **web**, built on top of **Appium** and **Selenium**.
-
-It’s designed around a clear idea:  
-👉 **start fast**, but **scale without breaking** when the project grows.
-
-It supports **local execution**, **device farms** (AWS Device Farm / BrowserStack), and **CI/CD pipelines**, with configuration fully decoupled from code and an architecture designed for real-world projects.
-
----
-
-## ✨ Key Features
-
-- 📱 **Mobile-first**: Android and iOS as the primary focus
-- 🌐 Integrated **Web (desktop)** support
-- 🧱 Clean, reusable architecture (**core / toolkit / tests**)
-- ☁️ Local or remote execution (**AWS Device Farm / BrowserStack**)
-- ⚙️ Externalized configuration per provider and platform
-- ♻️ Project-level extensibility without touching the core
-- 🧪 CI/CD–ready by design
-
----
-
-## ⚙️ Requirements & Setup
-
-### General Requirements
-
-- Java
-- Maven
-- Appium Server
-
----
-
-### 📱 Local Mobile Execution
-
-#### Android
-
-- Appium Server installed and running
-- Physical Android device or configured emulator
-
-#### iOS
-
-- Appium Server
-- **XCUITest** driver (Appium’s automation driver for iOS)
-- iOS environment properly set up (Xcode, simulator or physical device)
-
----
-
-### 🌐 Local Web Execution (Desktop)
-
-- Browser driver (e.g. ChromeDriver) placed in `src/test/resources`
-
----
-
-## ☁️ BrowserStack & AWS Device Farm Execution
-
-### BrowserStack
-
-Configure `src/test/resources/browserstack.yml` with credentials, platforms, and devices.  
-Once configured, tests can be executed directly from the IDE.
-
----
-
-### AWS Device Farm
-
-AWS Device Farm is focused on packaged executions and CI/CD workflows.
-
-To package the tests:
-
-mvn clean package -P my-example-app-android -DskipTests
+`mvn clean package -P my-example-app-android -DskipTests`
 
 
 Upload to AWS:
@@ -188,4 +119,3 @@ Provider- and platform-specific configuration:
 
 Pepenium aims to make automation boring.  
 And in testing, that’s a feature.
-
