@@ -1,7 +1,7 @@
 package io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages;
 
-import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsAppIOS;
 import io.appium.java_client.AppiumBy;
+import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsAppIOS;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -26,25 +26,25 @@ public class BottomNavigationPageIOS {
 
     public void openTabOne() {
         log.info("Opening bottom navigation: Tab One");
-        actionsApp.hacerClick(tabOne);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.click(tabOne);
+        actionsApp.takeScreenshot();
     }
 
     public void openTabTwo() {
         log.info("Opening bottom navigation: Tab Two");
-        actionsApp.hacerClick(tabTwo);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.click(tabTwo);
+        actionsApp.takeScreenshot();
     }
 
     public void openTabThree() {
         log.info("Opening bottom navigation: Tab Three");
-        actionsApp.hacerClick(tabThree);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.click(tabThree);
+        actionsApp.takeScreenshot();
     }
 
     public void openHome() {
         log.info("Opening bottom navigation: Home");
-        actionsApp.hacerClick(tabHome);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.click(tabHome);
+        actionsApp.takeScreenshot();
     }
 }

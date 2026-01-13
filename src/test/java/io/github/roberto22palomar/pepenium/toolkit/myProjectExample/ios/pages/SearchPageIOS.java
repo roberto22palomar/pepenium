@@ -25,19 +25,19 @@ public class SearchPageIOS {
 
     public void close() {
         log.info("Closing Search page (iOS)");
-        actionsApp.hacerClick(btnClose);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.click(btnClose);
+        actionsApp.takeScreenshot();
     }
 
     public void openQuickSearchTab() {
         log.info("Opening Quick Search tab (iOS)");
-        actionsApp.hacerClick(tabQuickSearch);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.click(tabQuickSearch);
+        actionsApp.takeScreenshot();
     }
 
     public void openFiltersTab() {
         log.info("Opening Filters tab (iOS)");
-        actionsApp.hacerClick(tabFilters);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.click(tabFilters);
+        actionsApp.takeScreenshot();
     }
 }
