@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Added
+## [0.2.0] - 2026-01-13
 
 ### Changed
+- **Breaking change**: Migrated Web, Android and iOS Actions APIs to English.
+  - Renamed public methods
+  - Updated comments and logs
+  - No behavior changes intended
 
 ### Security
 - Planned updates for vulnerable Maven dependencies.
