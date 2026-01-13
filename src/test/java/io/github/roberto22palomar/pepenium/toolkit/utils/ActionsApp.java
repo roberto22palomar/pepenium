@@ -27,40 +27,40 @@ public class ActionsApp {
     private static final Duration LONG_TIMEOUT = Duration.ofSeconds(120L);
 
     // ---------------------------
-    // Bloque: Esperas y validaciones
+    // Block: Waits and validations
     // ---------------------------
 
     /**
-     * Espera hasta que el elemento esté visible en pantalla.
+     * Waits until the element is present on screen.
      */
-    public WebElement esperarVisible(By locator) {
-        log.info("<<< ESPERANDO QUE ESTÉ PRESENTE EL ELEMENTO: {}", locator);
+    public WebElement waitToBePresent(By locator) {
+        log.info("<<< WAITING FOR ELEMENT TO BE PRESENT: {}", locator);
         WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
         WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
 
         if (element != null) {
-            log.info("<<< EL ELEMENTO ESTÁ PRESENTE: {}", locator);
+            log.info("<<< ELEMENT IS PRESENT: {}", locator);
         } else {
-            log.warn("<<< EL ELEMENTO NO ESTÁ PRESENTE: {}", locator);
+            log.warn("<<< ELEMENT IS NOT PRESENT: {}", locator);
         }
         return element;
     }
 
     /**
-     * Espera hasta que el texto del elemento sea el esperado.
+     * Waits until the element text matches the expected value.
      */
-    public boolean waitForElementText(By locator, String textoEsperado) {
+    public boolean waitForElementText(By locator, String expectedText) {
         try {
             return new WebDriverWait(driver, DEFAULT_TIMEOUT)
-                    .until(ExpectedConditions.textToBe(locator, textoEsperado));
+                    .until(ExpectedConditions.textToBe(locator, expectedText));
         } catch (TimeoutException e) {
-            log.warn("Timeout esperando texto '{}' en elemento: {}", textoEsperado, locator);
+            log.warn("Timeout waiting for text '{}' on element: {}", expectedText, locator);
             return false;
         }
     }
 
     /**
-     * Verifica si un elemento está presente sin esperar.
+     * Checks whether an element is present without waiting.
      */
     public boolean isElementPresent(By locator) {
         try {
@@ -72,151 +72,154 @@ public class ActionsApp {
     }
 
     /**
-     * Verifica si un elemento está visible.
+     * Checks whether an element is visible.
      */
-    public boolean estaElementoVisible(By locator) {
+    public boolean isElementVisible(By locator) {
         try {
             new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.visibilityOfElementLocated(locator));
             return true;
         } catch (TimeoutException e) {
-            log.warn("Elemento no visible: {}", locator);
+            log.warn("Element not visible: {}", locator);
             return false;
         }
     }
 
     /**
-     * Obtiene el texto visible de un elemento.
+     * Gets the visible text from an element.
      */
     public String getElementText(By locator) {
         try {
-            WebElement elemento = esperarVisible(locator);
-            return elemento.getText();
+            WebElement element = waitToBePresent(locator);
+            return element.getText();
         } catch (Exception e) {
-            log.error("Error obteniendo texto de elemento: {}", locator, e);
+            log.error("Error getting text from element: {}", locator, e);
             return null;
         }
     }
 
     // ---------------------------
-    // Bloque: Interacciones básicas
+    // Block: Basic interactions
     // ---------------------------
 
     /**
-     * Espera hasta que el elemento sea clicable y hace clic.
+     * Waits until the element is clickable and clicks it.
      */
     @SneakyThrows
-    public void hacerClick(By locator) {
+    public void makeClick(By locator) {
         try {
-
-            WebElement elemento = new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            WebElement element = new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.elementToBeClickable(locator));
-            elemento.click();
-            log.info("CLICK hecho en: {}", locator);
+            element.click();
+            log.info("Click performed on: {}", locator);
         } catch (TimeoutException e) {
-            log.error("Timeout al hacer clic en el elemento: {}", locator, e);
+            log.error("Timeout clicking element: {}", locator, e);
             throw e;
         } catch (Exception e) {
-            log.error("Error al hacer clic en el elemento: {}", locator, e);
+            log.error("Error clicking element: {}", locator, e);
             throw e;
         }
     }
 
-    public boolean esperarPantallaEstable() {
+    /**
+     * Tries to detect a "stable" screen state by checking:
+     * - no visible spinner/progress bar
+     * - root container rectangle unchanged for a few consecutive checks
+     */
+    public boolean waitStableScreen() {
         final By ROOT = AppiumBy.androidUIAutomator("new UiSelector().resourceId(\"android:id/content\")");
         final By SPINNER = AppiumBy.androidUIAutomator("new UiSelector().className(\"android.widget.ProgressBar\")");
 
-        long fin = System.nanoTime() + Duration.ofSeconds(2).toNanos();
-        org.openqa.selenium.Rectangle anterior = null;
-        int establesSeguidos = 2;
+        long end = System.nanoTime() + Duration.ofSeconds(2).toNanos();
+        org.openqa.selenium.Rectangle previous = null;
+        int consecutiveStable = 2;
 
-        while (System.nanoTime() < fin) {
+        while (System.nanoTime() < end) {
             try {
-                // Si hay loader visible, no consideramos estable
+                // If a loader is visible, we do not consider the UI stable
                 if (!driver.findElements(SPINNER).isEmpty()) {
-                    establesSeguidos = 0;
+                    consecutiveStable = 0;
                     Thread.sleep(1500);
                     continue;
                 }
 
-                org.openqa.selenium.Rectangle actual = driver.findElement(ROOT).getRect();
+                org.openqa.selenium.Rectangle current = driver.findElement(ROOT).getRect();
 
-                if (actual.equals(anterior)) {
-                    if (++establesSeguidos >= 3) return true; // ✔ estable
+                if (current.equals(previous)) {
+                    if (++consecutiveStable >= 3) return true; // ✔ stable
                 } else {
-                    establesSeguidos = 0;
+                    consecutiveStable = 0;
                 }
 
-                anterior = actual;
+                previous = current;
                 Thread.sleep(1500);
 
             } catch (org.openqa.selenium.StaleElementReferenceException e) {
-                establesSeguidos = 0; // el root se recreó → reintentar
+                consecutiveStable = 0; // root was recreated → retry
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
                 return false;
             }
         }
-        return false; // no llegó a estabilizarse a tiempo
+        return false; // did not stabilize in time
     }
 
-
     /**
-     * Hace clic si el elemento está visible.
+     * Clicks if the element is visible.
      */
-    public boolean hacerClickSiVisible(By locator) throws InterruptedException {
-        if (estaElementoVisible(locator)) {
-            hacerClick(locator);
+    public boolean makeClickIfVisible(By locator) throws InterruptedException {
+        if (isElementVisible(locator)) {
+            makeClick(locator);
             return true;
         }
         return false;
     }
 
     /**
-     * Espera hasta que el campo sea visible, lo limpia y envía texto.
+     * Waits for the field to be visible, clears it and sends text.
      */
-    public void enviarTexto(By locator, String texto) {
+    public void sendText(By locator, String text) {
         try {
-            esperarPantallaEstable();
-            WebElement elemento = esperarVisible(locator);
-            elemento.clear();
-            elemento.sendKeys(texto);
-            log.info("Texto enviado a: {}", locator);
+            waitStableScreen();
+            WebElement element = waitToBePresent(locator);
+            element.clear();
+            element.sendKeys(text);
+            log.info("Text sent to: {}", locator);
         } catch (Exception e) {
-            log.error("Error al enviar texto al elemento: {}", locator, e);
+            log.error("Error sending text to element: {}", locator, e);
             throw e;
         }
     }
 
     /**
-     * Espera a que la pantalla de carga aparezca y desaparezca.
+     * Waits for a loading indicator to appear and then disappear.
      */
-    public void esperarPantallaCargaDesaparezca(String xpath) {
-        By indicadorCarga = By.xpath(xpath);
+    public void waitLoadingScreenToDisappear(String xpath) {
+        By loadingIndicator = By.xpath(xpath);
         try {
-            log.info("Esperando visibilidad del indicador de carga...");
+            log.info("Waiting for loading indicator to become visible...");
             WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
 
-            wait.until(ExpectedConditions.visibilityOfElementLocated(indicadorCarga));
-            log.info("✅ Pantalla de carga visible");
+            wait.until(ExpectedConditions.visibilityOfElementLocated(loadingIndicator));
+            log.info("✅ Loading screen visible");
 
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(indicadorCarga));
-            log.info("✅ Pantalla de carga desaparecida");
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(loadingIndicator));
+            log.info("✅ Loading screen disappeared");
         } catch (TimeoutException e) {
-            log.error("⚠️ La pantalla de carga no desapareció tras 2 minutos", e);
+            log.error("⚠️ Loading screen did not disappear after 2 minutes", e);
             throw e;
         }
     }
 
     // ---------------------------
-    // Bloque: Gestos y movimientos
+    // Block: Gestures and movements
     // ---------------------------
 
     /**
-     * Desplazarse hasta que el elemento esté visible (scroll).
+     * Swipe up.
      */
     public void swipeUp() {
-        esperarPantallaEstable();
+        waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
         int startY = (int) (size.getHeight() * 0.90);
@@ -234,8 +237,11 @@ public class ActionsApp {
         driver.perform(Collections.singletonList(swipe));
     }
 
+    /**
+     * Swipe down.
+     */
     public void swipeDown() {
-        esperarPantallaEstable();
+        waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
         int startY = (int) (size.getHeight() * 0.10);
@@ -252,11 +258,14 @@ public class ActionsApp {
 
         driver.perform(Collections.singletonList(swipe));
 
-        hacerCapturaPantalla();
+        takeScreenshot();
     }
 
+    /**
+     * Swipe left.
+     */
     public void swipeLeft() {
-        esperarPantallaEstable();
+        waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
         int startX = (int) (size.getWidth() * 0.90);
@@ -274,8 +283,11 @@ public class ActionsApp {
         driver.perform(Collections.singletonList(swipe));
     }
 
+    /**
+     * Swipe right.
+     */
     public void swipeRight() {
-        esperarPantallaEstable();
+        waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
         int startX = (int) (size.getWidth() * 0.10);
@@ -292,11 +304,11 @@ public class ActionsApp {
 
         driver.perform(Collections.singletonList(swipe));
 
-        hacerCapturaPantalla();
+        takeScreenshot();
     }
 
     /**
-     * Hace scroll up repetido hasta que el elemento sea visible o se agote el número de intentos.
+     * Repeatedly swipes up until the element is visible or the max number of swipes is reached.
      */
     public WebElement scrollToElement(By locator, int maxSwipes) {
         int attempts = 0;
@@ -307,31 +319,30 @@ public class ActionsApp {
                     return el;
                 }
             } catch (Exception ignored) {
-                log.error("Error al hacer scroll al elemento: " + ignored.getMessage());
+                log.error("Error while scrolling to element: {}", ignored.getMessage());
             }
 
             swipeUp();
             attempts++;
         }
-        // al final, lanza excepción si no se encontró
-        throw new NoSuchElementException("No se encontró el elemento tras " + maxSwipes + " swipes: " + locator);
+        throw new NoSuchElementException("Element not found after " + maxSwipes + " swipes: " + locator);
     }
 
     public void swipeAtElement(By locator,
                                Direction direction,
                                int times,
-                               double percent,          // 0.0 - 1.0 del alto/ancho del elemento
-                               int durationMs) {        // duración del gesto
+                               double percent,          // 0.0 - 1.0 of the element height/width
+                               int durationMs) {        // gesture duration
 
-        esperarPantallaEstable();
-        WebElement el = esperarVisible(locator);
+        waitStableScreen();
+        WebElement el = waitToBePresent(locator);
         Rectangle r = el.getRect();
 
-        // Centro del elemento
+        // Center of the element
         int cx = r.getX() + r.getWidth() / 2;
         int cy = r.getY() + r.getHeight() / 2;
 
-        // Distancia de swipe en función del tamaño del elemento
+        // Swipe distance based on element size
         int dy = (int) Math.max(1, r.getHeight() * percent);
         int dx = (int) Math.max(1, r.getWidth() * percent);
 
@@ -357,11 +368,11 @@ public class ActionsApp {
             Point end = clampToViewport(endX, endY);
 
             performSwipe(start, end, durationMs);
-            log.info("Swipe {} en área de {} ({} -> {})", direction, locator, start, end);
+            log.info("Swipe {} in area of {} ({} -> {})", direction, locator, start, end);
         }
     }
 
-    // Ejecuta el swipe con W3C Actions
+    // Executes the swipe using W3C Actions
     private void performSwipe(Point start, Point end, int durationMs) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence swipe = new Sequence(finger, 1)
@@ -374,7 +385,7 @@ public class ActionsApp {
         driver.perform(Collections.singletonList(swipe));
     }
 
-    // Ajusta coordenadas a los límites de la pantalla
+    // Clamps coordinates to the screen bounds
     private Point clampToViewport(int x, int y) {
         Dimension size = driver.manage().window().getSize();
         int safeX = Math.max(5, Math.min(size.getWidth() - 5, x));
@@ -382,51 +393,51 @@ public class ActionsApp {
         return new Point(safeX, safeY);
     }
 
-    // Enum para direcciones
+    // Enum for directions
     public enum Direction {UP, DOWN, LEFT, RIGHT}
 
     // ---------------------------
-    // Bloque: Capturas y debugging
+    // Block: Screenshots and debugging
     // ---------------------------
 
-    public String hacerCapturaPantalla() {
-        esperarPantallaEstable();
+    public String takeScreenshot() {
+        waitStableScreen();
         if (driver == null) {
-            log.warn("⚠️ El driver es nulo. No se puede hacer la captura.");
+            log.warn("⚠️ Driver is null. Cannot take screenshot.");
             return null;
         }
 
         try {
-            // Espera rápida a que la pantalla esté lista
+            // Quick wait for the UI to settle
             new FastUiSettle(driver).waitBriefly();
-            // Captura en bytes
+            // Screenshot as bytes
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
 
-            // Ruta base desde variable o /tmp
-            // - En AWS DF lo recogerá el artifact si así se configura
-            // - En BrowserStack/local: se guardará en /tmp (o el path proporcionado)
+            // Base path from env var or /tmp
+            // - In AWS DF it can be collected as an artifact if configured
+            // - In BrowserStack/local: saved under /tmp (or provided path)
             String baseDir = System.getenv("DEVICEFARM_SCREENSHOT_PATH");
             if (baseDir == null || baseDir.isEmpty()) {
                 baseDir = "/tmp";
             }
 
-            // Nombre de archivo con timestamp
+            // Filename with timestamp
             String filename = "screenshot_" + Instant.now().toEpochMilli() + ".png";
 
-            // Construye el Path y escribe el archivo
+            // Build Path and write file
             Path filePath = Path.of(baseDir, filename);
-            Files.createDirectories(filePath.getParent()); // crea el directorio si no existe
+            Files.createDirectories(filePath.getParent());
             Files.write(filePath, screenshot);
 
             String fullPath = filePath.toAbsolutePath().toString();
-            log.info("📸 Captura de pantalla guardada en: {}", fullPath);
+            log.info("📸 Screenshot saved at: {}", fullPath);
             return fullPath;
 
         } catch (IOException e) {
-            log.error("💥 Error al guardar la captura de pantalla", e);
+            log.error("💥 Error saving screenshot", e);
             return null;
         } catch (Exception e) {
-            log.error("💥 Error inesperado realizando la captura de pantalla", e);
+            log.error("💥 Unexpected error taking screenshot", e);
             return null;
         }
     }
