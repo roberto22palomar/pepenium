@@ -29,9 +29,9 @@ public class NavigationTabsPage {
     public void open(Tab tab) {
         By locator = resolve(tab);
         log.info("Opening navigation tab: {}", tab);
-        actionsWeb.esperarVisible(locator);
-        actionsWeb.hacerClick(locator);
-        actionsWeb.hacerCapturaPantalla();
+        actionsWeb.waitToBeVisible(locator);
+        actionsWeb.click(locator);
+        actionsWeb.takeScreenshot();
     }
 
     private By resolve(Tab tab) {

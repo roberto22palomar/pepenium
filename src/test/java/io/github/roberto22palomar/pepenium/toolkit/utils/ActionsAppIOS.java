@@ -26,7 +26,7 @@ public class ActionsAppIOS {
 
     private final AppiumDriver driver;
 
-    // Ajusta estos tiempos a tu grid (iOS suele necesitar más margen que Android)
+    // Tune these timings for your grid (iOS usually needs more margin than Android)
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
     private static final Duration LONG_TIMEOUT    = Duration.ofSeconds(25);
     private static final Duration POLLING         = Duration.ofMillis(60);
@@ -34,9 +34,9 @@ public class ActionsAppIOS {
     public AppiumDriver getDriver() { return this.driver; }
 
     // =========================
-    // Esperas (helpers internos)
+    // Wait helpers (internal)
     // =========================
-    private WebDriverWait waitShort() {
+    private WebDriverWait shortWait() {
         WebDriverWait w = new WebDriverWait(driver, DEFAULT_TIMEOUT);
         w.pollingEvery(POLLING);
         w.ignoring(NoSuchElementException.class)
@@ -44,7 +44,7 @@ public class ActionsAppIOS {
         return w;
     }
 
-    private WebDriverWait waitLong() {
+    private WebDriverWait longWait() {
         WebDriverWait w = new WebDriverWait(driver, LONG_TIMEOUT);
         w.pollingEvery(POLLING);
         w.ignoring(NoSuchElementException.class)
@@ -53,194 +53,195 @@ public class ActionsAppIOS {
     }
 
     private <T> T untilShort(Function<? super WebDriver, T> condition) {
-        return waitShort().until(condition);
+        return shortWait().until(condition);
     }
 
     private <T> T untilLong(Function<? super WebDriver, T> condition) {
-        return waitLong().until(condition);
+        return longWait().until(condition);
     }
 
     // =========================
-    // Esperas y validaciones
+    // Waits and validations
     // =========================
 
-    /** Visible en pantalla (no sólo presente en el árbol). */
-    public WebElement esperarVisible(By locator) {
+    /** Visible on screen (not just present in the tree). */
+    public WebElement waitToBeVisible(By locator) {
         log.info("<<< WAIT visible: {} >>>", locator);
         return untilLong(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
-    /** Presente (sin exigir visibilidad). Útil para colecciones o cargas perezosas. */
-    public WebElement esperarPresente(By locator) {
-        log.info("<<< WAIT presente: {} >>>", locator);
+    /** Present (without requiring visibility). Useful for lazy loads or collections. */
+    public WebElement waitToBePresent(By locator) {
+        log.info("<<< WAIT present: {} >>>", locator);
         return untilLong(ExpectedConditions.presenceOfElementLocated(locator));
     }
 
-    /** Clickable ≈ visible + enabled (ojo: en iOS no siempre es perfecto, pero ayuda). */
-    public WebElement esperarClickable(By locator) {
+    /** Clickable ≈ visible + enabled (not always perfect on iOS, but helps). */
+    public WebElement waitToBeClickable(By locator) {
         log.info("<<< WAIT clickable: {} >>>", locator);
         return untilLong(ExpectedConditions.elementToBeClickable(locator));
     }
 
-    /** Devuelve true si el elemento aparece visible dentro del timeout corto. */
-    public boolean estaElementoVisible(By locator) {
+    /** Returns true if the element becomes visible within the short timeout. */
+    public boolean isElementVisible(By locator) {
         try {
             untilShort(ExpectedConditions.visibilityOfElementLocated(locator));
             return true;
         } catch (TimeoutException e) {
-            log.debug("No visible a tiempo: {}", locator);
+            log.debug("Not visible within timeout: {}", locator);
             return false;
         }
     }
 
-    /** Espera a que el texto visible del elemento contenga la cadena. */
-    public boolean waitForElementText(By locator, String textoEsperado) {
+    /** Waits until the visible text contains the expected string. */
+    public boolean waitForElementText(By locator, String expectedText) {
         try {
-            return untilShort(ExpectedConditions.textToBePresentInElementLocated(locator, textoEsperado));
+            return untilShort(ExpectedConditions.textToBePresentInElementLocated(locator, expectedText));
         } catch (TimeoutException e) {
-            log.warn("Timeout esperando texto '{}' en: {}", textoEsperado, locator);
+            log.warn("Timeout waiting for text '{}' on: {}", expectedText, locator);
             return false;
         }
     }
 
-    /** Espera a que el locator desaparezca (invisible o no presente). */
+    /** Waits until the locator disappears (invisible or not present). */
     public boolean waitGone(By locator) {
         try {
             return untilLong(ExpectedConditions.invisibilityOfElementLocated(locator));
         } catch (TimeoutException e) {
-            log.warn("Timeout esperando que desaparezca: {}", locator);
+            log.warn("Timeout waiting for element to disappear: {}", locator);
             return false;
         }
     }
 
-    /** Obtiene el texto de un elemento visible (reduce Stale con un re-locate). */
+    /** Gets the text from a visible element (re-locates to reduce stale issues). */
     public String getElementText(By locator) {
         try {
-            WebElement el = esperarVisible(locator);
+            WebElement el = waitToBeVisible(locator);
             return el.getText();
         } catch (Exception e) {
-            log.error("Error obteniendo texto: {}", locator, e);
+            log.error("Error getting text from element: {}", locator, e);
             return null;
         }
     }
 
     // =========================
-    // Interacciones básicas
+    // Basic interactions
     // =========================
     @SneakyThrows
-    public void hacerClick(By locator) {
+    public void click(By locator) {
         try {
-            WebElement el = esperarClickable(locator);
+            WebElement el = waitToBeClickable(locator);
             el.click();
-            log.info("CLICK en: {}", locator);
+            log.info("CLICK on: {}", locator);
         } catch (TimeoutException e) {
-            log.error("Timeout al hacer clic en: {}", locator, e);
+            log.error("Timeout clicking element: {}", locator, e);
             throw e;
         } catch (ElementClickInterceptedException ice) {
-            // Reintento suave: pequeño tap W3C en el centro del elemento
-            log.warn("Interceptado el click, intento tap W3C: {}", locator);
-            WebElement el = esperarVisible(locator);
+            // Soft retry: small W3C tap at element center
+            log.warn("Click intercepted, retrying with W3C tap: {}", locator);
+            WebElement el = waitToBeVisible(locator);
             Rectangle r = el.getRect();
-            int cx = r.getX() + r.getWidth()/2;
-            int cy = r.getY() + r.getHeight()/2;
+            int cx = r.getX() + r.getWidth() / 2;
+            int cy = r.getY() + r.getHeight() / 2;
             tapPoint(cx, cy, 80);
         } catch (Exception e) {
-            log.error("Error al hacer click en: {}", locator, e);
+            log.error("Error clicking element: {}", locator, e);
             throw e;
         }
     }
 
-    public boolean hacerClickSiVisible(By locator) {
-        if (estaElementoVisible(locator)) {
-            hacerClick(locator);
+    public boolean clickIfVisible(By locator) {
+        if (isElementVisible(locator)) {
+            click(locator);
             return true;
         }
         return false;
     }
 
-    public void enviarTexto(By locator, String texto) {
+    public void type(By locator, String text) {
         try {
-            esperarPantallaEstable();
-            WebElement el = esperarVisible(locator);
+            waitStableScreen();
+            WebElement el = waitToBeVisible(locator);
             el.clear();
-            el.sendKeys(texto);
-            // En iOS a veces el teclado tapa el botón siguiente:
-            try { /*driver.hideKeyboard();*/ } catch (Exception ignore) {}
-            log.info("Texto enviado a {}: '{}'", locator, texto);
+            el.sendKeys(text);
+            // On iOS the keyboard may cover the next button:
+            try { /* driver.hideKeyboard(); */ } catch (Exception ignore) {}
+            log.info("Text sent to {}: '{}'", locator, text);
         } catch (Exception e) {
-            log.error("Error al enviar texto a: {}", locator, e);
+            log.error("Error sending text to element: {}", locator, e);
             throw e;
         }
     }
 
-    /** Espera a un “loader” custom: pásame el locator (predicate o id) y espero a que aparezca y luego desaparezca. */
-    public void esperarPantallaCargaDesaparezca(By loadingLocator) {
+    /** Waits for a custom loader: waits for it to appear and then disappear. */
+    public void waitLoadingScreenToDisappear(By loadingLocator) {
         log.info("<<< WAIT loader visible: {} >>>", loadingLocator);
         try {
             untilLong(ExpectedConditions.visibilityOfElementLocated(loadingLocator));
         } catch (TimeoutException e) {
-            log.warn("Loader no llegó a aparecer (puede ser OK): {}", loadingLocator);
+            log.warn("Loader did not appear (may be OK): {}", loadingLocator);
         }
         log.info("<<< WAIT loader gone: {} >>>", loadingLocator);
         waitGone(loadingLocator);
     }
 
     // =========================
-    // Estabilidad de pantalla (iOS)
+    // Screen stability (iOS)
     // =========================
-    public boolean esperarPantallaEstable() {
+    public boolean waitStableScreen() {
         final By ROOT    = AppiumBy.iOSClassChain("**/XCUIElementTypeWindow[1]");
-        final By SPINNER = AppiumBy.iOSNsPredicateString("type == 'XCUIElementTypeActivityIndicator' AND visible == 1");
+        final By SPINNER = AppiumBy.iOSNsPredicateString(
+                "type == 'XCUIElementTypeActivityIndicator' AND visible == 1");
 
-        long fin = System.nanoTime() + Duration.ofSeconds(3).toNanos();
-        Rectangle anterior = null;
-        int establesSeguidos = 0;
+        long end = System.nanoTime() + Duration.ofSeconds(3).toNanos();
+        Rectangle previous = null;
+        int stableCount = 0;
 
-        while (System.nanoTime() < fin) {
+        while (System.nanoTime() < end) {
             try {
-                // Si hay spinner visible, resetea contador
+                // If spinner is visible, reset counter
                 if (!driver.findElements(SPINNER).isEmpty()) {
-                    establesSeguidos = 0;
+                    stableCount = 0;
                     Thread.sleep(200);
                     continue;
                 }
 
-                Rectangle actual = driver.findElement(ROOT).getRect();
-                if (actual.equals(anterior)) {
-                    establesSeguidos++;
-                    if (establesSeguidos >= 3) return true; // ~600-800ms estables
+                Rectangle current = driver.findElement(ROOT).getRect();
+                if (current.equals(previous)) {
+                    stableCount++;
+                    if (stableCount >= 3) return true; // ~600-800ms stable
                 } else {
-                    establesSeguidos = 0;
+                    stableCount = 0;
                 }
-                anterior = actual;
+                previous = current;
                 Thread.sleep(250);
 
             } catch (StaleElementReferenceException e) {
-                establesSeguidos = 0;
+                stableCount = 0;
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
                 return false;
             } catch (Exception any) {
-                // Fallback a viewport
+                // Fallback to viewport
                 Dimension size = driver.manage().window().getSize();
-                Rectangle fallback = new Rectangle(new Point(0,0), size);
-                if (fallback.equals(anterior)) {
-                    establesSeguidos++;
-                    if (establesSeguidos >= 3) return true;
+                Rectangle fallback = new Rectangle(new Point(0, 0), size);
+                if (fallback.equals(previous)) {
+                    stableCount++;
+                    if (stableCount >= 3) return true;
                 } else {
-                    establesSeguidos = 0;
+                    stableCount = 0;
                 }
-                anterior = fallback;
+                previous = fallback;
             }
         }
-        return establesSeguidos >= 1; // al menos algo de estabilidad
+        return stableCount >= 1; // some stability at least
     }
 
     // =========================
-    // Gestos y scroll
+    // Gestures and scrolling
     // =========================
     public void swipeUp() {
-        esperarPantallaEstable();
+        waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
         int startY = (int) (size.getHeight() * 0.85);
@@ -249,17 +250,17 @@ public class ActionsAppIOS {
     }
 
     public void swipeDown() {
-        esperarPantallaEstable();
+        waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
         int startY = (int) (size.getHeight() * 0.20);
         int endY   = (int) (size.getHeight() * 0.85);
         performSwipe(new Point(x, startY), new Point(x, endY), 500);
-        hacerCapturaPantalla();
+        takeScreenshot();
     }
 
     public void swipeLeft() {
-        esperarPantallaEstable();
+        waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
         int startX = (int) (size.getWidth() * 0.85);
@@ -268,36 +269,34 @@ public class ActionsAppIOS {
     }
 
     public void swipeRight() {
-        esperarPantallaEstable();
+        waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
         int startX = (int) (size.getWidth() * 0.15);
         int endX   = (int) (size.getWidth() * 0.85);
         performSwipe(new Point(startX, y), new Point(endX, y), 500);
-        hacerCapturaPantalla();
+        takeScreenshot();
     }
 
-    /** Scroll por swipes repetidos hasta que el elemento sea visible o agote intentos. */
+    /** Repeated swipe scrolling until the element is visible or attempts are exhausted. */
     public WebElement scrollToElement(By locator, int maxSwipes) {
         int attempts = 0;
         while (attempts < maxSwipes) {
             try {
                 WebElement el = driver.findElement(locator);
                 if (el.isDisplayed()) return el;
-            } catch (Exception ignored) {
-                // no-op
-            }
+            } catch (Exception ignored) { }
             swipeUp();
             attempts++;
         }
-        throw new NoSuchElementException("No se encontró tras " + maxSwipes + " swipes: " + locator);
+        throw new NoSuchElementException("Element not found after " + maxSwipes + " swipes: " + locator);
     }
 
     // =========================
-    // Capturas / Debug
+    // Screenshots / Debug
     // =========================
-    public String hacerCapturaPantalla() {
-        esperarPantallaEstable();
+    public String takeScreenshot() {
+        waitStableScreen();
         try {
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
             String filename = "screenshot_" + Instant.now().toEpochMilli() + ".png";
@@ -305,13 +304,13 @@ public class ActionsAppIOS {
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, screenshot);
             String fullPath = filePath.toAbsolutePath().toString();
-            log.info("📸 Captura guardada en: {}", fullPath);
+            log.info("📸 Screenshot saved at: {}", fullPath);
             return fullPath;
         } catch (IOException e) {
-            log.error("Error guardando captura", e);
+            log.error("Error saving screenshot", e);
             return null;
         } catch (Exception e) {
-            log.error("Error inesperado capturando pantalla", e);
+            log.error("Unexpected error taking screenshot", e);
             return null;
         }
     }
@@ -331,19 +330,19 @@ public class ActionsAppIOS {
         driver.perform(Collections.singletonList(tap));
     }
 
-    public void scrollToElementSeguro(By locator) {
+    public void safeScrollToElement(By locator) {
         ScrollUtils scroller = new ScrollUtils(driver);
         scroller.scrollToElement(locator, 12);
     }
 
-    // === SWIPE EN LA ZONA DE UN ELEMENTO ===
+    // === SWIPE IN ELEMENT AREA ===
     public void swipeAtElement(By locator,
                                Direction direction,
                                int times,
                                double percent,
                                int durationMs) {
-        esperarPantallaEstable();
-        WebElement el = esperarVisible(locator);
+        waitStableScreen();
+        WebElement el = waitToBeVisible(locator);
         Rectangle r = el.getRect();
 
         int cx = r.getX() + r.getWidth() / 2;
@@ -363,7 +362,7 @@ public class ActionsAppIOS {
             Point start = clampToViewport(startX, startY);
             Point end   = clampToViewport(endX, endY);
             performSwipe(start, end, durationMs);
-            log.info("Swipe {} en {} ({} -> {})", direction, locator, start, end);
+            log.info("Swipe {} on {} ({} -> {})", direction, locator, start, end);
         }
     }
 
@@ -382,7 +381,7 @@ public class ActionsAppIOS {
     private void performSwipeIOS(WebElement el, Point start, Point end, int durationMs) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
 
-        // Asegura duración mínima para que iOS detecte el gesto
+        // Ensure minimum duration so iOS detects the gesture
         int safeDuration = Math.max(durationMs, 400);
 
         Sequence swipe = new Sequence(finger, 1)
@@ -399,7 +398,7 @@ public class ActionsAppIOS {
     private Point clampToViewportIOS(int x, int y) {
         Dimension size = driver.manage().window().getSize();
 
-        // Margen mayor en iOS para evitar gestos del sistema
+        // Larger margin on iOS to avoid system gestures
         int margin = 20;
 
         int safeX = Math.max(margin, Math.min(size.getWidth()  - margin, x));
@@ -410,25 +409,24 @@ public class ActionsAppIOS {
 
     public enum Direction { UP, DOWN, LEFT, RIGHT }
 
-
     /**
-     * Realiza un swipe sobre un elemento en iOS (driver XCUITest).
+     * Performs a swipe on an element in iOS (XCUITest driver).
      */
     public void swipeAtElementIOS(By locator,
                                   Direction direction,
                                   int times,
-                                  double percent,        // 0.0 - 1.0 del alto/ancho del elemento
-                                  int durationMs) {      // duración del gesto
+                                  double percent,
+                                  int durationMs) {
 
-        esperarPantallaEstable();
-        WebElement el = esperarVisible(locator);
+        waitStableScreen();
+        WebElement el = waitToBeVisible(locator);
         Rectangle r = el.getRect();
 
-        // Centro del elemento
+        // Element center
         int cx = r.getX() + r.getWidth() / 2;
         int cy = r.getY() + r.getHeight() / 2;
 
-        // Distancia de swipe (más suave y segura en iOS)
+        // Swipe distance (safer for iOS)
         int dy = (int) Math.max(10, r.getHeight() * percent);
         int dx = (int) Math.max(10, r.getWidth()  * percent);
 
@@ -446,10 +444,9 @@ public class ActionsAppIOS {
             Point end   = clampToViewportIOS(endX, endY);
 
             performSwipeIOS(el, start, end, durationMs);
-            log.info("📱 Swipe {} (iOS) en {} -> {} → {}", direction, locator, start, end);
+            log.info("📱 Swipe {} (iOS) on {} -> {} → {}", direction, locator, start, end);
         }
     }
-
 
     private Point clampToViewport(int x, int y) {
         Dimension size = driver.manage().window().getSize();
@@ -457,5 +454,4 @@ public class ActionsAppIOS {
         int safeY = Math.max(5, Math.min(size.getHeight() - 5, y));
         return new Point(safeX, safeY);
     }
-
 }

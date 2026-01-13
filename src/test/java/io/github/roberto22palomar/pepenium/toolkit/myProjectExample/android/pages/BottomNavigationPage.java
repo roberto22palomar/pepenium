@@ -25,25 +25,25 @@ public class BottomNavigationPage {
 
     public void openTabOne() {
         log.info("Opening bottom navigation: Tab One");
-        actionsApp.hacerClick(tabOne);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.makeClick(tabOne);
+        actionsApp.takeScreenshot();
     }
 
     public void openTabTwo() {
         log.info("Opening bottom navigation: Tab Two");
-        actionsApp.hacerClick(tabTwo);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.makeClick(tabTwo);
+        actionsApp.takeScreenshot();
     }
 
     public void openTabThree() {
         log.info("Opening bottom navigation: Tab Three");
-        actionsApp.hacerClick(tabThree);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.makeClick(tabThree);
+        actionsApp.takeScreenshot();
     }
 
     public void openHome() {
         log.info("Opening bottom navigation: Home");
-        actionsApp.hacerClick(tabHome);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.makeClick(tabHome);
+        actionsApp.takeScreenshot();
     }
 }

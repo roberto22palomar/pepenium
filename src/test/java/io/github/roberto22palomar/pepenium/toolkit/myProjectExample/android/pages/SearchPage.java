@@ -24,19 +24,19 @@ public class SearchPage {
 
     public void close() {
         log.info("Closing Search page (Android)");
-        actionsApp.hacerClick(btnClose);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.makeClick(btnClose);
+        actionsApp.takeScreenshot();
     }
 
     public void openQuickSearchTab() {
         log.info("Opening Quick Search tab (Android)");
-        actionsApp.hacerClick(tabQuickSearch);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.makeClick(tabQuickSearch);
+        actionsApp.takeScreenshot();
     }
 
     public void openFiltersTab() {
         log.info("Opening Filters tab (Android)");
-        actionsApp.hacerClick(tabFilters);
-        actionsApp.hacerCapturaPantalla();
+        actionsApp.makeClick(tabFilters);
+        actionsApp.takeScreenshot();
     }
 }

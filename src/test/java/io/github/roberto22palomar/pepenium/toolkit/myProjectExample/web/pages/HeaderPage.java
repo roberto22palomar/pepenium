@@ -25,29 +25,29 @@ public class HeaderPage {
 
     public void openSideMenu() {
         log.info("Opening side menu");
-        actionsWeb.esperarVisible(sideMenuButton);
-        actionsWeb.hacerClick(sideMenuButton);
-        actionsWeb.hacerCapturaPantalla();
+        actionsWeb.waitToBeVisible(sideMenuButton);
+        actionsWeb.click(sideMenuButton);
+        actionsWeb.takeScreenshot();
     }
 
     public void openSearch() {
         log.info("Opening search");
-        actionsWeb.esperarVisible(searchButton);
-        actionsWeb.hacerClick(searchButton);
-        actionsWeb.hacerCapturaPantalla();
+        actionsWeb.waitToBeVisible(searchButton);
+        actionsWeb.click(searchButton);
+        actionsWeb.takeScreenshot();
     }
 
     public void refresh() {
         log.info("Refreshing page");
-        actionsWeb.esperarVisible(refreshButton);
-        actionsWeb.hacerClick(refreshButton);
-        actionsWeb.hacerCapturaPantalla();
+        actionsWeb.waitToBeVisible(refreshButton);
+        actionsWeb.click(refreshButton);
+        actionsWeb.takeScreenshot();
     }
 
     public void openMoreOptions() {
         log.info("Opening header options menu");
-        actionsWeb.esperarVisible(moreOptionsButton);
-        actionsWeb.hacerClick(moreOptionsButton);
-        actionsWeb.hacerCapturaPantalla();
+        actionsWeb.waitToBeVisible(moreOptionsButton);
+        actionsWeb.click(moreOptionsButton);
+        actionsWeb.takeScreenshot();
     }
 }
