@@ -4,24 +4,56 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- =========================================================
+         Project coordinates
+         ========================================================= -->
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0</version>
 
     <properties>
+        <!-- =====================================================
+             Build settings
+             ===================================================== -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Note: profiles compile to Java 8, but the root pom uses Java 11. -->
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+
+        <!-- =====================================================
+             Centralized versions (single source of truth)
+             ===================================================== -->
+        <selenium.bom.version>4.39.0</selenium.bom.version>
+        <appium.java.client.version>10.0.0</appium.java.client.version>
+
+        <junit.jupiter.version>5.13.1</junit.jupiter.version>
+        <junit.platform.console.version>1.13.4</junit.platform.console.version>
+
+        <lombok.version>1.18.38</lombok.version>
+        <snakeyaml.version>1.33</snakeyaml.version>
+
+        <slf4j.version>2.0.17</slf4j.version>
+        <log4j2.version>2.25.3</log4j2.version>
+
+        <!-- =====================================================
+             Plugin versions
+             ===================================================== -->
+        <maven.compiler.plugin.version>3.14.1</maven.compiler.plugin.version>
+        <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
+        <maven.dependency.plugin.version>3.6.1</maven.dependency.plugin.version>
     </properties>
 
-    <!-- Locks the entire Selenium family to a single version -->
-    <!-- Replace your current dependencyManagement with this -->
+    <!-- =========================================================
+         Dependency management
+         ========================================================= -->
     <dependencyManagement>
         <dependencies>
+            <!-- Locks the entire Selenium family to a single version -->
             <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-bom</artifactId>
-                <version>4.39.0</version>
+                <version>${selenium.bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -30,11 +62,14 @@
 
     <dependencies>
 
-        <!-- Appium Java Client (Selenium excluded to avoid version conflicts) -->
+        <!-- =====================================================
+             Mobile automation (Appium)
+             ===================================================== -->
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>10.0.0</version>
+            <version>${appium.java.client.version}</version>
+            <!-- Selenium excluded to avoid version conflicts; Selenium is controlled by the BOM -->
             <exclusions>
                 <exclusion>
                     <groupId>org.seleniumhq.selenium</groupId>
@@ -43,82 +78,124 @@
             </exclusions>
         </dependency>
 
-        <!-- Selenium (no version defined: managed by Selenium BOM) -->
+        <!-- =====================================================
+             Web automation (Selenium) - version managed by selenium-bom
+             ===================================================== -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
         </dependency>
 
-        <!-- JUnit 5 -->
+        <!-- =====================================================
+             Testing (JUnit 5)
+             ===================================================== -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.13.1</version>
+            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.13.1</version>
+            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- ConsoleLauncher -->
+        <!-- Standalone ConsoleLauncher (used as the Main-Class for tests.jar) -->
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-console-standalone</artifactId>
-            <version>1.13.4</version>
+            <version>${junit.platform.console.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- Utilities / logging -->
+        <!-- =====================================================
+             Utilities
+             ===================================================== -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.38</version>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.33</version>
+            <version>${snakeyaml.version}</version>
         </dependency>
 
+        <!-- =====================================================
+             Logging (SLF4J API + Log4j2 implementation)
+             ===================================================== -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.17</version>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.25.3</version>
+            <!-- Keeping the original artifact as-is; can be switched to log4j-slf4j2-impl later if needed -->
+            <version>${log4j2.version}</version>
         </dependency>
 
+        <!-- Align Log4j2 modules to the same version -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.14.1</version>
+            <version>${log4j2.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.14.1</version>
+            <version>${log4j2.version}</version>
         </dependency>
 
     </dependencies>
 
     <build>
         <plugins>
-            <!-- (No shade plugin, no global duplicated jar) -->
+            <!-- No global build plugins are needed at root level for now -->
         </plugins>
+
+        <!-- =====================================================
+             Centralize plugin versions so profiles can omit them
+             ===================================================== -->
+        <pluginManagement>
+            <plugins>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven.jar.plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.plugin.version}</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
     </build>
 
     <profiles>
 
+        <!-- =====================================================
+             Profile: Android app tests
+             ===================================================== -->
         <profile>
             <id>my-app-android</id>
             <build>
@@ -127,17 +204,11 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.14.1</version>
+                        <version>${maven.compiler.plugin.version}</version>
                         <configuration>
+                            <!-- AWS Device Farm commonly runs Java 8 -->
                             <source>1.8</source>
                             <target>1.8</target>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                    <version>1.18.34</version>
-                                </path>
-                            </annotationProcessorPaths>
                             <compilerArgs>
                                 <arg>-parameters</arg>
                             </compilerArgs>
@@ -148,7 +219,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.3.0</version>
                         <executions>
                             <execution>
                                 <id>tests-jar</id>
@@ -181,7 +251,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <version>3.6.1</version>
                         <executions>
 
                             <execution>
@@ -218,8 +287,6 @@
         </profile>
 
         <!-- iOS and Web profiles are identical except for test includes -->
-        <!-- Comments intentionally kept consistent for clarity -->
-
         <!-- my-app-ios -->
         <!-- my-web-android -->
 
