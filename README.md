@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/build.yml">
-    <img alt="Build" src="https://github.com/roberto22palomar/pepenium/actions/workflows/build.yml/badge.svg" />
+  <a href="https://github.com/roberto22palomar/pepenium/.github/workflows/ci-build.yml">
+    <img alt="Build" src="https://github.com/roberto22palomar/pepenium/.github/workflows/ci-build.yml.yml/badge.svg" />
   </a>
 </p>
 
@@ -23,12 +23,14 @@
 </p>
 
 
-**Pepenium** is a **Java-based test automation framework** for **mobile applications (Android / iOS)** and **web**, built on top of **Appium** and **Selenium**.
+**Pepenium** is a **Java-based test automation framework** for **mobile applications (Android / iOS)** and **web**,
+built on top of **Appium** and **Selenium**.
 
 It’s designed around a clear idea:  
 👉 **start fast**, but **scale without breaking** when the project grows.
 
-It supports **local execution**, **device farms** (AWS Device Farm / BrowserStack), and **CI/CD pipelines**, with configuration fully decoupled from code and an architecture designed for real-world projects.
+It supports **local execution**, **device farms** (AWS Device Farm / BrowserStack), and **CI/CD pipelines**, with
+configuration fully decoupled from code and an architecture designed for real-world projects.
 
 ---
 
@@ -92,8 +94,8 @@ To package the tests:
 
 `mvn clean package -P my-example-app-android -DskipTests`
 
-
 Upload to AWS:
+
 - Generated JAR
 - `dependency-jars` folder
 
@@ -104,6 +106,7 @@ Upload to AWS:
 ### Core (`core/`)
 
 Provider- and platform-specific configuration:
+
 - `core/configs/aws/(android|ios)`
 - `core/configs/browserstack/(android|ios|desktop)`
 
