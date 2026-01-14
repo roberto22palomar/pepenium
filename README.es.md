@@ -1,17 +1,35 @@
+<p align="center">
+  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/build.yml">
+    <img alt="Build" src="https://github.com/roberto22palomar/pepenium/actions/workflows/build.yml/badge.svg" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="LICENSE">
+    <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
+  </a>
+  <img alt="Java" src="https://img.shields.io/badge/Java-8%2B-blue.svg" />
+  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.x-orange.svg" />
+  <img alt="JUnit" src="https://img.shields.io/badge/JUnit-5-purple.svg" />
+  <img alt="Selenium" src="https://img.shields.io/badge/Selenium-4-43B02A.svg" />
+  <img alt="Appium Client" src="https://img.shields.io/badge/Appium%20Client-10-00BFFF.svg" />
+</p>
+
 # 🧪 Pepenium – Test Automation Framework
 
 <p align="center">
-  <a href="README.es.md">English</a> · 
-  <a href="README.md">Español</a>
+  🇬🇧 <a href="README.md">English</a> · 
+  🇪🇸 <strong>Español</strong>
 </p>
 
-
-**Pepenium** es un **framework de automatización de pruebas en Java** para aplicaciones **móviles (Android / iOS)** y **web**, construido sobre **Appium** y **Selenium**.
+**Pepenium** es un **framework de automatización de pruebas en Java** para aplicaciones **móviles (Android / iOS)** y *
+*web**, construido sobre **Appium** y **Selenium**.
 
 Está diseñado con una idea clara:  
 👉 **arrancar rápido**, pero **escalar sin romperse** cuando el proyecto crece.
 
-Soporta ejecución **local**, ejecución en **device farms** (AWS Device Farm / BrowserStack) y uso en **CI/CD**, con configuración desacoplada del código y una arquitectura pensada para proyectos reales.
+Soporta ejecución **local**, ejecución en **device farms** (AWS Device Farm / BrowserStack) y uso en **CI/CD**, con
+configuración desacoplada del código y una arquitectura pensada para proyectos reales.
 
 ---
 
@@ -72,11 +90,13 @@ Una vez configurado, los tests se pueden ejecutar directamente desde el IDE.
 AWS Device Farm está orientado a ejecuciones empaquetadas y CI/CD.
 
 Para empaquetar:
+
 ```
 mvn clean package -P my-example-app-android -DskipTests
 ```
 
 Subir a AWS:
+
 - JAR generado
 - Carpeta `dependency-jars`
 
@@ -87,6 +107,7 @@ Subir a AWS:
 ### Core (`core/`)
 
 Configuración por proveedor y plataforma:
+
 - `core/configs/aws/(android|ios)`
 - `core/configs/browserstack/(android|ios|desktop)`
 
@@ -116,7 +137,9 @@ Configuración por proveedor y plataforma:
 
 ---
 ---
+
 ## FINALIDAD
+
 Pepenium intenta que automatizar sea aburrido.  
 Y en testing, eso es una virtud.
 

@@ -1,9 +1,27 @@
+<p align="center">
+  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/build.yml">
+    <img alt="Build" src="https://github.com/roberto22palomar/pepenium/actions/workflows/build.yml/badge.svg" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="LICENSE">
+    <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
+  </a>
+  <img alt="Java" src="https://img.shields.io/badge/Java-8%2B-blue.svg" />
+  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.x-orange.svg" />
+  <img alt="JUnit" src="https://img.shields.io/badge/JUnit-5-purple.svg" />
+  <img alt="Selenium" src="https://img.shields.io/badge/Selenium-4-43B02A.svg" />
+  <img alt="Appium Client" src="https://img.shields.io/badge/Appium%20Client-10-00BFFF.svg" />
+</p>
+
 # 🧪 Pepenium – Test Automation Framework
 
 <p align="center">
-  <a href="README.md">English</a> · 
-  <a href="README.es.md">Español</a>
+  🇬🇧 <strong>English</strong> · 
+  🇪🇸 <a href="README.es.md">Español</a>
 </p>
+
 
 **Pepenium** is a **Java-based test automation framework** for **mobile applications (Android / iOS)** and **web**, built on top of **Appium** and **Selenium**.
 
