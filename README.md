@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://github.com/roberto22palomar/pepenium/.github/workflows/ci-build.yml">
-    <img alt="Build" src="https://github.com/roberto22palomar/pepenium/.github/workflows/ci-build.yml.yml/badge.svg" />
+  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
+    <img alt="Build" src="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml/badge.svg" />
   </a>
 </p>
 
