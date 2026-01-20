@@ -230,10 +230,10 @@
                                     <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
                                     <classifier>tests</classifier>
                                     <includes>
-                                        <include>io.github.roberto22palomar/pepenium/core/**/*.class</include>
-                                        <include>io.github.roberto22palomar/pepenium/tests/myProject/aws/android/*Test.class</include>
-                                        <include>io.github.roberto22palomar/pepenium/toolkit/myProject/**/*.class</include>
-                                        <include>io.github.roberto22palomar/pepenium/toolkit/utils/**/*.class</include>
+                                        <include>io/github/roberto22palomar/pepenium/core/**/*.class</include>
+                                        <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/aws/android/*Test.class</include>
+                                        <include>io/github/roberto22palomar/pepenium/toolkit/myProjectExample/**/*.class</include>
+                                        <include>io/github/roberto22palomar/pepenium/toolkit/utils/**/*.class</include>
                                     </includes>
                                     <archive>
                                         <manifest>
