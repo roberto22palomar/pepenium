@@ -41,7 +41,7 @@
              ===================================================== -->
         <maven.compiler.plugin.version>3.14.1</maven.compiler.plugin.version>
         <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
-        <maven.dependency.plugin.version>3.6.1</maven.dependency.plugin.version>
+        <maven.dependency.plugin.version>3.9.0</maven.dependency.plugin.version>
     </properties>
 
     <!-- =========================================================
