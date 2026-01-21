@@ -11,9 +11,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- README badges (core technologies + CI build status).
 
 ### Changed
+
+
+### Dependencies
+
+
+## [0.0.3] - 2026-01-21
+
+### Added
+
+- Added README badges for core technologies and CI build status.
+
+### Changed
+
+- docs: translate pom comments to English
+- refactor: pom cleanup to improve structure and maintainability
+- build: fix pom profile include paths for AWS test JAR packaging
+- Adapt YamlLoaders to SnakeYAML 2.x API changes
 
 ### Dependencies
 
@@ -22,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - deps: bump org.apache.logging.log4j:log4j-slf4j-impl from 2.14.1 to 2.25.3
 - deps: bump io.appium:java-client from 9.5.0 to 10.0.0
 - deps: bump org.apache.maven.plugins:maven-compiler-plugin from 3.10.1 to 3.14.1
+- deps: bump maven.dependency.plugin.version from 3.6.1 to 3.9.0
+- deps: bump org.projetlombok.lombok from 1.18.38 to 1.18.42
+- deps: bump org.yaml:snakeyaml from 1.33 to 2.5
 
 ---
 
