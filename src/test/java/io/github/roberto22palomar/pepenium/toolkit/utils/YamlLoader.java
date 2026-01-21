@@ -1,8 +1,6 @@
 package io.github.roberto22palomar.pepenium.toolkit.utils;
 
-
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -10,14 +8,14 @@ import java.nio.file.Paths;
 
 public final class YamlLoader {
 
-    private YamlLoader() { }
+    private YamlLoader() {
+    }
 
     public static BrowserStackConfig load(String yamlPath) {
         try (InputStream in = Files.newInputStream(Paths.get(yamlPath))) {
-            Yaml yaml = new Yaml(new Constructor(BrowserStackConfig.class));
-            return yaml.load(in);
+            return new Yaml().loadAs(in, BrowserStackConfig.class);
         } catch (Exception e) {
-            throw new RuntimeException("No se pudo cargar browserstack.yml: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to load browserstack.yml: " + e.getMessage(), e);
         }
     }
 }
