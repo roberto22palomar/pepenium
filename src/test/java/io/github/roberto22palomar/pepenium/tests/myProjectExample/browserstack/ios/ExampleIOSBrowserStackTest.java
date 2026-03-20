@@ -3,12 +3,16 @@ package io.github.roberto22palomar.pepenium.tests.myProjectExample.browserstack.
 import io.github.roberto22palomar.pepenium.core.BaseTest;
 import io.github.roberto22palomar.pepenium.core.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.configs.browserstack.ios.IOSConfigBS;
-
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.flows.ExampleNavigationFlowIOS;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages.BottomNavigationPageIOS;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages.SearchPageIOS;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsAppIOS;
-import org.junit.jupiter.api.Test;
+import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfig;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 public class ExampleIOSBrowserStackTest extends BaseTest {
 
@@ -17,18 +21,24 @@ public class ExampleIOSBrowserStackTest extends BaseTest {
         return new IOSConfigBS();
     }
 
-    @Test
-    public void basicNavigationFlow_shouldRunOnBrowserStackIOS() {
-        ActionsAppIOS actionsApp = new ActionsAppIOS(driver);
+    @Override
+    protected boolean useAutomaticLifecycle() {
+        return false;
+    }
 
-        // Pages (example)
-        SearchPageIOS searchPage = new SearchPageIOS(actionsApp);
-        BottomNavigationPageIOS bottomNavigationPage = new BottomNavigationPageIOS(actionsApp);
+    static Stream<Arguments> platforms() {
+        return IOSConfigBS.platforms();
+    }
 
-        // Flow (example)
-        ExampleNavigationFlowIOS flow = new ExampleNavigationFlowIOS(bottomNavigationPage, searchPage);
-
-        // Execute
-        flow.runBasicNavigationFlow();
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("platforms")
+    public void basicNavigationFlow_shouldRunOnBrowserStackIOS(BrowserStackConfig.Platform platform) throws Exception {
+        runWithConfig(new IOSConfigBS(platform), () -> {
+            ActionsAppIOS actionsApp = new ActionsAppIOS(driver);
+            SearchPageIOS searchPage = new SearchPageIOS(actionsApp);
+            BottomNavigationPageIOS bottomNavigationPage = new BottomNavigationPageIOS(actionsApp);
+            ExampleNavigationFlowIOS flow = new ExampleNavigationFlowIOS(bottomNavigationPage, searchPage);
+            flow.runBasicNavigationFlow();
+        });
     }
 }

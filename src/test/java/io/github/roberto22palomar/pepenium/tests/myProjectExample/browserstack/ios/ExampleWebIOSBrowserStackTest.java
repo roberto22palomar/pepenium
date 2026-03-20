@@ -7,7 +7,12 @@ import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.flows.Ex
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.pages.HeaderPage;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.pages.NavigationTabsPage;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsWeb;
-import org.junit.jupiter.api.Test;
+import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfigMobile;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 public class ExampleWebIOSBrowserStackTest extends BaseTest {
 
@@ -16,22 +21,26 @@ public class ExampleWebIOSBrowserStackTest extends BaseTest {
         return new IOSWebConfigBS();
     }
 
-    @Test
-    public void basicWebNavigationFlow_shouldRunOnBrowserStackIOS() {
-        ActionsWeb actionsWeb = new ActionsWeb(driver);
+    @Override
+    protected boolean useAutomaticLifecycle() {
+        return false;
+    }
 
-        // Pages (example)
-        HeaderPage headerPage = new HeaderPage(actionsWeb);
-        NavigationTabsPage navigationTabsPage = new NavigationTabsPage(actionsWeb);
+    static Stream<Arguments> platforms() {
+        return IOSWebConfigBS.platforms();
+    }
 
-        // Flow (example)
-        ExampleNavigationFlow flow = new ExampleNavigationFlow(headerPage, navigationTabsPage);
-
-        // Target URL (example)
-        String baseUrl = System.getenv().getOrDefault("PEPENIUM_BASE_URL", "https://example.com");
-        driver.get(baseUrl);
-
-        // Execute
-        flow.runBasicNavigationFlow();
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("platforms")
+    public void basicWebNavigationFlow_shouldRunOnBrowserStackIOS(BrowserStackConfigMobile.Platform platform) throws Exception {
+        runWithConfig(new IOSWebConfigBS(platform), () -> {
+            ActionsWeb actionsWeb = new ActionsWeb(driver);
+            HeaderPage headerPage = new HeaderPage(actionsWeb);
+            NavigationTabsPage navigationTabsPage = new NavigationTabsPage(actionsWeb);
+            ExampleNavigationFlow flow = new ExampleNavigationFlow(headerPage, navigationTabsPage);
+            String baseUrl = System.getenv().getOrDefault("PEPENIUM_BASE_URL", "https://example.com");
+            driver.get(baseUrl);
+            flow.runBasicNavigationFlow();
+        });
     }
 }

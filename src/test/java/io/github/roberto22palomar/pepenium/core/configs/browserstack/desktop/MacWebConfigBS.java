@@ -2,42 +2,56 @@ package io.github.roberto22palomar.pepenium.core.configs.browserstack.desktop;
 
 import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfigDesktop;
 import io.github.roberto22palomar.pepenium.toolkit.utils.YamlLoaderDesktop;
+import org.junit.jupiter.api.Named;
+import org.junit.jupiter.params.provider.Arguments;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class MacWebConfigBS {
 
-    private final BrowserStackConfigDesktop config;
+    private static final String YAML_PATH = "src/test/resources/browserstackMac.yml";
 
-    // Loads BrowserStack desktop settings from a YAML file (browser/OS/build metadata and credentials).
+    private final BrowserStackConfigDesktop config;
+    private final BrowserStackConfigDesktop.Platform platform;
+
     public MacWebConfigBS() {
-        config = YamlLoaderDesktop.load("src/test/resources/browserstackMac.yml");
+        this(loadConfig(), null);
+    }
+
+    public MacWebConfigBS(BrowserStackConfigDesktop.Platform platform) {
+        this(loadConfig(), platform);
+    }
+
+    private MacWebConfigBS(BrowserStackConfigDesktop config, BrowserStackConfigDesktop.Platform platform) {
+        this.config = config;
+        this.platform = platform != null ? platform : getDefaultPlatform(config);
+    }
+
+    public static Stream<Arguments> platforms() {
+        return getPlatforms(loadConfig()).stream()
+                .map(platform -> Arguments.of(Named.of(platformLabel(platform), platform)));
     }
 
     public WebDriver createDriver() throws Exception {
-        BrowserStackConfigDesktop.Platform platform = config.getPlatforms().get(0);
-
-        // Base Selenium capabilities (browser + version).
         MutableCapabilities caps = new MutableCapabilities();
         caps.setCapability("browserName", platform.getBrowserName());
         caps.setCapability("browserVersion", platform.getBrowserVersion());
 
-        // BrowserStack-specific options (OS selection, build metadata, local testing).
         MutableCapabilities bstackOptions = new MutableCapabilities();
         bstackOptions.setCapability("os", platform.getOs());
         bstackOptions.setCapability("osVersion", platform.getOsVersion());
         bstackOptions.setCapability("projectName", config.getProjectName());
         bstackOptions.setCapability("buildName", config.getBuildName());
-        // Human-friendly name shown in the BrowserStack dashboard.
         bstackOptions.setCapability("sessionName", "Mac Chrome Example");
         bstackOptions.setCapability("local", config.isBrowserstackLocal());
 
         caps.setCapability("bstack:options", bstackOptions);
 
-        // Remote hub URL with BrowserStack credentials.
         URL remoteUrl = new URL(
                 String.format(
                         "https://%s:%s@hub-cloud.browserstack.com/wd/hub",
@@ -47,5 +61,24 @@ public class MacWebConfigBS {
         );
 
         return new RemoteWebDriver(remoteUrl, caps);
+    }
+
+    private static BrowserStackConfigDesktop loadConfig() {
+        return YamlLoaderDesktop.load(YAML_PATH);
+    }
+
+    private static List<BrowserStackConfigDesktop.Platform> getPlatforms(BrowserStackConfigDesktop config) {
+        if (config == null || config.getPlatforms() == null || config.getPlatforms().isEmpty()) {
+            throw new IllegalStateException("No BrowserStack platforms were found in " + YAML_PATH);
+        }
+        return config.getPlatforms();
+    }
+
+    private static BrowserStackConfigDesktop.Platform getDefaultPlatform(BrowserStackConfigDesktop config) {
+        return getPlatforms(config).get(0);
+    }
+
+    private static String platformLabel(BrowserStackConfigDesktop.Platform platform) {
+        return platform.getOs() + " " + platform.getOsVersion() + " / " + platform.getBrowserName();
     }
 }
