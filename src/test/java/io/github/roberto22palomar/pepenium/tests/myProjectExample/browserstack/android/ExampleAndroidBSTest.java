@@ -7,7 +7,12 @@ import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.flow
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.BottomNavigationPage;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.SearchPage;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsApp;
-import org.junit.jupiter.api.Test;
+import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfig;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 public class ExampleAndroidBSTest extends BaseTest {
 
@@ -16,19 +21,24 @@ public class ExampleAndroidBSTest extends BaseTest {
         return new AndroidConfigBS();
     }
 
-    @Test
-    public void basicNavigationFlow_shouldRunOnAwsDeviceFarm() {
-        ActionsApp actionsApp = new ActionsApp(driver);
+    @Override
+    protected boolean useAutomaticLifecycle() {
+        return false;
+    }
 
-        // Pages (example)
-        SearchPage searchPage = new SearchPage(actionsApp);
-        BottomNavigationPage bottomNavigationPage = new BottomNavigationPage(actionsApp);
+    static Stream<Arguments> platforms() {
+        return AndroidConfigBS.platforms();
+    }
 
-        // Flow (example)
-        ExampleNavigationFlowAndroid flow = new ExampleNavigationFlowAndroid(bottomNavigationPage, searchPage);
-
-        // Execute
-        flow.runBasicNavigationFlow();
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("platforms")
+    public void basicNavigationFlow_shouldRunOnBrowserStackAndroid(BrowserStackConfig.Platform platform) throws Exception {
+        runWithConfig(new AndroidConfigBS(platform), () -> {
+            ActionsApp actionsApp = new ActionsApp(driver);
+            SearchPage searchPage = new SearchPage(actionsApp);
+            BottomNavigationPage bottomNavigationPage = new BottomNavigationPage(actionsApp);
+            ExampleNavigationFlowAndroid flow = new ExampleNavigationFlowAndroid(bottomNavigationPage, searchPage);
+            flow.runBasicNavigationFlow();
+        });
     }
 }
-

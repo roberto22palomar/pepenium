@@ -1,37 +1,53 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.ios;
 
-import io.github.roberto22palomar.pepenium.core.DriverConfig;
-import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfig;
-import io.github.roberto22palomar.pepenium.toolkit.utils.YamlLoader;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.options.XCUITestOptions;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
+import io.github.roberto22palomar.pepenium.core.DriverConfig;
+import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfig;
+import io.github.roberto22palomar.pepenium.toolkit.utils.YamlLoader;
+import org.junit.jupiter.api.Named;
+import org.junit.jupiter.params.provider.Arguments;
 import org.openqa.selenium.MutableCapabilities;
 
 import java.net.URL;
 import java.time.Duration;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class IOSConfigBS implements DriverConfig {
 
-    private final BrowserStackConfig config;
+    private static final String YAML_PATH = "src/test/resources/browserstackIOS.yml";
 
-    // Loads BrowserStack iOS settings from a YAML file (device/app/build metadata and credentials).
+    private final BrowserStackConfig config;
+    private final BrowserStackConfig.Platform platform;
+
     public IOSConfigBS() {
-        config = YamlLoader.load("src/test/resources/browserstackIOS.yml");
+        this(loadConfig(), null);
+    }
+
+    public IOSConfigBS(BrowserStackConfig.Platform platform) {
+        this(loadConfig(), platform);
+    }
+
+    private IOSConfigBS(BrowserStackConfig config, BrowserStackConfig.Platform platform) {
+        this.config = config;
+        this.platform = platform != null ? platform : getDefaultPlatform(config);
+    }
+
+    public static Stream<Arguments> platforms() {
+        return getPlatforms(loadConfig()).stream()
+                .map(platform -> Arguments.of(Named.of(platformLabel(platform), platform)));
     }
 
     @Override
     public AppiumDriverLocalService startService() {
-        // BrowserStack provides a remote Appium server, so we do not start a local service.
         return null;
     }
 
     @Override
     public AppiumDriver createDriver(AppiumDriverLocalService service) throws Exception {
-        BrowserStackConfig.Platform platform = config.getPlatforms().get(0);
-
-        // Base Appium capabilities for iOS (XCUITest).
         XCUITestOptions opts = new XCUITestOptions()
                 .setPlatformName(platform.getPlatformName())
                 .setDeviceName(platform.getDeviceName())
@@ -39,7 +55,6 @@ public class IOSConfigBS implements DriverConfig {
                 .setApp(config.getApp())
                 .setNewCommandTimeout(Duration.ofSeconds(300));
 
-        // BrowserStack-specific capabilities (reporting, metadata, logs).
         MutableCapabilities bstackOptions = new MutableCapabilities();
         bstackOptions.setCapability("appProfiling", true);
         bstackOptions.setCapability("networkLogs", true);
@@ -47,11 +62,8 @@ public class IOSConfigBS implements DriverConfig {
         bstackOptions.setCapability("buildName", config.getBuildName());
 
         opts.setCapability("bstack:options", bstackOptions);
-
-        // Enables BrowserStack Local if configured (useful for testing internal/staging environments).
         opts.setCapability("browserstack.local", config.isBrowserstackLocal());
 
-        // Remote hub URL with BrowserStack credentials.
         URL remoteUrl = new URL(
                 String.format(
                         "https://%s:%s@hub-cloud.browserstack.com/wd/hub",
@@ -61,5 +73,24 @@ public class IOSConfigBS implements DriverConfig {
         );
 
         return new IOSDriver(remoteUrl, opts);
+    }
+
+    private static BrowserStackConfig loadConfig() {
+        return YamlLoader.load(YAML_PATH);
+    }
+
+    private static List<BrowserStackConfig.Platform> getPlatforms(BrowserStackConfig config) {
+        if (config == null || config.getPlatforms() == null || config.getPlatforms().isEmpty()) {
+            throw new IllegalStateException("No BrowserStack platforms were found in " + YAML_PATH);
+        }
+        return config.getPlatforms();
+    }
+
+    private static BrowserStackConfig.Platform getDefaultPlatform(BrowserStackConfig config) {
+        return getPlatforms(config).get(0);
+    }
+
+    private static String platformLabel(BrowserStackConfig.Platform platform) {
+        return platform.getDeviceName() + " / iOS " + platform.getPlatformVersion();
     }
 }
