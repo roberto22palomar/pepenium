@@ -18,7 +18,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Dependencies
 
 
-## [0.0.3] - 2026-01-21
+## [0.4.0] - 2026-03-23
+
+### Added
+
+- Added bounded screenshot settle helpers for mobile and web, including `takeScreenshotFast()` for faster evidence capture when full settling is not needed.
+
+### Changed
+
+- BrowserStack example and configuration flows now execute against all devices defined in the YAML configuration files.
+- Improved BrowserStack/device-driven suite lifecycle handling to better support repeated execution across multiple configured targets.
+- Reworked screenshot capture waits in Web, Android and iOS actions to avoid blurry captures without blocking tests for several seconds.
+- Replaced hardcoded temporary screenshot paths with `DEVICEFARM_SCREENSHOT_PATH` or the platform temporary directory fallback.
+- Removed the fixed post-click sleep in web actions and replaced it with a short bounded DOM settle.
+- Reduced Android screen-stability polling cost so functional waits remain reliable without penalizing screenshot-heavy flows.
+- Cleaned up screenshot-related logs and helper code to reduce noisy diagnostics and dead settle logic.
+
+### Dependencies
+
+
+## [0.3.0] - 2026-01-21
 
 ### Added
 

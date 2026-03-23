@@ -9,7 +9,7 @@
          ========================================================= -->
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium</artifactId>
-    <version>0.2.0</version>
+    <version>0.4.0</version>
 
     <properties>
         <!-- =====================================================
