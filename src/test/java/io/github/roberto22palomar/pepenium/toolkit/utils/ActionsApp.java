@@ -5,7 +5,16 @@ import io.appium.java_client.AppiumDriver;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -25,14 +34,14 @@ public class ActionsApp {
     private final AppiumDriver driver;
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(6L);
     private static final Duration LONG_TIMEOUT = Duration.ofSeconds(120L);
+    private static final Duration SCREENSHOT_SETTLE_TIMEOUT = Duration.ofMillis(700);
+    private static final Duration SCREENSHOT_SETTLE_POLL = Duration.ofMillis(120);
+    private static final Duration SCREENSHOT_SETTLE_BUFFER = Duration.ofMillis(80);
 
     // ---------------------------
     // Block: Waits and validations
     // ---------------------------
 
-    /**
-     * Waits until the element is present on screen.
-     */
     public WebElement waitToBePresent(By locator) {
         log.info("<<< WAITING FOR ELEMENT TO BE PRESENT: {}", locator);
         WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
@@ -46,9 +55,6 @@ public class ActionsApp {
         return element;
     }
 
-    /**
-     * Waits until the element text matches the expected value.
-     */
     public boolean waitForElementText(By locator, String expectedText) {
         try {
             return new WebDriverWait(driver, DEFAULT_TIMEOUT)
@@ -59,9 +65,6 @@ public class ActionsApp {
         }
     }
 
-    /**
-     * Checks whether an element is present without waiting.
-     */
     public boolean isElementPresent(By locator) {
         try {
             driver.findElement(locator);
@@ -71,9 +74,6 @@ public class ActionsApp {
         }
     }
 
-    /**
-     * Checks whether an element is visible.
-     */
     public boolean isElementVisible(By locator) {
         try {
             new WebDriverWait(driver, DEFAULT_TIMEOUT)
@@ -85,9 +85,6 @@ public class ActionsApp {
         }
     }
 
-    /**
-     * Gets the visible text from an element.
-     */
     public String getElementText(By locator) {
         try {
             WebElement element = waitToBePresent(locator);
@@ -102,9 +99,6 @@ public class ActionsApp {
     // Block: Basic interactions
     // ---------------------------
 
-    /**
-     * Waits until the element is clickable and clicks it.
-     */
     @SneakyThrows
     public void makeClick(By locator) {
         try {
@@ -121,52 +115,44 @@ public class ActionsApp {
         }
     }
 
-    /**
-     * Tries to detect a "stable" screen state by checking:
-     * - no visible spinner/progress bar
-     * - root container rectangle unchanged for a few consecutive checks
-     */
     public boolean waitStableScreen() {
-        final By ROOT = AppiumBy.androidUIAutomator("new UiSelector().resourceId(\"android:id/content\")");
-        final By SPINNER = AppiumBy.androidUIAutomator("new UiSelector().className(\"android.widget.ProgressBar\")");
+        final By root = AppiumBy.androidUIAutomator("new UiSelector().resourceId(\"android:id/content\")");
+        final By spinner = AppiumBy.androidUIAutomator("new UiSelector().className(\"android.widget.ProgressBar\")");
 
         long end = System.nanoTime() + Duration.ofSeconds(2).toNanos();
-        org.openqa.selenium.Rectangle previous = null;
-        int consecutiveStable = 2;
+        Rectangle previous = null;
+        int consecutiveStable = 0;
 
         while (System.nanoTime() < end) {
             try {
-                // If a loader is visible, we do not consider the UI stable
-                if (!driver.findElements(SPINNER).isEmpty()) {
+                if (!driver.findElements(spinner).isEmpty()) {
                     consecutiveStable = 0;
-                    Thread.sleep(1500);
+                    Thread.sleep(200);
                     continue;
                 }
 
-                org.openqa.selenium.Rectangle current = driver.findElement(ROOT).getRect();
-
+                Rectangle current = driver.findElement(root).getRect();
                 if (current.equals(previous)) {
-                    if (++consecutiveStable >= 3) return true; // ✔ stable
+                    if (++consecutiveStable >= 2) {
+                        return true;
+                    }
                 } else {
                     consecutiveStable = 0;
                 }
 
                 previous = current;
-                Thread.sleep(1500);
-
-            } catch (org.openqa.selenium.StaleElementReferenceException e) {
-                consecutiveStable = 0; // root was recreated → retry
-            } catch (InterruptedException ie) {
+                Thread.sleep(200);
+            } catch (StaleElementReferenceException e) {
+                consecutiveStable = 0;
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return false;
             }
         }
-        return false; // did not stabilize in time
+
+        return false;
     }
 
-    /**
-     * Clicks if the element is visible.
-     */
     public boolean makeClickIfVisible(By locator) throws InterruptedException {
         if (isElementVisible(locator)) {
             makeClick(locator);
@@ -175,9 +161,6 @@ public class ActionsApp {
         return false;
     }
 
-    /**
-     * Waits for the field to be visible, clears it and sends text.
-     */
     public void sendText(By locator, String text) {
         try {
             waitStableScreen();
@@ -191,9 +174,6 @@ public class ActionsApp {
         }
     }
 
-    /**
-     * Waits for a loading indicator to appear and then disappear.
-     */
     public void waitLoadingScreenToDisappear(String xpath) {
         By loadingIndicator = By.xpath(xpath);
         try {
@@ -201,12 +181,12 @@ public class ActionsApp {
             WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
 
             wait.until(ExpectedConditions.visibilityOfElementLocated(loadingIndicator));
-            log.info("✅ Loading screen visible");
+            log.info("Loading screen visible");
 
             wait.until(ExpectedConditions.invisibilityOfElementLocated(loadingIndicator));
-            log.info("✅ Loading screen disappeared");
+            log.info("Loading screen disappeared");
         } catch (TimeoutException e) {
-            log.error("⚠️ Loading screen did not disappear after 2 minutes", e);
+            log.error("Loading screen did not disappear after 2 minutes", e);
             throw e;
         }
     }
@@ -215,9 +195,6 @@ public class ActionsApp {
     // Block: Gestures and movements
     // ---------------------------
 
-    /**
-     * Swipe up.
-     */
     public void swipeUp() {
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
@@ -237,9 +214,6 @@ public class ActionsApp {
         driver.perform(Collections.singletonList(swipe));
     }
 
-    /**
-     * Swipe down.
-     */
     public void swipeDown() {
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
@@ -257,13 +231,9 @@ public class ActionsApp {
                 .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         driver.perform(Collections.singletonList(swipe));
-
         takeScreenshot();
     }
 
-    /**
-     * Swipe left.
-     */
     public void swipeLeft() {
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
@@ -283,9 +253,6 @@ public class ActionsApp {
         driver.perform(Collections.singletonList(swipe));
     }
 
-    /**
-     * Swipe right.
-     */
     public void swipeRight() {
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
@@ -303,13 +270,9 @@ public class ActionsApp {
                 .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         driver.perform(Collections.singletonList(swipe));
-
         takeScreenshot();
     }
 
-    /**
-     * Repeatedly swipes up until the element is visible or the max number of swipes is reached.
-     */
     public WebElement scrollToElement(By locator, int maxSwipes) {
         int attempts = 0;
         while (attempts < maxSwipes) {
@@ -331,23 +294,24 @@ public class ActionsApp {
     public void swipeAtElement(By locator,
                                Direction direction,
                                int times,
-                               double percent,          // 0.0 - 1.0 of the element height/width
-                               int durationMs) {        // gesture duration
+                               double percent,
+                               int durationMs) {
 
         waitStableScreen();
         WebElement el = waitToBePresent(locator);
         Rectangle r = el.getRect();
 
-        // Center of the element
         int cx = r.getX() + r.getWidth() / 2;
         int cy = r.getY() + r.getHeight() / 2;
 
-        // Swipe distance based on element size
         int dy = (int) Math.max(1, r.getHeight() * percent);
         int dx = (int) Math.max(1, r.getWidth() * percent);
 
         for (int i = 0; i < times; i++) {
-            int startX = cx, startY = cy, endX = cx, endY = cy;
+            int startX = cx;
+            int startY = cy;
+            int endX = cx;
+            int endY = cy;
 
             switch (direction) {
                 case UP:
@@ -372,7 +336,6 @@ public class ActionsApp {
         }
     }
 
-    // Executes the swipe using W3C Actions
     private void performSwipe(Point start, Point end, int durationMs) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence swipe = new Sequence(finger, 1)
@@ -385,7 +348,6 @@ public class ActionsApp {
         driver.perform(Collections.singletonList(swipe));
     }
 
-    // Clamps coordinates to the screen bounds
     private Point clampToViewport(int x, int y) {
         Dimension size = driver.manage().window().getSize();
         int safeX = Math.max(5, Math.min(size.getWidth() - 5, x));
@@ -393,52 +355,68 @@ public class ActionsApp {
         return new Point(safeX, safeY);
     }
 
-    // Enum for directions
     public enum Direction {UP, DOWN, LEFT, RIGHT}
 
     // ---------------------------
     // Block: Screenshots and debugging
     // ---------------------------
 
+    public String takeScreenshotFast() {
+        return takeScreenshot(false);
+    }
+
     public String takeScreenshot() {
-        waitStableScreen();
+        return takeScreenshot(true);
+    }
+
+    public String takeScreenshot(boolean settleBeforeCapture) {
         if (driver == null) {
-            log.warn("⚠️ Driver is null. Cannot take screenshot.");
+            log.warn("Driver is null. Cannot take screenshot.");
             return null;
         }
 
         try {
-            // Quick wait for the UI to settle
-            new FastUiSettle(driver).waitBriefly();
-            // Screenshot as bytes
-            byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-
-            // Base path from env var or /tmp
-            // - In AWS DF it can be collected as an artifact if configured
-            // - In BrowserStack/local: saved under /tmp (or provided path)
-            String baseDir = System.getenv("DEVICEFARM_SCREENSHOT_PATH");
-            if (baseDir == null || baseDir.isEmpty()) {
-                baseDir = "/tmp";
+            if (settleBeforeCapture) {
+                waitForScreenshotMoment();
             }
 
-            // Filename with timestamp
+            byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
             String filename = "screenshot_" + Instant.now().toEpochMilli() + ".png";
-
-            // Build Path and write file
-            Path filePath = Path.of(baseDir, filename);
+            Path filePath = resolveScreenshotBaseDir().resolve(filename);
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, screenshot);
 
             String fullPath = filePath.toAbsolutePath().toString();
-            log.info("📸 Screenshot saved at: {}", fullPath);
+            log.info("Screenshot saved at: {}", fullPath);
             return fullPath;
 
         } catch (IOException e) {
-            log.error("💥 Error saving screenshot", e);
+            log.error("Error saving screenshot", e);
             return null;
         } catch (Exception e) {
-            log.error("💥 Unexpected error taking screenshot", e);
+            log.error("Unexpected error taking screenshot", e);
             return null;
         }
+    }
+
+    private void waitForScreenshotMoment() {
+        boolean settled = new FastUiSettle(
+                driver,
+                SCREENSHOT_SETTLE_TIMEOUT,
+                SCREENSHOT_SETTLE_POLL,
+                SCREENSHOT_SETTLE_BUFFER
+        ).waitBriefly();
+
+        if (!settled) {
+            log.debug("Screenshot captured without full settle after bounded wait");
+        }
+    }
+
+    private Path resolveScreenshotBaseDir() {
+        String baseDir = System.getenv("DEVICEFARM_SCREENSHOT_PATH");
+        if (baseDir == null || baseDir.isBlank()) {
+            baseDir = System.getProperty("java.io.tmpdir");
+        }
+        return Path.of(baseDir);
     }
 }

@@ -3,7 +3,16 @@ package io.github.roberto22palomar.pepenium.toolkit.utils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -22,8 +31,10 @@ public class ActionsWeb {
     private final WebDriver driver;
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(6L);
     private static final Duration LONG_TIMEOUT = Duration.ofSeconds(120L);
+    private static final Duration SCREENSHOT_SETTLE_TIMEOUT = Duration.ofMillis(700);
+    private static final Duration SCREENSHOT_SETTLE_POLL = Duration.ofMillis(100);
+    private static final Duration POST_CLICK_SETTLE_TIMEOUT = Duration.ofMillis(500);
 
-    // ====== Overlay helpers + robust click ======
     private final By openOverlay = By.cssSelector("[data-slot='sheet-overlay'][data-state='open']");
     private final By closeSheetButton = By.cssSelector(
             "[data-slot='sheet-close'], [data-state='open'] [aria-label='Close'], button[data-slot='sheet-close']"
@@ -37,34 +48,21 @@ public class ActionsWeb {
     public void closeSheetIfOpen() {
         List<WebElement> open = driver.findElements(openOverlay);
         if (!open.isEmpty()) {
-            // Try closing with a button; if not available, ESC as fallback
             try {
                 click(closeSheetButton);
             } catch (Exception ignore) {
-                new org.openqa.selenium.interactions.Actions(driver)
-                        .sendKeys(Keys.ESCAPE)
-                        .perform();
+                new Actions(driver).sendKeys(Keys.ESCAPE).perform();
             }
             new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(d -> d.findElements(openOverlay).isEmpty());
         }
     }
 
-    /**
-     * Waits until there are at least N elements (useful for dynamic lists like chips).
-     */
     public void waitForAtLeastNElements(By locator, int n) {
         new WebDriverWait(driver, DEFAULT_TIMEOUT)
                 .until(d -> d.findElements(locator).size() >= n);
     }
 
-    // ---------------------------
-    // Block: Waits and validations
-    // ---------------------------
-
-    /**
-     * Waits until the element is visible on screen.
-     */
     public WebElement waitToBeVisible(By locator) {
         try {
             return new WebDriverWait(driver, DEFAULT_TIMEOUT)
@@ -78,9 +76,6 @@ public class ActionsWeb {
         }
     }
 
-    /**
-     * Waits until the element text matches the expected value.
-     */
     public boolean waitForElementText(By locator, String expectedText) {
         try {
             return new WebDriverWait(driver, DEFAULT_TIMEOUT)
@@ -91,9 +86,6 @@ public class ActionsWeb {
         }
     }
 
-    /**
-     * Checks whether an element is present without waiting.
-     */
     public boolean isElementPresent(By locator) {
         try {
             driver.findElement(locator);
@@ -103,9 +95,6 @@ public class ActionsWeb {
         }
     }
 
-    /**
-     * Checks whether an element is visible.
-     */
     public boolean isElementVisible(By locator) {
         try {
             new WebDriverWait(driver, DEFAULT_TIMEOUT)
@@ -117,9 +106,6 @@ public class ActionsWeb {
         }
     }
 
-    /**
-     * Gets the visible text from an element.
-     */
     public String getElementText(By locator) {
         try {
             WebElement element = waitToBeVisible(locator);
@@ -130,20 +116,13 @@ public class ActionsWeb {
         }
     }
 
-    // ---------------------------
-    // Block: Basic interactions
-    // ---------------------------
-
-    /**
-     * Waits until the element is clickable and clicks it.
-     */
     @SneakyThrows
     public void click(By locator) {
         try {
             WebElement element = new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.elementToBeClickable(locator));
             element.click();
-            Thread.sleep(2000);
+            waitForPostActionSettle();
             log.info("Click performed on: {}", locator);
         } catch (TimeoutException e) {
             log.error("Timeout clicking element: {}", locator, e);
@@ -154,25 +133,16 @@ public class ActionsWeb {
         }
     }
 
-    /**
-     * Waits until at least one element exists for the locator and returns them all.
-     */
     public List<WebElement> waitAndGetAll(By locator) {
         new WebDriverWait(driver, DEFAULT_TIMEOUT)
                 .until(ExpectedConditions.numberOfElementsToBeMoreThan(locator, 0));
         return driver.findElements(locator);
     }
 
-    /**
-     * Counts elements for a locator (waiting until at least one exists).
-     */
     public int count(By locator) {
         return waitAndGetAll(locator).size();
     }
 
-    /**
-     * Click an element by index within a list located by 'locator'.
-     */
     public void clickByIndexInList(By locator, int index) {
         List<WebElement> elements = waitAndGetAll(locator);
         if (index < 0 || index >= elements.size()) {
@@ -184,9 +154,6 @@ public class ActionsWeb {
         clickWithFallback(target, locator, index);
     }
 
-    /**
-     * Click a random element within a list located by 'locator'.
-     */
     public void clickRandomInList(By locator) {
         List<WebElement> elements = waitAndGetAll(locator);
         int size = elements.size();
@@ -198,9 +165,6 @@ public class ActionsWeb {
         clickWithFallback(target, locator, index);
     }
 
-    /**
-     * Click with scroll and JS fallback (floating menus, overlays, etc).
-     */
     private void clickWithFallback(WebElement element, By locator, int index) {
         try {
             ((JavascriptExecutor) driver).executeScript(
@@ -208,17 +172,16 @@ public class ActionsWeb {
             new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.elementToBeClickable(element));
             element.click();
+            waitForPostActionSettle();
             log.info("Click by index {} in list: {}", index, locator);
         } catch (Exception e) {
             log.warn("Standard click failed, trying JS click. Reason: {}", e.getMessage());
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+            waitForPostActionSettle();
             log.info("JS click performed for index {} on: {}", index, locator);
         }
     }
 
-    /**
-     * Waits for element presence (useful for containers like menus).
-     */
     public void waitToBePresent(By locator) {
         log.info("<<< WAITING FOR ELEMENT TO BE PRESENT: {} >>>", locator);
         WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
@@ -230,9 +193,6 @@ public class ActionsWeb {
         }
     }
 
-    /**
-     * Clicks if the element is visible.
-     */
     public boolean clickIfVisible(By locator) {
         if (isElementVisible(locator)) {
             click(locator);
@@ -241,9 +201,6 @@ public class ActionsWeb {
         return false;
     }
 
-    /**
-     * Waits until the field is visible, clears it and sends text.
-     */
     public void type(By locator, String text) {
         try {
             WebElement element = waitToBeVisible(locator);
@@ -256,9 +213,6 @@ public class ActionsWeb {
         }
     }
 
-    /**
-     * Waits for a loading screen to appear and then disappear.
-     */
     public void waitLoadingScreen(String xpath) {
         By loadingIndicator = By.xpath(xpath);
         try {
@@ -266,93 +220,157 @@ public class ActionsWeb {
             WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
 
             wait.until(ExpectedConditions.visibilityOfElementLocated(loadingIndicator));
-            log.info("✅ Loading screen visible");
+            log.info("Loading screen visible");
 
             wait.until(ExpectedConditions.invisibilityOfElementLocated(loadingIndicator));
-            log.info("✅ Loading screen disappeared");
+            log.info("Loading screen disappeared");
         } catch (TimeoutException e) {
-            log.error("⚠️ Loading screen did not disappear after 2 minutes", e);
+            log.error("Loading screen did not disappear after 2 minutes", e);
             throw e;
         }
     }
 
-    /**
-     * Progressive scroll until an element is found.
-     * Once detected in the DOM, centers it in the viewport and clicks it.
-     */
     public void scrollUntilFoundAndClick(By locator, int maxScrolls, int stepPx) {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
 
         for (int i = 0; i < maxScrolls; i++) {
             try {
-                // 1) Find the element in the DOM
                 WebElement el = driver.findElement(locator);
-
-                // 2) Wait for visibility (React may take time to render it)
                 wait.until(ExpectedConditions.visibilityOf(el));
-
-                // 3) Center in viewport and click
                 js.executeScript("arguments[0].scrollIntoView({block:'center', behavior:'instant'});", el);
                 Thread.sleep(300);
                 el.click();
-                log.info("✅ Click performed on {} after {} scrolls", locator, i);
+                waitForPostActionSettle();
+                log.info("Click performed on {} after {} scrolls", locator, i);
                 return;
 
             } catch (NoSuchElementException e) {
-                // Not found yet → keep scrolling down
                 js.executeScript("window.scrollBy(0, arguments[0]);", stepPx);
-                log.debug("🔽 Scroll {} (+{} px)", i + 1, stepPx);
-                try { Thread.sleep(400); } catch (InterruptedException ignored) {}
+                log.debug("Scroll {} (+{} px)", i + 1, stepPx);
+                try {
+                    Thread.sleep(400);
+                } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(ignored);
+                }
             } catch (TimeoutException e) {
-                log.debug("⌛ Element found but not visible yet (scroll {}), retrying...", i + 1);
+                log.debug("Element found but not visible yet (scroll {}), retrying...", i + 1);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }
         }
 
-        throw new NoSuchElementException("❌ Element not found after " + maxScrolls + " scrolls: " + locator);
+        throw new NoSuchElementException("Element not found after " + maxScrolls + " scrolls: " + locator);
     }
 
-    // ---------------------------
-    // Block: Screenshots and debugging
-    // ---------------------------
+    public String takeScreenshotFast() {
+        return takeScreenshot(false);
+    }
 
-    /**
-     * Takes a screenshot and saves it under a configurable path or /tmp.
-     *
-     * @return Absolute path to the screenshot file.
-     */
     public String takeScreenshot() {
+        return takeScreenshot(true);
+    }
+
+    public String takeScreenshot(boolean settleBeforeCapture) {
         if (driver == null) {
-            log.warn("⚠️ Driver is null. Cannot take screenshot.");
+            log.warn("Driver is null. Cannot take screenshot.");
             return null;
         }
 
         try {
-            byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-
-            // Base path from env var or /tmp
-            // - In AWS DF it can be collected as an artifact if configured
-            // - In BrowserStack/local: saved under /tmp (or provided path)
-            String baseDir = System.getenv("DEVICEFARM_SCREENSHOT_PATH");
-            if (baseDir == null || baseDir.isEmpty()) {
-                baseDir = "/tmp";
+            if (settleBeforeCapture) {
+                waitForScreenshotMoment();
             }
 
+            byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
             String filename = "screenshot_" + Instant.now().toEpochMilli() + ".png";
-
-            Path filePath = Path.of(baseDir, filename);
+            Path filePath = resolveScreenshotBaseDir().resolve(filename);
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, screenshot);
 
             String fullPath = filePath.toAbsolutePath().toString();
-            log.info("📸 Screenshot saved at: {}", fullPath);
+            log.info("Screenshot saved at: {}", fullPath);
             return fullPath;
 
         } catch (IOException e) {
-            log.error("💥 Error saving screenshot (Device Farm)", e);
+            log.error("Error saving screenshot", e);
+            return null;
+        } catch (Exception e) {
+            log.error("Unexpected error taking screenshot", e);
             return null;
         }
+    }
+
+    private void waitForPostActionSettle() {
+        waitForDocumentQuietly(POST_CLICK_SETTLE_TIMEOUT);
+    }
+
+    private void waitForScreenshotMoment() {
+        waitForDocumentQuietly(SCREENSHOT_SETTLE_TIMEOUT);
+    }
+
+    private void waitForDocumentQuietly(Duration timeout) {
+        if (!(driver instanceof JavascriptExecutor js)) {
+            return;
+        }
+
+        long deadline = System.nanoTime() + timeout.toNanos();
+        String previousSnapshot = readDomSnapshot(js);
+
+        while (System.nanoTime() < deadline) {
+            sleep(SCREENSHOT_SETTLE_POLL);
+
+            if (!isDocumentReady(js)) {
+                previousSnapshot = readDomSnapshot(js);
+                continue;
+            }
+
+            String currentSnapshot = readDomSnapshot(js);
+            if (currentSnapshot.equals(previousSnapshot)) {
+                return;
+            }
+            previousSnapshot = currentSnapshot;
+        }
+    }
+
+    private boolean isDocumentReady(JavascriptExecutor js) {
+        try {
+            Object state = js.executeScript("return document.readyState");
+            return "complete".equals(state) || "interactive".equals(state);
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    private String readDomSnapshot(JavascriptExecutor js) {
+        try {
+            Object snapshot = js.executeScript(
+                    "return [document.readyState,"
+                            + "(document.body ? document.body.childElementCount : 0),"
+                            + "(document.body ? document.body.innerText.length : 0),"
+                            + "window.scrollX, window.scrollY].join('|');"
+            );
+            return String.valueOf(snapshot);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private void sleep(Duration duration) {
+        try {
+            Thread.sleep(duration.toMillis());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private Path resolveScreenshotBaseDir() {
+        String baseDir = System.getenv("DEVICEFARM_SCREENSHOT_PATH");
+        if (baseDir == null || baseDir.isBlank()) {
+            baseDir = System.getProperty("java.io.tmpdir");
+        }
+        return Path.of(baseDir);
     }
 }
