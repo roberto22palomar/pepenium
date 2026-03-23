@@ -312,9 +312,10 @@ public class ActionsWeb {
     }
 
     private void waitForDocumentQuietly(Duration timeout) {
-        if (!(driver instanceof JavascriptExecutor js)) {
+        if (!(driver instanceof JavascriptExecutor)) {
             return;
         }
+        JavascriptExecutor js = (JavascriptExecutor) driver;
 
         long deadline = System.nanoTime() + timeout.toNanos();
         String previousSnapshot = readDomSnapshot(js);
