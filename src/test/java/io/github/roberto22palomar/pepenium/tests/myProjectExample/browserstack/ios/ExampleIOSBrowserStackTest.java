@@ -7,6 +7,7 @@ import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.flows.Ex
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages.BottomNavigationPageIOS;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages.SearchPageIOS;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsAppIOS;
+import io.github.roberto22palomar.pepenium.toolkit.utils.AssertionsAppIOS;
 import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfig;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,8 +36,10 @@ public class ExampleIOSBrowserStackTest extends BaseTest {
     public void basicNavigationFlow_shouldRunOnBrowserStackIOS(BrowserStackConfig.Platform platform) throws Exception {
         runWithConfig(new IOSConfigBS(platform), () -> {
             ActionsAppIOS actionsApp = new ActionsAppIOS(driver);
-            SearchPageIOS searchPage = new SearchPageIOS(actionsApp);
-            BottomNavigationPageIOS bottomNavigationPage = new BottomNavigationPageIOS(actionsApp);
+            AssertionsAppIOS assertionsAppIOS = new AssertionsAppIOS(driver, actionsApp);
+            assertionsAppIOS.assertStableScreen();
+            SearchPageIOS searchPage = new SearchPageIOS(actionsApp, assertionsAppIOS);
+            BottomNavigationPageIOS bottomNavigationPage = new BottomNavigationPageIOS(actionsApp, assertionsAppIOS);
             ExampleNavigationFlowIOS flow = new ExampleNavigationFlowIOS(bottomNavigationPage, searchPage);
             flow.runBasicNavigationFlow();
         });

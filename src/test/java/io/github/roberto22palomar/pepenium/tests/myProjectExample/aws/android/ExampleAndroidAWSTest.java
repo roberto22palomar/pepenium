@@ -7,6 +7,7 @@ import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.flow
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.BottomNavigationPage;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.SearchPage;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsApp;
+import io.github.roberto22palomar.pepenium.toolkit.utils.AssertionsApp;
 import org.junit.jupiter.api.Test;
 
 public class ExampleAndroidAWSTest extends BaseTest {
@@ -19,10 +20,11 @@ public class ExampleAndroidAWSTest extends BaseTest {
     @Test
     public void basicNavigationFlow_shouldRunOnAwsDeviceFarm() {
         ActionsApp actionsApp = new ActionsApp(driver);
+        AssertionsApp assertionsApp = new AssertionsApp(driver, actionsApp);
 
         // Pages (example)
-        SearchPage searchPage = new SearchPage(actionsApp);
-        BottomNavigationPage bottomNavigationPage = new BottomNavigationPage(actionsApp);
+        SearchPage searchPage = new SearchPage(actionsApp, assertionsApp);
+        BottomNavigationPage bottomNavigationPage = new BottomNavigationPage(actionsApp, assertionsApp);
 
         // Flow (example)
         ExampleNavigationFlowAndroid flow = new ExampleNavigationFlowAndroid(bottomNavigationPage, searchPage);
