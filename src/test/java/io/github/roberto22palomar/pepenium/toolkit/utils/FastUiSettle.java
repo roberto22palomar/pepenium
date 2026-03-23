@@ -7,63 +7,93 @@ import org.openqa.selenium.WebElement;
 
 import java.time.Duration;
 
-
 @Slf4j
-/**
- * Espera ultrarrápida: si aparece el flag "screen-ready", disparamos.
- * Si no, vigilamos spinners y, como fallback, comprobamos estabilidad del DOM (pageSource hash).
- */
 public final class FastUiSettle {
     private final AppiumDriver driver;
-    private final Duration settle = Duration.ofMillis(150);        // micro-settle tras condición OK
-    private final Duration spinnerWait = Duration.ofMillis(5000);  // tope si hay loader
-    private final Duration poll = Duration.ofMillis(120);          // polling
+    private final Duration maxWait;
+    private final Duration poll;
+    private final Duration settle;
 
     public FastUiSettle(AppiumDriver driver) {
+        this(driver, Duration.ofMillis(650), Duration.ofMillis(120), Duration.ofMillis(80));
+    }
+
+    public FastUiSettle(AppiumDriver driver, Duration maxWait, Duration poll, Duration settle) {
         this.driver = driver;
+        this.maxWait = maxWait;
+        this.poll = poll;
+        this.settle = settle;
     }
 
-    public void waitBriefly() {
-        // 3) Fallback: 2 hashes de pageSource separados 100ms (máx ~200ms)
-        String h1 = safeHash(pageSourceSafe());
-        sleep(Duration.ofMillis(100));
-        String h2 = safeHash(pageSourceSafe());
-        if (!h1.equals(h2)) sleep(settle);
+    public boolean waitBriefly() {
+        long deadline = System.nanoTime() + maxWait.toNanos();
+        String previousHash = safeHash(pageSourceSafe());
+        boolean observedMovement = false;
+
+        while (System.nanoTime() < deadline) {
+            if (hasScreenReadyFlag()) {
+                sleep(settle);
+                return true;
+            }
+
+            if (hasGenericSpinner()) {
+                observedMovement = true;
+                sleep(poll);
+                previousHash = safeHash(pageSourceSafe());
+                continue;
+            }
+
+            sleep(poll);
+            String currentHash = safeHash(pageSourceSafe());
+            if (currentHash.equals(previousHash)) {
+                if (observedMovement) {
+                    sleep(settle);
+                }
+                return true;
+            }
+
+            observedMovement = true;
+            previousHash = currentHash;
+        }
+
+        return false;
     }
 
-    /**
-     * Devuelve true si detecta un indicador genérico de carga (Android/iOS).
-     */
     private boolean hasGenericSpinner() {
         try {
-            // Android
-            for (WebElement e : driver.findElements(By.className("android.widget.ProgressBar")))
-                if (e.isDisplayed()) return true;
-            // iOS
-            for (WebElement e : driver.findElements(By.className("XCUIElementTypeActivityIndicator")))
-                if (e.isDisplayed()) return true;
-            for (WebElement e : driver.findElements(By.className("XCUIElementTypeProgressIndicator")))
-                if (e.isDisplayed()) return true;
-        } catch (Exception ignore) {
-            log.error("Error al comprobar generic spinner en screenshots.");
+            for (WebElement element : driver.findElements(By.className("android.widget.ProgressBar"))) {
+                if (element.isDisplayed()) {
+                    return true;
+                }
+            }
+
+            for (WebElement element : driver.findElements(By.className("XCUIElementTypeActivityIndicator"))) {
+                if (element.isDisplayed()) {
+                    return true;
+                }
+            }
+
+            for (WebElement element : driver.findElements(By.className("XCUIElementTypeProgressIndicator"))) {
+                if (element.isDisplayed()) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            log.debug("Unable to inspect spinner state while settling screenshot", e);
         }
         return false;
     }
 
-    /**
-     * Atajo positivo: si existe el flag "screen-ready", consideramos la pantalla lista.
-     */
     private boolean hasScreenReadyFlag() {
         try {
-            // Android: resource-id
-            for (WebElement e : driver.findElements(By.xpath("//*[@resource-id='screen-ready']")))
-                if (e.isDisplayed()) {
-                    log.info("SCREEN READY SE ENCONTRÓ");
+            for (WebElement element : driver.findElements(By.xpath("//*[@resource-id='screen-ready']"))) {
+                if (element.isDisplayed()) {
+                    log.debug("Screen-ready marker detected before screenshot");
                     return true;
                 }
-
-        } catch (Exception ignore) {
-            log.error("Error al comprobar generic spinner en screenshots.");
+            }
+        } catch (Exception e) {
+            log.debug("Unable to inspect screen-ready marker while settling screenshot", e);
         }
         return false;
     }
@@ -76,16 +106,16 @@ public final class FastUiSettle {
         }
     }
 
-    private String safeHash(String s) {
-        int len = Math.min(s.length(), 5000); // hash sobre un trozo para evitar coste excesivo
-        return Integer.toHexString(s.substring(0, len).hashCode());
+    private String safeHash(String source) {
+        int length = Math.min(source.length(), 5000);
+        return Integer.toHexString(source.substring(0, length).hashCode());
     }
 
-    private void sleep(Duration d) {
+    private void sleep(Duration duration) {
         try {
-            Thread.sleep(d.toMillis());
-        } catch (InterruptedException ignored) {
-            log.error("Error dormir el hilo en screenshots.");
+            Thread.sleep(duration.toMillis());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }
