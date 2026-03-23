@@ -7,6 +7,7 @@ import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.flow
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.BottomNavigationPage;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.SearchPage;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsApp;
+import io.github.roberto22palomar.pepenium.toolkit.utils.AssertionsApp;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -63,10 +64,13 @@ public class ExampleAndroidLocalTest {
     @Test
     public void basicNavigationFlow_shouldRunLocally() {
         ActionsApp actionsApp = new ActionsApp(driver);
+        AssertionsApp assertionsApp = new AssertionsApp(driver, actionsApp);
+
+        assertionsApp.assertStableScreen();
 
         // Pages (example)
-        SearchPage searchPage = new SearchPage(actionsApp);
-        BottomNavigationPage bottomNavigationPage = new BottomNavigationPage(actionsApp);
+        SearchPage searchPage = new SearchPage(actionsApp, assertionsApp);
+        BottomNavigationPage bottomNavigationPage = new BottomNavigationPage(actionsApp, assertionsApp);
 
         // Flow (example)
         ExampleNavigationFlowAndroid flow = new ExampleNavigationFlowAndroid(bottomNavigationPage, searchPage);

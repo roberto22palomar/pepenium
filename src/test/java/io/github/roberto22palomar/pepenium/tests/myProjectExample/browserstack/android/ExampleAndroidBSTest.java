@@ -7,6 +7,7 @@ import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.flow
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.BottomNavigationPage;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.SearchPage;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsApp;
+import io.github.roberto22palomar.pepenium.toolkit.utils.AssertionsApp;
 import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfig;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,8 +36,9 @@ public class ExampleAndroidBSTest extends BaseTest {
     public void basicNavigationFlow_shouldRunOnBrowserStackAndroid(BrowserStackConfig.Platform platform) throws Exception {
         runWithConfig(new AndroidConfigBS(platform), () -> {
             ActionsApp actionsApp = new ActionsApp(driver);
-            SearchPage searchPage = new SearchPage(actionsApp);
-            BottomNavigationPage bottomNavigationPage = new BottomNavigationPage(actionsApp);
+            AssertionsApp assertionsApp = new AssertionsApp(driver, actionsApp);
+            SearchPage searchPage = new SearchPage(actionsApp, assertionsApp);
+            BottomNavigationPage bottomNavigationPage = new BottomNavigationPage(actionsApp, assertionsApp);
             ExampleNavigationFlowAndroid flow = new ExampleNavigationFlowAndroid(bottomNavigationPage, searchPage);
             flow.runBasicNavigationFlow();
         });
