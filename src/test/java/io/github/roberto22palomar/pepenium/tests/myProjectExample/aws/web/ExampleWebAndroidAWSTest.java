@@ -8,6 +8,7 @@ import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.flows.Ex
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.pages.HeaderPage;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.pages.NavigationTabsPage;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsWeb;
+import io.github.roberto22palomar.pepenium.toolkit.utils.AssertionsWeb;
 import org.junit.jupiter.api.Test;
 
 public class ExampleWebAndroidAWSTest extends BaseTest {
@@ -20,10 +21,11 @@ public class ExampleWebAndroidAWSTest extends BaseTest {
     @Test
     public void basicWebNavigationFlow_shouldRunOnAwsDeviceFarm() {
         ActionsWeb actionsWeb = new ActionsWeb(driver);
+        AssertionsWeb assertionsWeb = new AssertionsWeb(driver, actionsWeb);
 
         // Pages (example)
-        HeaderPage headerPage = new HeaderPage(actionsWeb);
-        NavigationTabsPage navigationTabsPage = new NavigationTabsPage(actionsWeb);
+        HeaderPage headerPage = new HeaderPage(actionsWeb, assertionsWeb);
+        NavigationTabsPage navigationTabsPage = new NavigationTabsPage(actionsWeb, assertionsWeb);
 
 
         // Flow (example)
@@ -33,6 +35,8 @@ public class ExampleWebAndroidAWSTest extends BaseTest {
         String baseUrl = System.getenv().getOrDefault("PEPENIUM_BASE_URL", "https://example.com");
 
         driver.get(baseUrl);
+        assertionsWeb.assertDocumentReady();
+        assertionsWeb.assertCurrentUrlMatchesBase(baseUrl);
 
         // Execute
         flow.runBasicNavigationFlow();

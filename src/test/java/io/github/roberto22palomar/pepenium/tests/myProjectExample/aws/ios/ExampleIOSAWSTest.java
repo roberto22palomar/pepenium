@@ -8,6 +8,7 @@ import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.flows.Ex
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages.BottomNavigationPageIOS;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages.SearchPageIOS;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsAppIOS;
+import io.github.roberto22palomar.pepenium.toolkit.utils.AssertionsAppIOS;
 import org.junit.jupiter.api.Test;
 
 public class ExampleIOSAWSTest extends BaseTest {
@@ -20,10 +21,11 @@ public class ExampleIOSAWSTest extends BaseTest {
     @Test
     public void basicNavigationFlow_shouldRunOnAwsDeviceFarm() {
         ActionsAppIOS actionsApp = new ActionsAppIOS(driver);
+        AssertionsAppIOS assertionsAppIOS = new AssertionsAppIOS(driver, actionsApp);
 
         // Pages (example)
-        SearchPageIOS searchPage = new SearchPageIOS(actionsApp);
-        BottomNavigationPageIOS bottomNavigationPage = new BottomNavigationPageIOS(actionsApp);
+        SearchPageIOS searchPage = new SearchPageIOS(actionsApp, assertionsAppIOS);
+        BottomNavigationPageIOS bottomNavigationPage = new BottomNavigationPageIOS(actionsApp, assertionsAppIOS);
 
         // Flow (example)
         ExampleNavigationFlowIOS flow = new ExampleNavigationFlowIOS(bottomNavigationPage, searchPage);

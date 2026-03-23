@@ -1,6 +1,7 @@
 package io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.pages;
 
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsWeb;
+import io.github.roberto22palomar.pepenium.toolkit.utils.AssertionsWeb;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -21,16 +22,25 @@ public class NavigationTabsPage {
     private final By tabSeven = By.xpath("//*[@data-testid='TABS-SEVEN']");
 
     private final ActionsWeb actionsWeb;
+    private final AssertionsWeb assertionsWeb;
 
     public enum Tab {
         ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN
     }
 
+    public void assertTabsLoaded() {
+        log.info("Asserting navigation tabs are loaded");
+        assertionsWeb.assertVisible(tabOne);
+        assertionsWeb.assertVisible(tabTwo);
+        assertionsWeb.assertVisible(tabThree);
+    }
+
     public void open(Tab tab) {
         By locator = resolve(tab);
         log.info("Opening navigation tab: {}", tab);
-        actionsWeb.waitToBeVisible(locator);
+        assertionsWeb.assertClickable(locator);
         actionsWeb.click(locator);
+        assertionsWeb.assertVisible(locator);
         actionsWeb.takeScreenshot();
     }
 

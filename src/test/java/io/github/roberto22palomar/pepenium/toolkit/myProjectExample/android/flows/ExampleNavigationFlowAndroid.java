@@ -22,6 +22,7 @@ public class ExampleNavigationFlowAndroid {
      */
     public void runBasicNavigationFlow() {
         log.info("=== Starting ExampleNavigationFlowAndroid ===");
+        searchPage.assertSearchPageLoaded();
 
         // In a real app, opening the search could happen via a header button.
         // For this example, we assume the Search page can be reached and exercised directly.
@@ -29,6 +30,7 @@ public class ExampleNavigationFlowAndroid {
         searchPage.openFiltersTab();
         searchPage.close();
 
+        bottomNavigationPage.assertBottomNavigationLoaded();
         bottomNavigationPage.openTabOne();
         bottomNavigationPage.openTabTwo();
         bottomNavigationPage.openHome();

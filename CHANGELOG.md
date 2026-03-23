@@ -11,9 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Added reusable assertion helpers for web, Android, and iOS:
+  - `AssertionsWeb`
+  - `AssertionsApp`
+  - `AssertionsAppIOS`
+  - shared mobile base helpers in `BaseAssertionsMobile`
+- Added assertion-oriented example usage across toolkit page objects and example tests.
 
 ### Changed
 
+- Updated example web, Android, and iOS page objects to combine `Actions*` with `Assertions*`.
+- Updated example flows to assert screen/page readiness before navigating.
+- Updated example local, AWS, and BrowserStack tests to instantiate and wire assertion helpers.
+- Expanded BrowserStack example execution to run against all configured YAML devices/platforms instead of a single hardcoded target.
+- Refactored BrowserStack base execution so parameterized suites can run with per-platform driver lifecycle management.
 
 ### Dependencies
 
