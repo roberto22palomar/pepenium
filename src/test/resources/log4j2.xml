@@ -2,7 +2,7 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
+                <Pattern>%d{HH:mm:ss} %-5level %logger{1} %notEmpty{[%X{profile}]}%notEmpty{[%X{targetShort}]}%notEmpty{[%X{driverShort}]}%notEmpty{[#%X{sessionShort}]} - %msg%n</Pattern>
             </PatternLayout>
         </Console>
     </Appenders>

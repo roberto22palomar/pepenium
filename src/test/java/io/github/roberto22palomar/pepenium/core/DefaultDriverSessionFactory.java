@@ -7,14 +7,21 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 
 public class DefaultDriverSessionFactory implements DriverSessionFactory {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultDriverSessionFactory.class);
+
     @Override
     public DriverSession create(DriverRequest request) throws Exception {
         PepeniumBanner.print(request);
+        log.info("Creating driver session: description='{}', capabilities={}",
+                request.getDescription(),
+                CapabilitiesSummary.summarize(request.getCapabilities()));
         WebDriver driver;
 
         switch (request.getDriverType()) {
@@ -32,6 +39,14 @@ public class DefaultDriverSessionFactory implements DriverSessionFactory {
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported driver type: " + request.getDriverType());
+        }
+
+        if (driver instanceof RemoteWebDriver) {
+            String sessionId = String.valueOf(((RemoteWebDriver) driver).getSessionId());
+            LoggingContext.setSessionId(sessionId);
+            log.info("Driver session created successfully");
+        } else {
+            log.info("Driver session created successfully");
         }
 
         return new DriverSession(driver, request);

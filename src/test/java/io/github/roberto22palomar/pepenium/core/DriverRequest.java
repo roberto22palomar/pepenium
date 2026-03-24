@@ -8,11 +8,14 @@ import org.openqa.selenium.Capabilities;
 import java.net.URL;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class DriverRequest {
     private final DriverType driverType;
     private final URL serverUrl;
     private final Capabilities capabilities;
     private final AppiumDriverLocalService ownedService;
     private final String description;
+    private final TestTarget target;
+    private final String executionProfileId;
+    private final String executionProfileDescription;
 }
