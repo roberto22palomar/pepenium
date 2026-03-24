@@ -1,13 +1,17 @@
 package io.github.roberto22palomar.pepenium.core;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public final class ExecutionProfiles {
 
@@ -22,10 +26,31 @@ public final class ExecutionProfiles {
         if (profile == null) {
             throw new IllegalArgumentException(
                     "Unknown Pepenium execution profile: " + profileId
-                            + ". Check " + PROFILES_RESOURCE + " for the available profile ids."
+                            + ". Available profiles: " + availableProfileIds()
             );
         }
         return profile;
+    }
+
+    public static boolean exists(String profileId) {
+        return profileId != null && PROFILES.containsKey(profileId);
+    }
+
+    public static List<ExecutionProfile> list() {
+        return Collections.unmodifiableList(new ArrayList<>(PROFILES.values()));
+    }
+
+    public static String availableProfileIds() {
+        return PROFILES.keySet().stream().collect(Collectors.joining(", "));
+    }
+
+    public static String describeAll() {
+        return list().stream()
+                .map(profile -> String.format("- %s [%s] %s",
+                        profile.getId(),
+                        profile.getTarget(),
+                        profile.getDescription()))
+                .collect(Collectors.joining(System.lineSeparator()));
     }
 
     public static void validateCompatibility(ExecutionProfile profile, TestTarget target) {
@@ -33,8 +58,16 @@ public final class ExecutionProfiles {
             throw new IllegalStateException(
                     "Execution profile '" + profile.getId() + "' targets " + profile.getTarget()
                             + " but the test targets " + target
+                            + ". Compatible profiles for " + target + ": " + compatibleProfileIds(target)
             );
         }
+    }
+
+    public static String compatibleProfileIds(TestTarget target) {
+        return list().stream()
+                .filter(profile -> profile.getTarget() == target)
+                .map(ExecutionProfile::getId)
+                .collect(Collectors.joining(", "));
     }
 
     private static Map<String, ExecutionProfile> loadProfiles() {
@@ -126,11 +159,13 @@ public final class ExecutionProfiles {
     }
 
     @Getter
+    @Setter
     public static class ProfilesFile {
         private List<ProfileDefinition> profiles;
     }
 
     @Getter
+    @Setter
     public static class ProfileDefinition {
         private String id;
         private String target;
