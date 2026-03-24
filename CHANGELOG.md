@@ -32,6 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - iOS web
   - desktop web
 - Added English and Spanish quick-start guides.
+- Added a Pepenium ASCII startup banner when a driver session is created.
+- Added structured logging context with execution profile, target, driver type and session id.
+- Added automatic failure diagnostics with screenshot path and runtime context for web and mobile executions.
+- Added optional detailed framework logging through `PEPENIUM_DETAIL_LOGGING` or `pepenium.detail.logging`.
+- Added safe capability summaries for diagnostics instead of logging raw capability payloads.
+- Added JUL test logging configuration to suppress noisy Selenium warnings during normal runs.
 
 ### Changed
 
@@ -41,8 +47,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated project documentation in English and Spanish to reflect the new execution model, example structure and usage patterns.
 - Improved the framework ergonomics for IDE execution by introducing profile-driven environment selection on top of target-based tests.
 - Updated Maven project metadata and packaging paths to align with the new example layout and `0.5.0` release.
+- Improved screenshot capture behavior for fast flows and introduced `takeScreenshotFast()` for lighter evidence points.
+- Improved runtime logging readability with shorter logger names, compact prefixes and cleaner default console output.
+- Reduced duplicated framework stacktraces in normal error output while keeping full detail available through the detail-logging switch.
+- Trimmed Maven Surefire stacktraces and aligned logging bindings to a clean SLF4J 2.x plus Log4j2 setup.
 
 ### Dependencies
+
+- Replaced `log4j-slf4j-impl` with `log4j-slf4j2-impl`.
+- Added explicit Maven Surefire plugin configuration for cleaner test output.
 
 
 ## [0.4.0] - 2026-03-23

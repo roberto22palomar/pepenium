@@ -1,6 +1,6 @@
 # Guia Rapida
 
-Esta guia muestra la forma mas rapida de entender y ejecutar Pepenium despues del refactor del modelo de ejecucion y de la simplificacion de los examples.
+Esta guia muestra la forma mas rapida de entender y ejecutar Pepenium tal y como esta en `v0.5.0`.
 
 ## 1. Requisitos
 
@@ -120,7 +120,49 @@ Cada configuracion apunta a la misma clase y solo cambia `pepenium.profile`.
 
 Asi tienes cambio de entorno en un click sin editar el test.
 
-## 8. Donde Se Resuelve la Ejecucion
+## 8. Que Veras en Runtime
+
+Cuando arranca una sesion, Pepenium imprime un banner ASCII y luego registra contexto de ejecucion compacto.
+
+El contexto tipico incluye:
+
+- execution profile
+- target
+- tipo de driver
+- session id corta
+
+## 9. Diagnostico de Fallos
+
+Cuando falla un test, Pepenium reporta automaticamente:
+
+- ruta del screenshot
+- execution profile y target
+- session id
+- URL y titulo en sesiones web
+- package, activity o contexto en sesiones mobile cuando estan disponibles
+
+Si quieres mas detalle tecnico del framework, activa:
+
+```text
+PEPENIUM_DETAIL_LOGGING=true
+```
+
+o:
+
+```text
+-Dpepenium.detail.logging=true
+```
+
+## 10. Screenshots
+
+Helpers disponibles:
+
+- `takeScreenshot()`
+- `takeScreenshotFast()`
+
+`takeScreenshotFast()` es util para checkpoints rapidos donde quieres menos coste de captura.
+
+## 11. Donde Se Resuelve la Ejecucion
 
 Clases principales:
 
@@ -130,20 +172,7 @@ Clases principales:
 - [ExecutionProfileResolver.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/ExecutionProfileResolver.java)
 - [DefaultDriverSessionFactory.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/DefaultDriverSessionFactory.java)
 
-## 9. Actions, Assertions y Screenshots
-
-Hay helpers reutilizables para todas las plataformas soportadas:
-
-- Web: `ActionsWeb`, `AssertionsWeb`
-- Android: `ActionsApp`, `AssertionsApp`
-- iOS: `ActionsAppIOS`, `AssertionsAppIOS`
-
-Los screenshots soportan:
-
-- `takeScreenshot()`
-- `takeScreenshotFast()`
-
-## 10. Primeros Pasos Recomendados
+## 12. Primeros Pasos Recomendados
 
 1. Ejecuta `ExampleAndroidNativeTest` en local.
 2. Crea una segunda run configuration con `-Dpepenium.profile=browserstack-android`.
