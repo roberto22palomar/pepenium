@@ -22,34 +22,37 @@
   <a href="README.es.md">Espanol</a>
 </p>
 
-Pepenium is a Java automation framework for Android, iOS and Web, built on top of Appium, Selenium and JUnit 5.
+Pepenium is a Java automation framework for Android, iOS and Web built on top of Appium, Selenium and JUnit 5.
 
-Its current direction is simple to use, profile-driven execution: tests declare what they are, and execution profiles decide where they run.
+Its current direction is simple to understand and practical to run: tests declare a functional target, execution profiles decide where they run, and the framework owns session lifecycle, logging and failure diagnostics.
 
 ## Why Pepenium
 
-- One test per functional target, not one test per infrastructure provider
+- One test per functional target, not one test per provider
 - Shared execution model for local, BrowserStack and AWS Device Farm
-- Reusable `Actions*` and `Assertions*` helpers for Web, Android and iOS
 - Centralized driver/session lifecycle through a single session factory
+- Reusable `Actions*` helpers for Web, Android and iOS
 - Screenshot helpers designed for fast flows without blurred captures
+- Cleaner logs with automatic runtime context and failure evidence
 
 See [QUICK-START.md](QUICK-START.md) for the fastest way to run it and [CHANGELOG.md](CHANGELOG.md) for release history.
 
-## What Changed Up To v0.5.0
+## What v0.5.0 Adds
 
 - Unified session creation around `DriverRequest`, `DriverSession` and `DefaultDriverSessionFactory`
 - Introduced `TestTarget` and execution profiles so tests no longer return provider-specific config classes
 - Simplified examples to one test per functional target
-- Added reusable assertions for Web, Android and iOS
+- Added a Pepenium startup banner when a driver session is created
 - Improved screenshot settling and added `takeScreenshotFast()`
-- Expanded BrowserStack execution support across the YAML-defined device sets
+- Added compact logging with execution context such as profile, target, driver and session
+- Added automatic failure diagnostics with screenshot path plus web or mobile runtime context
+- Added optional detailed framework logging through `PEPENIUM_DETAIL_LOGGING=true`
 
 ## Current Architecture
 
 ### `core`
 
-Framework-level runtime and execution pieces:
+Framework runtime and execution pieces:
 
 - `BaseTest`
 - `DriverConfig`
@@ -60,6 +63,9 @@ Framework-level runtime and execution pieces:
 - `ExecutionProfile`
 - `ExecutionProfiles`
 - `ExecutionProfileResolver`
+- `FailureContextReporter`
+- `LoggingContext`
+- `PepeniumBanner`
 - `TestTarget`
 
 Provider-specific request builders currently live under:
@@ -72,10 +78,10 @@ Provider-specific request builders currently live under:
 
 Reusable building blocks:
 
-- Web: `ActionsWeb`, `AssertionsWeb`
-- Android: `ActionsApp`, `AssertionsApp`
-- iOS: `ActionsAppIOS`, `AssertionsAppIOS`
-- common utility classes such as YAML loaders and BrowserStack config mappers
+- Web: `ActionsWeb`
+- Android: `ActionsApp`
+- iOS: `ActionsAppIOS`
+- common utilities such as YAML loaders, BrowserStack config mappers and screenshot settling helpers
 - example page objects and flows under `toolkit/myProjectExample`
 
 ### `tests`
@@ -86,7 +92,7 @@ Example tests showing the intended usage pattern:
 - `tests/myProjectExample/ios`
 - `tests/myProjectExample/web`
 
-Examples are now grouped by functional target instead of by environment.
+Examples are grouped by functional target instead of by environment.
 
 ## Execution Model
 
@@ -211,24 +217,39 @@ BrowserStack profiles are backed by the YAML example files under:
 
 AWS Device Farm profiles follow the same `TestTarget` model, but are still geared toward packaged execution flows defined in `pom.xml`.
 
-## Actions, Assertions and Screenshots
+## Screenshots, Logging and Failure Diagnostics
 
-Pepenium includes platform-specific actions and assertions:
+Pepenium includes:
 
-- Web: `ActionsWeb`, `AssertionsWeb`
-- Android: `ActionsApp`, `AssertionsApp`
-- iOS: `ActionsAppIOS`, `AssertionsAppIOS`
-
-Recent screenshot improvements:
-
-- bounded settling before capture
+- `takeScreenshot()` for safer evidence capture
 - `takeScreenshotFast()` for lighter checkpoints
 - temp-directory fallback when `DEVICEFARM_SCREENSHOT_PATH` is not set
-- better behavior in fast flows, especially on mobile
+- a Pepenium ASCII banner when a session starts
+- compact logs with profile, target, driver and short session id
+- automatic failure reporting with screenshot path and runtime context
+
+Automatic failure context includes:
+
+- profile, target, driver and session id
+- web URL and title for web sessions
+- package, activity or context details for mobile sessions when available
+- a summarized capabilities view instead of noisy raw capability dumps
+
+If you need extra framework detail, enable:
+
+```text
+PEPENIUM_DETAIL_LOGGING=true
+```
+
+or:
+
+```text
+-Dpepenium.detail.logging=true
+```
 
 ## Current Status
 
-Pepenium is already useful for real automation work. It has been exercised against real Android app flows, remote configuration paths and reusable actions/assertions. The next major direction is to keep improving execution ergonomics and reusable-library readiness.
+Pepenium is already useful for real automation work. It has been exercised against real Android app flows, local emulators, remote configuration paths and reusable action layers. The next major direction is to keep improving reusable-library readiness and higher-level diagnostics.
 
 ## Documentation
 

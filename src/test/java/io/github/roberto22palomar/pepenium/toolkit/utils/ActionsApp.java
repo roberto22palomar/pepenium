@@ -2,6 +2,7 @@ package io.github.roberto22palomar.pepenium.toolkit.utils;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
+import io.github.roberto22palomar.pepenium.core.LoggingPreferences;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -108,11 +109,11 @@ public class ActionsApp {
             log.info("Click performed on: {}", locator);
         } catch (TimeoutException e) {
             log.error("Timeout clicking element: {}", locator);
-            log.debug("Click stacktrace", e);
+            LoggingPreferences.logDetail(log, "Click stacktrace", e);
             throw e;
         } catch (Exception e) {
             log.error("Error clicking element: {} ({})", locator, e.getClass().getSimpleName());
-            log.debug("Click stacktrace", e);
+            LoggingPreferences.logDetail(log, "Click stacktrace", e);
             throw e;
         }
     }
@@ -172,7 +173,7 @@ public class ActionsApp {
             log.info("Text sent to: {}", locator);
         } catch (Exception e) {
             log.error("Error sending text to element: {} ({})", locator, e.getClass().getSimpleName());
-            log.debug("Type stacktrace", e);
+            LoggingPreferences.logDetail(log, "Type stacktrace", e);
             throw e;
         }
     }
@@ -190,7 +191,7 @@ public class ActionsApp {
             log.info("Loading screen disappeared");
         } catch (TimeoutException e) {
             log.error("Loading screen did not disappear after 2 minutes");
-            log.debug("Loading wait stacktrace", e);
+            LoggingPreferences.logDetail(log, "Loading wait stacktrace", e);
             throw e;
         }
     }
@@ -396,11 +397,11 @@ public class ActionsApp {
 
         } catch (IOException e) {
             log.error("Error saving screenshot ({})", e.getClass().getSimpleName());
-            log.debug("Screenshot stacktrace", e);
+            LoggingPreferences.logDetail(log, "Screenshot stacktrace", e);
             return null;
         } catch (Exception e) {
             log.error("Unexpected error taking screenshot ({})", e.getClass().getSimpleName());
-            log.debug("Screenshot stacktrace", e);
+            LoggingPreferences.logDetail(log, "Screenshot stacktrace", e);
             return null;
         }
     }

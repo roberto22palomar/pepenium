@@ -1,6 +1,6 @@
 # Quick Start
 
-This guide shows the fastest path to understand and run Pepenium after the execution-model and example-suite refactor.
+This guide shows the fastest path to understand and run Pepenium as it stands in `v0.5.0`.
 
 ## 1. Prerequisites
 
@@ -12,7 +12,7 @@ This guide shows the fastest path to understand and run Pepenium after the execu
 
 ## 2. Core Idea
 
-Tests now declare a functional target, not a provider-specific driver config class.
+Tests declare a functional target, not a provider-specific config class.
 
 ```java
 public class ExampleAndroidNativeTest extends BaseTest {
@@ -120,7 +120,49 @@ Each configuration points to the same class and only changes `pepenium.profile`.
 
 That gives you one-click switching without editing the test.
 
-## 8. Where Execution Is Resolved
+## 8. What You Will See at Runtime
+
+When a session starts, Pepenium prints an ASCII startup banner and then logs compact execution context.
+
+Typical log context includes:
+
+- execution profile
+- target
+- driver type
+- short session id
+
+## 9. Failure Diagnostics
+
+On test failure, Pepenium automatically reports:
+
+- screenshot path
+- execution profile and target
+- session id
+- web URL and title for web sessions
+- package, activity or context details for mobile sessions when available
+
+If you want more framework detail, enable:
+
+```text
+PEPENIUM_DETAIL_LOGGING=true
+```
+
+or:
+
+```text
+-Dpepenium.detail.logging=true
+```
+
+## 10. Screenshots
+
+Available helpers:
+
+- `takeScreenshot()`
+- `takeScreenshotFast()`
+
+`takeScreenshotFast()` is useful for rapid checkpoints where you want lighter capture overhead.
+
+## 11. Where Execution Is Resolved
 
 Core classes involved:
 
@@ -130,20 +172,7 @@ Core classes involved:
 - [ExecutionProfileResolver.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/ExecutionProfileResolver.java)
 - [DefaultDriverSessionFactory.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/DefaultDriverSessionFactory.java)
 
-## 9. Actions, Assertions and Screenshots
-
-Reusable helpers are available for all supported platforms:
-
-- Web: `ActionsWeb`, `AssertionsWeb`
-- Android: `ActionsApp`, `AssertionsApp`
-- iOS: `ActionsAppIOS`, `AssertionsAppIOS`
-
-Screenshots support:
-
-- `takeScreenshot()`
-- `takeScreenshotFast()`
-
-## 10. Suggested First Steps
+## 12. Suggested First Steps
 
 1. Run `ExampleAndroidNativeTest` locally.
 2. Create a second IDE run configuration with `-Dpepenium.profile=browserstack-android`.
