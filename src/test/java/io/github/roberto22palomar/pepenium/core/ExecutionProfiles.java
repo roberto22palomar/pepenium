@@ -1,41 +1,18 @@
 package io.github.roberto22palomar.pepenium.core;
 
-import io.github.roberto22palomar.pepenium.core.configs.aws.android.AndroidConfigAWS;
-import io.github.roberto22palomar.pepenium.core.configs.aws.android.AndroidWebConfigAWS;
-import io.github.roberto22palomar.pepenium.core.configs.aws.ios.IOSConfigAWS;
-import io.github.roberto22palomar.pepenium.core.configs.browserstack.android.AndroidConfigBS;
-import io.github.roberto22palomar.pepenium.core.configs.browserstack.android.AndroidWebConfigBS;
-import io.github.roberto22palomar.pepenium.core.configs.browserstack.desktop.MacWebConfigBS;
-import io.github.roberto22palomar.pepenium.core.configs.browserstack.desktop.WindowsWebConfigBS;
-import io.github.roberto22palomar.pepenium.core.configs.browserstack.ios.IOSConfigBS;
-import io.github.roberto22palomar.pepenium.core.configs.browserstack.ios.IOSWebConfigBS;
-import io.github.roberto22palomar.pepenium.core.configs.local.android.AndroidConfigLocal;
-import io.github.roberto22palomar.pepenium.core.configs.local.android.AndroidWebConfigLocal;
-import io.github.roberto22palomar.pepenium.core.configs.local.desktop.ChromeWebConfigLocal;
+import lombok.Getter;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.InputStream;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public final class ExecutionProfiles {
 
-    private static final Map<String, ExecutionProfile> PROFILES = new LinkedHashMap<>();
-
-    static {
-        register(new ExecutionProfile("local-android", TestTarget.ANDROID_NATIVE, "Local Android native app", AndroidConfigLocal::new));
-        register(new ExecutionProfile("local-android-web", TestTarget.ANDROID_WEB, "Local Android mobile web", AndroidWebConfigLocal::new));
-        register(new ExecutionProfile("local-web", TestTarget.WEB_DESKTOP, "Local desktop web with Chrome", ChromeWebConfigLocal::new));
-
-        register(new ExecutionProfile("aws-android", TestTarget.ANDROID_NATIVE, "AWS Device Farm Android native app", AndroidConfigAWS::new));
-        register(new ExecutionProfile("aws-android-web", TestTarget.ANDROID_WEB, "AWS Device Farm Android mobile web", AndroidWebConfigAWS::new));
-        register(new ExecutionProfile("aws-ios", TestTarget.IOS_NATIVE, "AWS Device Farm iOS native app", IOSConfigAWS::new));
-
-        register(new ExecutionProfile("browserstack-android", TestTarget.ANDROID_NATIVE, "BrowserStack Android native app", AndroidConfigBS::new));
-        register(new ExecutionProfile("browserstack-android-web", TestTarget.ANDROID_WEB, "BrowserStack Android mobile web", AndroidWebConfigBS::new));
-        register(new ExecutionProfile("browserstack-ios", TestTarget.IOS_NATIVE, "BrowserStack iOS native app", IOSConfigBS::new));
-        register(new ExecutionProfile("browserstack-ios-web", TestTarget.IOS_WEB, "BrowserStack iOS mobile web", IOSWebConfigBS::new));
-        register(new ExecutionProfile("browserstack-windows-web", TestTarget.WEB_DESKTOP, "BrowserStack Windows desktop web", WindowsWebConfigBS::new));
-        register(new ExecutionProfile("browserstack-mac-web", TestTarget.WEB_DESKTOP, "BrowserStack Mac desktop web", MacWebConfigBS::new));
-    }
+    private static final String PROFILES_RESOURCE = "execution-profiles.yml";
+    private static final Map<String, ExecutionProfile> PROFILES = loadProfiles();
 
     private ExecutionProfiles() {
     }
@@ -43,7 +20,10 @@ public final class ExecutionProfiles {
     public static ExecutionProfile get(String profileId) {
         ExecutionProfile profile = PROFILES.get(profileId);
         if (profile == null) {
-            throw new IllegalArgumentException("Unknown Pepenium execution profile: " + profileId);
+            throw new IllegalArgumentException(
+                    "Unknown Pepenium execution profile: " + profileId
+                            + ". Check " + PROFILES_RESOURCE + " for the available profile ids."
+            );
         }
         return profile;
     }
@@ -57,7 +37,104 @@ public final class ExecutionProfiles {
         }
     }
 
-    private static void register(ExecutionProfile profile) {
-        PROFILES.put(profile.getId(), profile);
+    private static Map<String, ExecutionProfile> loadProfiles() {
+        try (InputStream input = ExecutionProfiles.class.getClassLoader().getResourceAsStream(PROFILES_RESOURCE)) {
+            if (input == null) {
+                throw new IllegalStateException("Missing required resource: " + PROFILES_RESOURCE);
+            }
+
+            ProfilesFile yamlFile = new Yaml().loadAs(input, ProfilesFile.class);
+            if (yamlFile == null || yamlFile.getProfiles() == null || yamlFile.getProfiles().isEmpty()) {
+                throw new IllegalStateException("No execution profiles found in " + PROFILES_RESOURCE);
+            }
+
+            Map<String, ExecutionProfile> profiles = new LinkedHashMap<>();
+            for (ProfileDefinition definition : yamlFile.getProfiles()) {
+                ExecutionProfile profile = toExecutionProfile(definition);
+                if (profiles.putIfAbsent(profile.getId(), profile) != null) {
+                    throw new IllegalStateException("Duplicate execution profile id '" + profile.getId()
+                            + "' in " + PROFILES_RESOURCE);
+                }
+            }
+            return profiles;
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to load execution profiles from " + PROFILES_RESOURCE, e);
+        }
+    }
+
+    private static ExecutionProfile toExecutionProfile(ProfileDefinition definition) {
+        if (definition == null) {
+            throw new IllegalStateException("Found null execution profile definition in " + PROFILES_RESOURCE);
+        }
+        if (isBlank(definition.getId())) {
+            throw new IllegalStateException("Execution profile id is required in " + PROFILES_RESOURCE);
+        }
+        if (isBlank(definition.getTarget())) {
+            throw new IllegalStateException("Execution profile target is required for '" + definition.getId() + "'");
+        }
+        if (isBlank(definition.getDescription())) {
+            throw new IllegalStateException("Execution profile description is required for '" + definition.getId() + "'");
+        }
+        if (isBlank(definition.getConfigClass())) {
+            throw new IllegalStateException("Execution profile configClass is required for '" + definition.getId() + "'");
+        }
+
+        TestTarget target;
+        try {
+            target = TestTarget.valueOf(definition.getTarget().trim());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Unknown target '" + definition.getTarget()
+                    + "' for execution profile '" + definition.getId() + "'", e);
+        }
+
+        return new ExecutionProfile(
+                definition.getId().trim(),
+                target,
+                definition.getDescription().trim(),
+                buildConfigSupplier(definition.getConfigClass().trim(), definition.getId().trim())
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Supplier<DriverConfig> buildConfigSupplier(String configClassName, String profileId) {
+        try {
+            Class<?> rawClass = Class.forName(configClassName);
+            if (!DriverConfig.class.isAssignableFrom(rawClass)) {
+                throw new IllegalStateException("Config class '" + configClassName
+                        + "' for execution profile '" + profileId + "' does not extend DriverConfig");
+            }
+
+            Class<? extends DriverConfig> configClass = (Class<? extends DriverConfig>) rawClass;
+            return () -> {
+                try {
+                    return configClass.getDeclaredConstructor().newInstance();
+                } catch (Exception e) {
+                    throw new IllegalStateException("Failed to instantiate config class '" + configClassName
+                            + "' for execution profile '" + profileId + "'", e);
+                }
+            };
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Config class '" + configClassName
+                    + "' for execution profile '" + profileId + "' was not found", e);
+        }
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    @Getter
+    public static class ProfilesFile {
+        private List<ProfileDefinition> profiles;
+    }
+
+    @Getter
+    public static class ProfileDefinition {
+        private String id;
+        private String target;
+        private String description;
+        private String configClass;
     }
 }

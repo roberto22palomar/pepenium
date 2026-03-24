@@ -1,6 +1,5 @@
 package io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.flows;
 
-
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.BottomNavigationPage;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.SearchPage;
 import lombok.RequiredArgsConstructor;
