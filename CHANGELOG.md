@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Added `ENVIRONMENT.md` as a central reference for environment variables and Java system properties used by the project.
 - Added a unified driver/session layer with `DriverRequest`, `DriverSession`, `DriverSessionFactory` and `DefaultDriverSessionFactory`.
 - Added `TestTarget`, execution profiles and execution profile resolution to decouple tests from provider-specific driver config classes.
 - Added local execution configs for Android native, Android web and desktop Chrome under `core/configs/local`.

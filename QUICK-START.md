@@ -196,3 +196,4 @@ Core classes involved:
 2. Create a second IDE run configuration with `-Dpepenium.profile=browserstack-android`.
 3. Run `ExampleDesktopWebTest` locally.
 4. Explore `core/configs/...` to see how each provider builds a neutral `DriverRequest`.
+5. Use [ENVIRONMENT.md](ENVIRONMENT.md) to see all supported environment variables and system properties in one place.

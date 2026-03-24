@@ -36,6 +36,7 @@ Its current direction is simple to understand and practical to run: tests declar
 - Cleaner logs with automatic runtime context and failure evidence
 
 See [QUICK-START.md](QUICK-START.md) for the fastest way to run it and [CHANGELOG.md](CHANGELOG.md) for release history.
+Use [ENVIRONMENT.md](ENVIRONMENT.md) as the central reference for environment variables and runtime properties.
 
 ## What v0.5.0 Adds
 
@@ -275,3 +276,4 @@ Pepenium is already useful for real automation work. It has been exercised again
 - English quick start: [QUICK-START.md](QUICK-START.md)
 - Spanish quick start: [QUICK-START.es.md](QUICK-START.es.md)
 - Spanish README: [README.es.md](README.es.md)
+- Environment reference: [ENVIRONMENT.md](ENVIRONMENT.md)
