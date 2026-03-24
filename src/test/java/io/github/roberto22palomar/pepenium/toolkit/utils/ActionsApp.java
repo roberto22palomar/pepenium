@@ -3,6 +3,7 @@ package io.github.roberto22palomar.pepenium.toolkit.utils;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.github.roberto22palomar.pepenium.core.LoggingPreferences;
+import io.github.roberto22palomar.pepenium.core.StepTracker;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -102,6 +103,7 @@ public class ActionsApp {
 
     @SneakyThrows
     public void makeClick(By locator) {
+        StepTracker.record("Tap " + locator);
         try {
             WebElement element = new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.elementToBeClickable(locator));
@@ -165,6 +167,7 @@ public class ActionsApp {
     }
 
     public void sendText(By locator, String text) {
+        StepTracker.record("Type into " + locator);
         try {
             waitStableScreen();
             WebElement element = waitToBePresent(locator);
@@ -179,6 +182,7 @@ public class ActionsApp {
     }
 
     public void waitLoadingScreenToDisappear(String xpath) {
+        StepTracker.record("Wait loading screen " + xpath);
         By loadingIndicator = By.xpath(xpath);
         try {
             log.info("Waiting for loading indicator to become visible...");
@@ -201,6 +205,7 @@ public class ActionsApp {
     // ---------------------------
 
     public void swipeUp() {
+        StepTracker.record("Swipe up");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
@@ -220,6 +225,7 @@ public class ActionsApp {
     }
 
     public void swipeDown() {
+        StepTracker.record("Swipe down");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
@@ -240,6 +246,7 @@ public class ActionsApp {
     }
 
     public void swipeLeft() {
+        StepTracker.record("Swipe left");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
@@ -259,6 +266,7 @@ public class ActionsApp {
     }
 
     public void swipeRight() {
+        StepTracker.record("Swipe right");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
@@ -279,6 +287,7 @@ public class ActionsApp {
     }
 
     public WebElement scrollToElement(By locator, int maxSwipes) {
+        StepTracker.record("Scroll to " + locator);
         int attempts = 0;
         while (attempts < maxSwipes) {
             try {
@@ -301,6 +310,7 @@ public class ActionsApp {
                                int times,
                                double percent,
                                int durationMs) {
+        StepTracker.record("Swipe " + direction + " on " + locator + " x" + times);
 
         waitStableScreen();
         WebElement el = waitToBePresent(locator);
@@ -375,6 +385,7 @@ public class ActionsApp {
     }
 
     public String takeScreenshot(boolean settleBeforeCapture) {
+        StepTracker.record(settleBeforeCapture ? "Take screenshot" : "Take fast screenshot");
         if (driver == null) {
             log.warn("Driver is null. Cannot take screenshot.");
             return null;

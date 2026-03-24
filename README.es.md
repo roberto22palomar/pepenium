@@ -47,6 +47,7 @@ Consulta [QUICK-START.es.md](QUICK-START.es.md) para empezar rapido y [CHANGELOG
 - Logging compacto con contexto de profile, target, driver y sesion
 - Diagnostico automatico de fallos con ruta de screenshot y contexto web o mobile
 - Logging detallado opcional mediante `PEPENIUM_DETAIL_LOGGING=true`
+- Step tracking para que los resumentes de fallo muestren las ultimas acciones registradas
 
 ## Arquitectura Actual
 
@@ -66,6 +67,7 @@ Piezas de runtime y ejecucion del framework:
 - `FailureContextReporter`
 - `LoggingContext`
 - `PepeniumBanner`
+- `StepTracker`
 - `TestTarget`
 
 Los builders de request especificos de proveedor viven actualmente en:
@@ -227,6 +229,7 @@ Pepenium incluye:
 - un banner ASCII de Pepenium al arrancar una sesion
 - logs compactos con profile, target, driver y sesion corta
 - reporte automatico de fallo con screenshot y contexto de runtime
+- tracking de pasos recientes dentro del resumen de fallo
 
 El contexto automatico de fallo incluye:
 
@@ -234,6 +237,14 @@ El contexto automatico de fallo incluye:
 - URL y titulo en sesiones web
 - package, activity o contexto en sesiones mobile cuando estan disponibles
 - un resumen de capabilities en lugar de dumps crudos y ruidosos
+- los ultimos pasos del framework antes del fallo
+
+Comportamiento del step tracking:
+
+- registra automaticamente operaciones comunes de `Actions*`
+- conserva solo los ultimos `10` pasos por defecto
+- se puede ajustar con `PEPENIUM_STEP_TRACKER_LIMIT` o `-Dpepenium.step.tracker.limit=...`
+- se puede enriquecer manualmente desde tests o flows con `step("Abrir buscador")`
 
 Si necesitas mas detalle tecnico del framework, activa:
 
