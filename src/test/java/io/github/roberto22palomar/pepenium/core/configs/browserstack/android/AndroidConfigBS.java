@@ -1,9 +1,9 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.android;
 
 import io.appium.java_client.android.options.UiAutomator2Options;
-import io.github.roberto22palomar.pepenium.core.DriverConfig;
-import io.github.roberto22palomar.pepenium.core.DriverRequest;
-import io.github.roberto22palomar.pepenium.core.DriverType;
+import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
+import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfig;
 import io.github.roberto22palomar.pepenium.toolkit.utils.YamlLoader;
 import org.junit.jupiter.api.Named;

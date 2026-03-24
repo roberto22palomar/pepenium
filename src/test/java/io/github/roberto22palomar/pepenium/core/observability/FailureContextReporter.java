@@ -1,8 +1,10 @@
-package io.github.roberto22palomar.pepenium.core;
+package io.github.roberto22palomar.pepenium.core.observability;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.runtime.DriverSession;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;

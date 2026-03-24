@@ -1,8 +1,8 @@
 package io.github.roberto22palomar.pepenium.core.configs.aws.ios;
 
-import io.github.roberto22palomar.pepenium.core.DriverConfig;
-import io.github.roberto22palomar.pepenium.core.DriverRequest;
-import io.github.roberto22palomar.pepenium.core.DriverType;
+import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
+import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 import io.appium.java_client.ios.options.XCUITestOptions;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;

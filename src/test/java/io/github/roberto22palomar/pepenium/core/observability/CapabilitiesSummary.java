@@ -1,4 +1,4 @@
-package io.github.roberto22palomar.pepenium.core;
+package io.github.roberto22palomar.pepenium.core.observability;
 
 import org.openqa.selenium.Capabilities;
 

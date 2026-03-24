@@ -1,8 +1,8 @@
 package io.github.roberto22palomar.pepenium.core.configs.local.desktop;
 
-import io.github.roberto22palomar.pepenium.core.DriverConfig;
-import io.github.roberto22palomar.pepenium.core.DriverRequest;
-import io.github.roberto22palomar.pepenium.core.DriverType;
+import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
+import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 public class ChromeWebConfigLocal implements DriverConfig {

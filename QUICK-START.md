@@ -183,11 +183,11 @@ Available helpers:
 
 Core classes involved:
 
-- [BaseTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/BaseTest.java)
-- [TestTarget.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/TestTarget.java)
-- [ExecutionProfiles.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/ExecutionProfiles.java)
-- [ExecutionProfileResolver.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/ExecutionProfileResolver.java)
-- [DefaultDriverSessionFactory.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/DefaultDriverSessionFactory.java)
+- [BaseTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)
+- [TestTarget.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/execution/TestTarget.java)
+- [ExecutionProfiles.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfiles.java)
+- [ExecutionProfileResolver.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfileResolver.java)
+- [DefaultDriverSessionFactory.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/runtime/DefaultDriverSessionFactory.java)
 - `src/test/resources/execution-profiles.yml`
 
 ## 12. Suggested First Steps

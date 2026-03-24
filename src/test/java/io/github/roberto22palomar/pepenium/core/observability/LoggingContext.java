@@ -1,5 +1,8 @@
-package io.github.roberto22palomar.pepenium.core;
+package io.github.roberto22palomar.pepenium.core.observability;
 
+import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.execution.DriverType;
+import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.util.Objects;

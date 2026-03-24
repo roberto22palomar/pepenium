@@ -1,7 +1,11 @@
-package io.github.roberto22palomar.pepenium.core;
+package io.github.roberto22palomar.pepenium.core.runtime;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.observability.CapabilitiesSummary;
+import io.github.roberto22palomar.pepenium.core.observability.LoggingContext;
+import io.github.roberto22palomar.pepenium.core.observability.PepeniumBanner;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;

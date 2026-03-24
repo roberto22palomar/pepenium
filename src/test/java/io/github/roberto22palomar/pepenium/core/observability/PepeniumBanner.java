@@ -1,5 +1,6 @@
-package io.github.roberto22palomar.pepenium.core;
+package io.github.roberto22palomar.pepenium.core.observability;
 
+import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
