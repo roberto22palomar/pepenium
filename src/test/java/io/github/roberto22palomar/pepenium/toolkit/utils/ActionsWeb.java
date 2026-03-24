@@ -3,6 +3,7 @@ package io.github.roberto22palomar.pepenium.toolkit.utils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import io.github.roberto22palomar.pepenium.core.LoggingPreferences;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -69,11 +70,11 @@ public class ActionsWeb {
                     .until(ExpectedConditions.visibilityOfElementLocated(locator));
         } catch (TimeoutException e) {
             log.error("Timeout waiting for element visibility: {}", locator);
-            log.debug("Visibility wait stacktrace", e);
+            LoggingPreferences.logDetail(log, "Visibility wait stacktrace", e);
             throw e;
         } catch (Exception e) {
             log.error("Unexpected error while waiting for element visibility: {} ({})", locator, e.getClass().getSimpleName());
-            log.debug("Visibility wait stacktrace", e);
+            LoggingPreferences.logDetail(log, "Visibility wait stacktrace", e);
             throw e;
         }
     }
@@ -128,11 +129,11 @@ public class ActionsWeb {
             log.info("Click performed on: {}", locator);
         } catch (TimeoutException e) {
             log.error("Timeout clicking element: {}", locator);
-            log.debug("Click stacktrace", e);
+            LoggingPreferences.logDetail(log, "Click stacktrace", e);
             throw e;
         } catch (Exception e) {
             log.error("Error clicking element: {} ({})", locator, e.getClass().getSimpleName());
-            log.debug("Click stacktrace", e);
+            LoggingPreferences.logDetail(log, "Click stacktrace", e);
             throw e;
         }
     }
@@ -213,7 +214,7 @@ public class ActionsWeb {
             log.info("Text sent to: {}", locator);
         } catch (Exception e) {
             log.error("Error sending text to element: {} ({})", locator, e.getClass().getSimpleName());
-            log.debug("Type stacktrace", e);
+            LoggingPreferences.logDetail(log, "Type stacktrace", e);
             throw e;
         }
     }
@@ -231,7 +232,7 @@ public class ActionsWeb {
             log.info("Loading screen disappeared");
         } catch (TimeoutException e) {
             log.error("Loading screen did not disappear after 2 minutes");
-            log.debug("Loading wait stacktrace", e);
+            LoggingPreferences.logDetail(log, "Loading wait stacktrace", e);
             throw e;
         }
     }
@@ -302,11 +303,11 @@ public class ActionsWeb {
 
         } catch (IOException e) {
             log.error("Error saving screenshot ({})", e.getClass().getSimpleName());
-            log.debug("Screenshot stacktrace", e);
+            LoggingPreferences.logDetail(log, "Screenshot stacktrace", e);
             return null;
         } catch (Exception e) {
             log.error("Unexpected error taking screenshot ({})", e.getClass().getSimpleName());
-            log.debug("Screenshot stacktrace", e);
+            LoggingPreferences.logDetail(log, "Screenshot stacktrace", e);
             return null;
         }
     }
