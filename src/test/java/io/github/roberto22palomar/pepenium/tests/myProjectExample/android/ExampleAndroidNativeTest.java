@@ -1,33 +1,29 @@
-package io.github.roberto22palomar.pepenium.tests.myProjectExample.aws.android;
+package io.github.roberto22palomar.pepenium.tests.myProjectExample.android;
 
 import io.github.roberto22palomar.pepenium.core.BaseTest;
-import io.github.roberto22palomar.pepenium.core.DriverConfig;
-import io.github.roberto22palomar.pepenium.core.configs.aws.android.AndroidConfigAWS;
+import io.github.roberto22palomar.pepenium.core.TestTarget;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.flows.ExampleNavigationFlowAndroid;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.BottomNavigationPage;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.SearchPage;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsApp;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-public class ExampleAndroidAWSTest extends BaseTest {
+@Slf4j
+public class ExampleAndroidNativeTest extends BaseTest {
 
     @Override
-    protected DriverConfig getConfig() {
-        return new AndroidConfigAWS();
+    protected TestTarget getTarget() {
+        return TestTarget.ANDROID_NATIVE;
     }
 
     @Test
-    public void basicNavigationFlow_shouldRunOnAwsDeviceFarm() {
-        ActionsApp actionsApp = new ActionsApp(driver);
-
-        // Pages (example)
+    void basicNavigationFlow_shouldRun() {
+        ActionsApp actionsApp = new ActionsApp(appiumDriver());
         SearchPage searchPage = new SearchPage(actionsApp);
         BottomNavigationPage bottomNavigationPage = new BottomNavigationPage(actionsApp);
-
-        // Flow (example)
         ExampleNavigationFlowAndroid flow = new ExampleNavigationFlowAndroid(bottomNavigationPage, searchPage);
-
-        // Execute
         flow.runBasicNavigationFlow();
+        log.info("Example Android native flow finished");
     }
 }

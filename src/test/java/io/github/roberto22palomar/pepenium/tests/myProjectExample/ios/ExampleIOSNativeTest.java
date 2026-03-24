@@ -1,34 +1,34 @@
-package io.github.roberto22palomar.pepenium.tests.myProjectExample.aws.ios;
+package io.github.roberto22palomar.pepenium.tests.myProjectExample.ios;
 
 import io.github.roberto22palomar.pepenium.core.BaseTest;
-import io.github.roberto22palomar.pepenium.core.DriverConfig;
-import io.github.roberto22palomar.pepenium.core.configs.aws.ios.IOSConfigAWS;
-
+import io.github.roberto22palomar.pepenium.core.TestTarget;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.flows.ExampleNavigationFlowIOS;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages.BottomNavigationPageIOS;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages.SearchPageIOS;
 import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsAppIOS;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-public class ExampleIOSAWSTest extends BaseTest {
+@Slf4j
+public class ExampleIOSNativeTest extends BaseTest {
 
     @Override
-    protected DriverConfig getConfig() {
-        return new IOSConfigAWS();
+    protected TestTarget getTarget() {
+        return TestTarget.IOS_NATIVE;
+    }
+
+    @Override
+    protected String getDefaultProfileId() {
+        return "browserstack-ios";
     }
 
     @Test
-    public void basicNavigationFlow_shouldRunOnAwsDeviceFarm() {
-        ActionsAppIOS actionsApp = new ActionsAppIOS(driver);
-
-        // Pages (example)
+    void basicNavigationFlow_shouldRun() {
+        ActionsAppIOS actionsApp = new ActionsAppIOS(appiumDriver());
         SearchPageIOS searchPage = new SearchPageIOS(actionsApp);
         BottomNavigationPageIOS bottomNavigationPage = new BottomNavigationPageIOS(actionsApp);
-
-        // Flow (example)
         ExampleNavigationFlowIOS flow = new ExampleNavigationFlowIOS(bottomNavigationPage, searchPage);
-
-        // Execute
         flow.runBasicNavigationFlow();
+        log.info("Example iOS native flow finished");
     }
 }
