@@ -1,10 +1,9 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.android;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
-import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.github.roberto22palomar.pepenium.core.DriverConfig;
+import io.github.roberto22palomar.pepenium.core.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.DriverType;
 import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfig;
 import io.github.roberto22palomar.pepenium.toolkit.utils.YamlLoader;
 import org.junit.jupiter.api.Named;
@@ -42,12 +41,7 @@ public class AndroidConfigBS implements DriverConfig {
     }
 
     @Override
-    public AppiumDriverLocalService startService() {
-        return null;
-    }
-
-    @Override
-    public AppiumDriver createDriver(AppiumDriverLocalService service) throws Exception {
+    public DriverRequest createRequest() throws Exception {
         UiAutomator2Options opts = new UiAutomator2Options()
                 .setAutomationName("UiAutomator2")
                 .setPlatformName(platform.getPlatformName())
@@ -73,7 +67,12 @@ public class AndroidConfigBS implements DriverConfig {
                 )
         );
 
-        return new AndroidDriver(remoteUrl, opts);
+        return DriverRequest.builder()
+                .driverType(DriverType.ANDROID_APPIUM)
+                .serverUrl(remoteUrl)
+                .capabilities(opts)
+                .description("BrowserStack Android native app - " + platformLabel(platform))
+                .build();
     }
 
     private static BrowserStackConfig loadConfig() {
@@ -92,6 +91,11 @@ public class AndroidConfigBS implements DriverConfig {
     }
 
     private static String platformLabel(BrowserStackConfig.Platform platform) {
-        return platform.getDeviceName() + " / Android " + platform.getPlatformVersion();
+        return String.format(
+                "%s / %s / %s",
+                platform.getPlatformName(),
+                platform.getDeviceName(),
+                platform.getPlatformVersion()
+        );
     }
 }
