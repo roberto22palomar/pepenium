@@ -196,3 +196,4 @@ Clases principales:
 2. Crea una segunda run configuration con `-Dpepenium.profile=browserstack-android`.
 3. Ejecuta `ExampleDesktopWebTest` en local.
 4. Revisa `core/configs/...` para ver como cada proveedor construye una `DriverRequest` neutral.
+5. Usa [ENVIRONMENT.md](ENVIRONMENT.md) para ver todas las variables de entorno y system properties soportadas en un unico sitio.

@@ -36,6 +36,7 @@ La direccion actual del proyecto es simple de entender y practica de ejecutar: l
 - Logs mas limpios con contexto automatico y evidencia de fallo
 
 Consulta [QUICK-START.es.md](QUICK-START.es.md) para empezar rapido y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
+Usa [ENVIRONMENT.md](ENVIRONMENT.md) como referencia central de variables de entorno y properties de runtime.
 
 ## Que Aporta v0.5.0
 
@@ -275,3 +276,4 @@ Pepenium ya es util para trabajo real de automatizacion. Se ha ejercitado contra
 - Quick start en ingles: [QUICK-START.md](QUICK-START.md)
 - Quick start en espanol: [QUICK-START.es.md](QUICK-START.es.md)
 - README en ingles: [README.md](README.md)
+- Referencia de entorno: [ENVIRONMENT.md](ENVIRONMENT.md)
