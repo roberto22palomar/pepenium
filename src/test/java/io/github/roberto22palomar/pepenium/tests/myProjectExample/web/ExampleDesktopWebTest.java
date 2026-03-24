@@ -2,10 +2,10 @@ package io.github.roberto22palomar.pepenium.tests.myProjectExample.web;
 
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import io.github.roberto22palomar.pepenium.core.runtime.BaseTest;
-import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.flows.ExampleNavigationFlow;
-import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.pages.HeaderPage;
-import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.pages.NavigationTabsPage;
-import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsWeb;
+import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.flows.ExampleNavigationFlow;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.HeaderPage;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.NavigationTabsPage;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 

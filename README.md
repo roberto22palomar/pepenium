@@ -81,11 +81,11 @@ Provider-specific request builders currently live under:
 
 Reusable building blocks:
 
-- Web: `ActionsWeb`
-- Android: `ActionsApp`
-- iOS: `ActionsAppIOS`
-- common utilities such as YAML loaders, BrowserStack config mappers and screenshot settling helpers
-- example page objects and flows under `toolkit/myProjectExample`
+- `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
+- `toolkit/browserstack`: BrowserStack YAML config models
+- `toolkit/yaml`: YAML loaders for BrowserStack catalogs
+- `toolkit/support`: reusable settle and scroll helpers
+- `toolkit/examples`: example page objects and flows
 
 ### `tests`
 

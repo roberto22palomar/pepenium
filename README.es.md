@@ -81,11 +81,11 @@ Los builders de request especificos de proveedor viven actualmente en:
 
 Bloques reutilizables:
 
-- Web: `ActionsWeb`
-- Android: `ActionsApp`
-- iOS: `ActionsAppIOS`
-- utilidades comunes como loaders YAML, mapeadores de BrowserStack y helpers de estabilizacion de screenshots
-- page objects y flows de ejemplo bajo `toolkit/myProjectExample`
+- `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
+- `toolkit/browserstack`: modelos de configuracion YAML para BrowserStack
+- `toolkit/yaml`: loaders YAML para catalogos de BrowserStack
+- `toolkit/support`: helpers reutilizables de settle y scroll
+- `toolkit/examples`: page objects y flows de ejemplo
 
 ### `tests`
 

@@ -2,10 +2,10 @@ package io.github.roberto22palomar.pepenium.tests.myProjectExample.android;
 
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import io.github.roberto22palomar.pepenium.core.runtime.BaseTest;
-import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.flows.ExampleNavigationFlowAndroid;
-import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.BottomNavigationPage;
-import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.SearchPage;
-import io.github.roberto22palomar.pepenium.toolkit.utils.ActionsApp;
+import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.android.flows.ExampleNavigationFlowAndroid;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.android.pages.BottomNavigationPage;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.android.pages.SearchPage;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 

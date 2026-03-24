@@ -250,8 +250,7 @@
                                         <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/android/*Test.class</include>
                                         <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/*Test.class</include>
                                         <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/web/*Test.class</include>
-                                        <include>io/github/roberto22palomar/pepenium/toolkit/myProjectExample/**/*.class</include>
-                                        <include>io/github/roberto22palomar/pepenium/toolkit/utils/**/*.class</include>
+                                        <include>io/github/roberto22palomar/pepenium/toolkit/**/*.class</include>
                                     </includes>
                                     <archive>
                                         <manifest>
