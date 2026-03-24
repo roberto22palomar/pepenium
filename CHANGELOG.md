@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Refactored `BaseTest` so tests now declare a target instead of returning an environment-specific config class.
 - Refactored provider-specific config classes so they now build neutral driver requests instead of creating drivers directly.
 - Simplified the `tests/myProjectExample` structure by removing duplication by environment (`local`, `browserstack`, `aws`) and organizing tests by target (`android`, `ios`, `web`).
+- Reorganized `toolkit` by responsibility into dedicated `actions`, `browserstack`, `yaml`, `support` and `examples` packages.
 - Updated project documentation in English and Spanish to reflect the new execution model, example structure and usage patterns.
 - Improved the framework ergonomics for IDE execution by introducing profile-driven environment selection on top of target-based tests.
 - Updated Maven project metadata and packaging paths to align with the new example layout and `0.5.0` release.
