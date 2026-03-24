@@ -1,6 +1,14 @@
-package io.github.roberto22palomar.pepenium.core;
+package io.github.roberto22palomar.pepenium.core.runtime;
 
 import io.appium.java_client.AppiumDriver;
+import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
+import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.execution.ExecutionProfile;
+import io.github.roberto22palomar.pepenium.core.execution.ExecutionProfileResolver;
+import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
+import io.github.roberto22palomar.pepenium.core.observability.FailureContextReporter;
+import io.github.roberto22palomar.pepenium.core.observability.LoggingContext;
+import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;

@@ -2,8 +2,8 @@ package io.github.roberto22palomar.pepenium.toolkit.utils;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
-import io.github.roberto22palomar.pepenium.core.LoggingPreferences;
-import io.github.roberto22palomar.pepenium.core.StepTracker;
+import io.github.roberto22palomar.pepenium.core.observability.LoggingPreferences;
+import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

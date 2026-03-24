@@ -1,4 +1,4 @@
-package io.github.roberto22palomar.pepenium.core;
+package io.github.roberto22palomar.pepenium.core.execution;
 
 public class ExecutionProfileResolver {
 

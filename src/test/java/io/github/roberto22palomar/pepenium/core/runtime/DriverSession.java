@@ -1,7 +1,8 @@
-package io.github.roberto22palomar.pepenium.core;
+package io.github.roberto22palomar.pepenium.core.runtime;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
+import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import lombok.Getter;
 import org.openqa.selenium.WebDriver;
 

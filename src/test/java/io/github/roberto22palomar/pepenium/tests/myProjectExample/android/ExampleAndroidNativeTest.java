@@ -1,7 +1,7 @@
 package io.github.roberto22palomar.pepenium.tests.myProjectExample.android;
 
-import io.github.roberto22palomar.pepenium.core.BaseTest;
-import io.github.roberto22palomar.pepenium.core.TestTarget;
+import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
+import io.github.roberto22palomar.pepenium.core.runtime.BaseTest;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.flows.ExampleNavigationFlowAndroid;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.BottomNavigationPage;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.android.pages.SearchPage;

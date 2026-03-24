@@ -1,8 +1,8 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.desktop;
 
-import io.github.roberto22palomar.pepenium.core.DriverConfig;
-import io.github.roberto22palomar.pepenium.core.DriverRequest;
-import io.github.roberto22palomar.pepenium.core.DriverType;
+import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
+import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfigDesktop;
 import io.github.roberto22palomar.pepenium.toolkit.utils.YamlLoaderDesktop;
 import org.junit.jupiter.api.Named;
