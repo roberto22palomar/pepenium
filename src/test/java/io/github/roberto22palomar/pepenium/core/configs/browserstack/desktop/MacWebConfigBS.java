@@ -1,18 +1,19 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.desktop;
 
+import io.github.roberto22palomar.pepenium.core.DriverConfig;
+import io.github.roberto22palomar.pepenium.core.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.DriverType;
 import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfigDesktop;
 import io.github.roberto22palomar.pepenium.toolkit.utils.YamlLoaderDesktop;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.provider.Arguments;
 import org.openqa.selenium.MutableCapabilities;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class MacWebConfigBS {
+public class MacWebConfigBS implements DriverConfig {
 
     private static final String YAML_PATH = "src/test/resources/browserstackMac.yml";
 
@@ -37,7 +38,8 @@ public class MacWebConfigBS {
                 .map(platform -> Arguments.of(Named.of(platformLabel(platform), platform)));
     }
 
-    public WebDriver createDriver() throws Exception {
+    @Override
+    public DriverRequest createRequest() throws Exception {
         MutableCapabilities caps = new MutableCapabilities();
         caps.setCapability("browserName", platform.getBrowserName());
         caps.setCapability("browserVersion", platform.getBrowserVersion());
@@ -60,7 +62,12 @@ public class MacWebConfigBS {
                 )
         );
 
-        return new RemoteWebDriver(remoteUrl, caps);
+        return DriverRequest.builder()
+                .driverType(DriverType.REMOTE_WEB)
+                .serverUrl(remoteUrl)
+                .capabilities(caps)
+                .description("BrowserStack Mac desktop web - " + platformLabel(platform))
+                .build();
     }
 
     private static BrowserStackConfigDesktop loadConfig() {
@@ -79,6 +86,12 @@ public class MacWebConfigBS {
     }
 
     private static String platformLabel(BrowserStackConfigDesktop.Platform platform) {
-        return platform.getOs() + " " + platform.getOsVersion() + " / " + platform.getBrowserName();
+        return String.format(
+                "%s / %s / %s %s",
+                platform.getOs(),
+                platform.getOsVersion(),
+                platform.getBrowserName(),
+                platform.getBrowserVersion()
+        );
     }
 }

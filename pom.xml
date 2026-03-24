@@ -9,7 +9,7 @@
          ========================================================= -->
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
 
     <properties>
         <!-- =====================================================
@@ -231,7 +231,9 @@
                                     <classifier>tests</classifier>
                                     <includes>
                                         <include>io/github/roberto22palomar/pepenium/core/**/*.class</include>
-                                        <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/aws/android/*Test.class</include>
+                                        <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/android/*Test.class</include>
+                                        <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/*Test.class</include>
+                                        <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/web/*Test.class</include>
                                         <include>io/github/roberto22palomar/pepenium/toolkit/myProjectExample/**/*.class</include>
                                         <include>io/github/roberto22palomar/pepenium/toolkit/utils/**/*.class</include>
                                     </includes>

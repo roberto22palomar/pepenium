@@ -22,8 +22,6 @@ public class ExampleNavigationFlow {
      */
     public void runBasicNavigationFlow() {
         log.info("=== Starting ExampleNavigationFlow ===");
-        headerPage.assertHeaderLoaded();
-        navigationTabsPage.assertTabsLoaded();
 
         headerPage.openSearch();
 
@@ -45,8 +43,6 @@ public class ExampleNavigationFlow {
      */
     public void runMenuAndHomeFlow() {
         log.info("=== Starting MenuAndHomeFlow ===");
-        headerPage.assertHeaderLoaded();
-        navigationTabsPage.assertTabsLoaded();
 
         headerPage.openSideMenu();
 

@@ -8,135 +8,230 @@
   <a href="LICENSE">
     <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
   </a>
-  <img alt="Java" src="https://img.shields.io/badge/Java-8%2B-blue.svg" />
+  <img alt="Java" src="https://img.shields.io/badge/Java-11-blue.svg" />
   <img alt="Maven" src="https://img.shields.io/badge/Maven-3.x-orange.svg" />
   <img alt="JUnit" src="https://img.shields.io/badge/JUnit-5-purple.svg" />
   <img alt="Selenium" src="https://img.shields.io/badge/Selenium-4-43B02A.svg" />
   <img alt="Appium Client" src="https://img.shields.io/badge/Appium%20Client-10-00BFFF.svg" />
 </p>
 
-# 🧪 Pepenium – Test Automation Framework
+# Pepenium
 
 <p align="center">
-  🇬🇧 <strong>English</strong> · 
-  🇪🇸 <a href="README.es.md">Español</a>
+  <strong>English</strong> |
+  <a href="README.es.md">Espanol</a>
 </p>
 
+Pepenium is a Java automation framework for Android, iOS and Web, built on top of Appium, Selenium and JUnit 5.
 
-**Pepenium** is a **Java-based test automation framework** for **mobile applications (Android / iOS)** and **web**,
-built on top of **Appium** and **Selenium**.
+Its current direction is simple to use, profile-driven execution: tests declare what they are, and execution profiles decide where they run.
 
-It’s designed around a clear idea:  
-👉 **start fast**, but **scale without breaking** when the project grows.
+## Why Pepenium
 
-It supports **local execution**, **device farms** (AWS Device Farm / BrowserStack), and **CI/CD pipelines**, with
-configuration fully decoupled from code and an architecture designed for real-world projects.
+- One test per functional target, not one test per infrastructure provider
+- Shared execution model for local, BrowserStack and AWS Device Farm
+- Reusable `Actions*` and `Assertions*` helpers for Web, Android and iOS
+- Centralized driver/session lifecycle through a single session factory
+- Screenshot helpers designed for fast flows without blurred captures
 
----
+See [QUICK-START.md](QUICK-START.md) for the fastest way to run it and [CHANGELOG.md](CHANGELOG.md) for release history.
 
-## ✨ Key Features
+## What Changed Up To v0.5.0
 
-- 📱 **Mobile-first**: Android and iOS as the primary focus
-- 🌐 Integrated **Web (desktop)** support
-- 🧱 Clean, reusable architecture (**core / toolkit / tests**)
-- ☁️ Local or remote execution (**AWS Device Farm / BrowserStack**)
-- ⚙️ Externalized configuration per provider and platform
-- ♻️ Project-level extensibility without touching the core
-- 🧪 CI/CD–ready by design
+- Unified session creation around `DriverRequest`, `DriverSession` and `DefaultDriverSessionFactory`
+- Introduced `TestTarget` and execution profiles so tests no longer return provider-specific config classes
+- Simplified examples to one test per functional target
+- Added reusable assertions for Web, Android and iOS
+- Improved screenshot settling and added `takeScreenshotFast()`
+- Expanded BrowserStack execution support across the YAML-defined device sets
 
----
+## Current Architecture
 
-## ⚙️ Requirements & Setup
+### `core`
 
-### General Requirements
+Framework-level runtime and execution pieces:
 
-- Java
-- Maven
-- Appium Server
+- `BaseTest`
+- `DriverConfig`
+- `DriverRequest`
+- `DriverSession`
+- `DriverSessionFactory`
+- `DefaultDriverSessionFactory`
+- `ExecutionProfile`
+- `ExecutionProfiles`
+- `ExecutionProfileResolver`
+- `TestTarget`
 
----
+Provider-specific request builders currently live under:
 
-### 📱 Local Mobile Execution
+- `core/configs/local`
+- `core/configs/browserstack`
+- `core/configs/aws`
 
-#### Android
+### `toolkit`
 
-- Appium Server installed and running
-- Physical Android device or configured emulator
+Reusable building blocks:
 
-#### iOS
+- Web: `ActionsWeb`, `AssertionsWeb`
+- Android: `ActionsApp`, `AssertionsApp`
+- iOS: `ActionsAppIOS`, `AssertionsAppIOS`
+- common utility classes such as YAML loaders and BrowserStack config mappers
+- example page objects and flows under `toolkit/myProjectExample`
 
-- Appium Server
-- **XCUITest** driver (Appium’s automation driver for iOS)
-- iOS environment properly set up (Xcode, simulator or physical device)
+### `tests`
 
----
+Example tests showing the intended usage pattern:
 
-### 🌐 Local Web Execution (Desktop)
+- `tests/myProjectExample/android`
+- `tests/myProjectExample/ios`
+- `tests/myProjectExample/web`
 
-- Browser driver (e.g. ChromeDriver) placed in `src/test/resources`
+Examples are now grouped by functional target instead of by environment.
 
----
+## Execution Model
 
-## ☁️ BrowserStack & AWS Device Farm Execution
+Tests declare a `TestTarget`:
 
-### BrowserStack
+```java
+public class ExampleAndroidNativeTest extends BaseTest {
 
-Configure `src/test/resources/browserstack.yml` with credentials, platforms, and devices.  
-Once configured, tests can be executed directly from the IDE.
+    @Override
+    protected TestTarget getTarget() {
+        return TestTarget.ANDROID_NATIVE;
+    }
+}
+```
 
----
+At runtime, Pepenium resolves an execution profile:
 
-### AWS Device Farm
+- from `-Dpepenium.profile=...`
+- or from `PEPENIUM_PROFILE`
+- or from the target default profile when one exists
 
-AWS Device Farm is focused on packaged executions and CI/CD workflows.
+This keeps the same test portable across environments without changing its code.
 
-To package the tests:
+## Supported Targets
 
-`mvn clean package -P my-example-app-android -DskipTests`
+- `ANDROID_NATIVE`
+- `ANDROID_WEB`
+- `IOS_NATIVE`
+- `IOS_WEB`
+- `WEB_DESKTOP`
 
-Upload to AWS:
+## Built-In Execution Profiles
 
-- Generated JAR
-- `dependency-jars` folder
+- `local-android`
+- `local-android-web`
+- `local-web`
+- `aws-android`
+- `aws-android-web`
+- `aws-ios`
+- `browserstack-android`
+- `browserstack-android-web`
+- `browserstack-ios`
+- `browserstack-ios-web`
+- `browserstack-windows-web`
+- `browserstack-mac-web`
 
----
+## Example Tests
 
-## 🧠 Architecture
+- Android native: [ExampleAndroidNativeTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidNativeTest.java)
+- Android web: [ExampleAndroidWebTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidWebTest.java)
+- iOS native: [ExampleIOSNativeTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSNativeTest.java)
+- iOS web: [ExampleIOSWebTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
+- Desktop web: [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
 
-### Core (`core/`)
+## Running From the IDE
 
-Provider- and platform-specific configuration:
+The intended workflow is:
 
-- `core/configs/aws/(android|ios)`
-- `core/configs/browserstack/(android|ios|desktop)`
+1. Keep one test per target.
+2. Create one IDE run configuration per execution profile you care about.
+3. Point those run configurations to the same test class.
 
----
+Example for the same Android native test:
 
-### Toolkit (`toolkit/`)
+- `Android Native - Local`
+- `Android Native - BrowserStack`
+- `Android Native - AWS`
 
-- `toolkit/utils`
-- `toolkit/<project>`
+Each run configuration changes only `pepenium.profile`.
 
----
+That gives you one-click execution without editing the test.
 
-## 🧬 Page Object Model (POM)
+## Local Execution
 
-### Pages
+### Android Native
 
-- App IDs (Android `resource-id`, iOS `accessibility id`)
-- Basic actions
+Default profile for `ANDROID_NATIVE`: `local-android`
 
-### Flows
+Useful environment variables:
 
-- Composition of actions across multiple pages
+```text
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=emulator-5554
+ANDROID_DEVICE_NAME=Android Device
+APP_PATH=C:\path\to\app.apk
+APP_PACKAGE=com.example.app
+APP_ACTIVITY=com.example.MainActivity
+```
 
-### Tests
+### Android Web
 
-- Call flows and validate results
+Default profile for `ANDROID_WEB`: `local-android-web`
 
----
+Useful environment variables:
 
-## PURPOSE
+```text
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=emulator-5554
+ANDROID_DEVICE_NAME=Android Device
+PEPENIUM_BASE_URL=https://example.com
+```
 
-Pepenium aims to make automation boring.  
-And in testing, that’s a feature.
+### Desktop Web
+
+Default profile for `WEB_DESKTOP`: `local-web`
+
+Useful environment variables:
+
+```text
+PEPENIUM_BASE_URL=https://example.com
+```
+
+## BrowserStack and AWS
+
+BrowserStack profiles are backed by the YAML example files under:
+
+- `src/test/resources/browserstackExamples/browserstackAndroid.yml.example`
+- `src/test/resources/browserstackExamples/browserstackAndroidWEB.yml.example`
+- `src/test/resources/browserstackExamples/browserstackIOS.yml.example`
+- `src/test/resources/browserstackExamples/browserstackIOSWEB.yml.example`
+- `src/test/resources/browserstackExamples/browserstack.yml.example`
+
+AWS Device Farm profiles follow the same `TestTarget` model, but are still geared toward packaged execution flows defined in `pom.xml`.
+
+## Actions, Assertions and Screenshots
+
+Pepenium includes platform-specific actions and assertions:
+
+- Web: `ActionsWeb`, `AssertionsWeb`
+- Android: `ActionsApp`, `AssertionsApp`
+- iOS: `ActionsAppIOS`, `AssertionsAppIOS`
+
+Recent screenshot improvements:
+
+- bounded settling before capture
+- `takeScreenshotFast()` for lighter checkpoints
+- temp-directory fallback when `DEVICEFARM_SCREENSHOT_PATH` is not set
+- better behavior in fast flows, especially on mobile
+
+## Current Status
+
+Pepenium is already useful for real automation work. It has been exercised against real Android app flows, remote configuration paths and reusable actions/assertions. The next major direction is to keep improving execution ergonomics and reusable-library readiness.
+
+## Documentation
+
+- English quick start: [QUICK-START.md](QUICK-START.md)
+- Spanish quick start: [QUICK-START.es.md](QUICK-START.es.md)
+- Spanish README: [README.es.md](README.es.md)

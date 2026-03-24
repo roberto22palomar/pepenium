@@ -21,13 +21,11 @@ public class ExampleNavigationFlowIOS {
      */
     public void runBasicNavigationFlow() {
         log.info("=== Starting ExampleNavigationFlowIOS ===");
-        searchPage.assertSearchPageLoaded();
 
         searchPage.openQuickSearchTab();
         searchPage.openFiltersTab();
         searchPage.close();
 
-        bottomNavigationPage.assertBottomNavigationLoaded();
         bottomNavigationPage.openTabOne();
         bottomNavigationPage.openTabThree();
         bottomNavigationPage.openHome();

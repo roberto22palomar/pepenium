@@ -11,20 +11,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Added reusable assertion helpers for web, Android, and iOS:
-  - `AssertionsWeb`
-  - `AssertionsApp`
-  - `AssertionsAppIOS`
-  - shared mobile base helpers in `BaseAssertionsMobile`
-- Added assertion-oriented example usage across toolkit page objects and example tests.
 
 ### Changed
 
-- Updated example web, Android, and iOS page objects to combine `Actions*` with `Assertions*`.
-- Updated example flows to assert screen/page readiness before navigating.
-- Updated example local, AWS, and BrowserStack tests to instantiate and wire assertion helpers.
-- Expanded BrowserStack example execution to run against all configured YAML devices/platforms instead of a single hardcoded target.
-- Refactored BrowserStack base execution so parameterized suites can run with per-platform driver lifecycle management.
+
+### Dependencies
+
+
+## [0.5.0] - 2026-03-24
+
+### Added
+
+- Added a unified driver/session layer with `DriverRequest`, `DriverSession`, `DriverSessionFactory` and `DefaultDriverSessionFactory`.
+- Added `TestTarget`, execution profiles and execution profile resolution to decouple tests from provider-specific driver config classes.
+- Added local execution configs for Android native, Android web and desktop Chrome under `core/configs/local`.
+- Added new simplified example tests with one example per functional target:
+  - Android native
+  - Android web
+  - iOS native
+  - iOS web
+  - desktop web
+- Added English and Spanish quick-start guides.
+
+### Changed
+
+- Refactored `BaseTest` so tests now declare a target instead of returning an environment-specific config class.
+- Refactored provider-specific config classes so they now build neutral driver requests instead of creating drivers directly.
+- Simplified the `tests/myProjectExample` structure by removing duplication by environment (`local`, `browserstack`, `aws`) and organizing tests by target (`android`, `ios`, `web`).
+- Updated project documentation in English and Spanish to reflect the new execution model, example structure and usage patterns.
+- Improved the framework ergonomics for IDE execution by introducing profile-driven environment selection on top of target-based tests.
+- Updated Maven project metadata and packaging paths to align with the new example layout and `0.5.0` release.
 
 ### Dependencies
 
@@ -79,9 +95,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - **Breaking change**: Migrated Web, Android and iOS Actions APIs to English.
-    - Renamed public methods
-    - Updated comments and logs
-    - No behavior changes intended
+  - Renamed public methods
+  - Updated comments and logs
+  - No behavior changes intended
 
 ---
 

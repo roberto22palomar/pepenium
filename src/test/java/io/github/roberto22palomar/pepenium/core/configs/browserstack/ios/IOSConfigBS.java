@@ -1,10 +1,9 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.ios;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.options.XCUITestOptions;
-import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.github.roberto22palomar.pepenium.core.DriverConfig;
+import io.github.roberto22palomar.pepenium.core.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.DriverType;
 import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfig;
 import io.github.roberto22palomar.pepenium.toolkit.utils.YamlLoader;
 import org.junit.jupiter.api.Named;
@@ -42,12 +41,7 @@ public class IOSConfigBS implements DriverConfig {
     }
 
     @Override
-    public AppiumDriverLocalService startService() {
-        return null;
-    }
-
-    @Override
-    public AppiumDriver createDriver(AppiumDriverLocalService service) throws Exception {
+    public DriverRequest createRequest() throws Exception {
         XCUITestOptions opts = new XCUITestOptions()
                 .setPlatformName(platform.getPlatformName())
                 .setDeviceName(platform.getDeviceName())
@@ -72,7 +66,12 @@ public class IOSConfigBS implements DriverConfig {
                 )
         );
 
-        return new IOSDriver(remoteUrl, opts);
+        return DriverRequest.builder()
+                .driverType(DriverType.IOS_APPIUM)
+                .serverUrl(remoteUrl)
+                .capabilities(opts)
+                .description("BrowserStack iOS native app - " + platformLabel(platform))
+                .build();
     }
 
     private static BrowserStackConfig loadConfig() {
@@ -91,6 +90,11 @@ public class IOSConfigBS implements DriverConfig {
     }
 
     private static String platformLabel(BrowserStackConfig.Platform platform) {
-        return platform.getDeviceName() + " / iOS " + platform.getPlatformVersion();
+        return String.format(
+                "%s / %s / %s",
+                platform.getPlatformName(),
+                platform.getDeviceName(),
+                platform.getPlatformVersion()
+        );
     }
 }

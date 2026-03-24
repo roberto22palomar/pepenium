@@ -1,9 +1,8 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.android;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.github.roberto22palomar.pepenium.core.DriverConfig;
+import io.github.roberto22palomar.pepenium.core.DriverRequest;
+import io.github.roberto22palomar.pepenium.core.DriverType;
 import io.github.roberto22palomar.pepenium.toolkit.utils.BrowserStackConfigMobile;
 import io.github.roberto22palomar.pepenium.toolkit.utils.YamlLoaderMobile;
 import org.junit.jupiter.api.Named;
@@ -40,7 +39,7 @@ public class AndroidWebConfigBS implements DriverConfig {
     }
 
     @Override
-    public AppiumDriver createDriver(AppiumDriverLocalService service) throws Exception {
+    public DriverRequest createRequest() throws Exception {
         MutableCapabilities caps = new MutableCapabilities();
         caps.setCapability("platformName", "Android");
         caps.setCapability("browserName", "Chrome");
@@ -70,12 +69,12 @@ public class AndroidWebConfigBS implements DriverConfig {
                 )
         );
 
-        return new AndroidDriver(remoteUrl, caps);
-    }
-
-    @Override
-    public AppiumDriverLocalService startService() {
-        return null;
+        return DriverRequest.builder()
+                .driverType(DriverType.ANDROID_APPIUM)
+                .serverUrl(remoteUrl)
+                .capabilities(caps)
+                .description("BrowserStack Android web - " + platformLabel(platform))
+                .build();
     }
 
     private static BrowserStackConfigMobile loadConfig() {
@@ -94,6 +93,11 @@ public class AndroidWebConfigBS implements DriverConfig {
     }
 
     private static String platformLabel(BrowserStackConfigMobile.Platform platform) {
-        return platform.getDeviceName() + " / Android " + platform.getOsVersion();
+        return String.format(
+                "%s / %s / %s",
+                platform.getDeviceName(),
+                platform.getOsVersion(),
+                platform.getBrowserName() != null ? platform.getBrowserName() : "Chrome"
+        );
     }
 }
