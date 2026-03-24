@@ -11,7 +11,8 @@ public class ExecutionProfileResolver {
         if (profileId == null || profileId.isBlank()) {
             throw new IllegalStateException(
                     "No execution profile was provided for target " + target
-                            + ". Use -Dpepenium.profile=<profileId> or override getDefaultProfileId()."
+                            + ". Use -Dpepenium.profile=<profileId> or override getDefaultProfileId(). "
+                            + "Compatible profiles: " + ExecutionProfiles.compatibleProfileIds(target)
             );
         }
 
