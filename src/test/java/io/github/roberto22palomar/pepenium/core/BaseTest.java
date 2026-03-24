@@ -3,7 +3,9 @@ package io.github.roberto22palomar.pepenium.core;
 import io.appium.java_client.AppiumDriver;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -50,6 +52,10 @@ public abstract class BaseTest {
         return session.getAppiumDriver();
     }
 
+    protected void step(String description) {
+        StepTracker.record(description);
+    }
+
     protected void initializeDriver(DriverConfig config) throws Exception {
         DriverRequest request = config.createRequest()
                 .toBuilder()
@@ -85,6 +91,7 @@ public abstract class BaseTest {
         }
         driver = null;
         LoggingContext.clearAll();
+        StepTracker.clear();
     }
 
     protected void runWithConfig(DriverConfig config, ThrowingRunnable testBody) throws Exception {
@@ -110,6 +117,16 @@ public abstract class BaseTest {
         if (useAutomaticLifecycle()) {
             initializeDriverForProfile(getDefaultProfileId());
         }
+    }
+
+    @BeforeEach
+    void setupTestTracking() {
+        StepTracker.clear();
+    }
+
+    @AfterEach
+    void teardownTestTracking() {
+        StepTracker.clear();
     }
 
     @AfterAll

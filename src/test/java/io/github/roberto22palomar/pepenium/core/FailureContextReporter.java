@@ -37,6 +37,7 @@ public final class FailureContextReporter {
                 request.getTarget(),
                 request.getExecutionProfileId(),
                 request.getDriverType());
+        logSteps();
         log.error("Capabilities: {}", CapabilitiesSummary.summarize(request.getCapabilities()));
         LoggingPreferences.logDetail(log, "Detailed failure stacktrace", cause);
 
@@ -44,6 +45,25 @@ public final class FailureContextReporter {
         logSessionId(driver);
         logWebContext(driver);
         logMobileContext(driver, request.getCapabilities());
+    }
+
+    private static void logSteps() {
+        StepTracker.Snapshot snapshot = StepTracker.snapshot();
+        if (snapshot.getSteps().isEmpty()) {
+            return;
+        }
+
+        if (snapshot.isTruncated()) {
+            log.error("Recent steps (showing last {} of {} recorded):",
+                    snapshot.getSteps().size(),
+                    snapshot.getTotalRecorded());
+        } else {
+            log.error("Recent steps (showing {}):", snapshot.getSteps().size());
+        }
+
+        for (String step : snapshot.getSteps()) {
+            log.error("Step: {}", step);
+        }
     }
 
     private static void logScreenshot(WebDriver driver) {

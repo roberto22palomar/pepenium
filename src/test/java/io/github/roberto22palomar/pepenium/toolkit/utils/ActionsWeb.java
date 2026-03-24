@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import io.github.roberto22palomar.pepenium.core.LoggingPreferences;
+import io.github.roberto22palomar.pepenium.core.StepTracker;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -49,6 +50,7 @@ public class ActionsWeb {
     public void closeSheetIfOpen() {
         List<WebElement> open = driver.findElements(openOverlay);
         if (!open.isEmpty()) {
+            StepTracker.record("Close open sheet overlay");
             try {
                 click(closeSheetButton);
             } catch (Exception ignore) {
@@ -121,6 +123,7 @@ public class ActionsWeb {
 
     @SneakyThrows
     public void click(By locator) {
+        StepTracker.record("Click " + locator);
         try {
             WebElement element = new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.elementToBeClickable(locator));
@@ -149,6 +152,7 @@ public class ActionsWeb {
     }
 
     public void clickByIndexInList(By locator, int index) {
+        StepTracker.record("Click index " + index + " from " + locator);
         List<WebElement> elements = waitAndGetAll(locator);
         if (index < 0 || index >= elements.size()) {
             throw new IllegalArgumentException(
@@ -166,6 +170,7 @@ public class ActionsWeb {
             throw new NoSuchElementException("No elements found for: " + locator);
         }
         int index = ThreadLocalRandom.current().nextInt(size);
+        StepTracker.record("Click random index " + index + " from " + locator);
         WebElement target = elements.get(index);
         clickWithFallback(target, locator, index);
     }
@@ -207,6 +212,7 @@ public class ActionsWeb {
     }
 
     public void type(By locator, String text) {
+        StepTracker.record("Type into " + locator);
         try {
             WebElement element = waitToBeVisible(locator);
             element.clear();
@@ -220,6 +226,7 @@ public class ActionsWeb {
     }
 
     public void waitLoadingScreen(String xpath) {
+        StepTracker.record("Wait loading screen " + xpath);
         By loadingIndicator = By.xpath(xpath);
         try {
             log.info("Waiting for loading indicator visibility...");
@@ -238,6 +245,7 @@ public class ActionsWeb {
     }
 
     public void scrollUntilFoundAndClick(By locator, int maxScrolls, int stepPx) {
+        StepTracker.record("Scroll until found and click " + locator);
         JavascriptExecutor js = (JavascriptExecutor) driver;
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
 
@@ -281,6 +289,7 @@ public class ActionsWeb {
     }
 
     public String takeScreenshot(boolean settleBeforeCapture) {
+        StepTracker.record(settleBeforeCapture ? "Take screenshot" : "Take fast screenshot");
         if (driver == null) {
             log.warn("Driver is null. Cannot take screenshot.");
             return null;

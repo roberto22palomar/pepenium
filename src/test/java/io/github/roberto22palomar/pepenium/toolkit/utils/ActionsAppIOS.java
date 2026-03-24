@@ -3,6 +3,7 @@ package io.github.roberto22palomar.pepenium.toolkit.utils;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.github.roberto22palomar.pepenium.core.LoggingPreferences;
+import io.github.roberto22palomar.pepenium.core.StepTracker;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -128,6 +129,7 @@ public class ActionsAppIOS {
 
     @SneakyThrows
     public void click(By locator) {
+        StepTracker.record("Tap " + locator);
         try {
             WebElement el = waitToBeClickable(locator);
             el.click();
@@ -159,6 +161,7 @@ public class ActionsAppIOS {
     }
 
     public void type(By locator, String text) {
+        StepTracker.record("Type into " + locator);
         try {
             waitStableScreen();
             WebElement el = waitToBeVisible(locator);
@@ -177,6 +180,7 @@ public class ActionsAppIOS {
     }
 
     public void waitLoadingScreenToDisappear(By loadingLocator) {
+        StepTracker.record("Wait loading screen " + loadingLocator);
         log.info("<<< WAIT loader visible: {} >>>", loadingLocator);
         try {
             untilLong(ExpectedConditions.visibilityOfElementLocated(loadingLocator));
@@ -238,6 +242,7 @@ public class ActionsAppIOS {
     }
 
     public void swipeUp() {
+        StepTracker.record("Swipe up");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
@@ -247,6 +252,7 @@ public class ActionsAppIOS {
     }
 
     public void swipeDown() {
+        StepTracker.record("Swipe down");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
@@ -257,6 +263,7 @@ public class ActionsAppIOS {
     }
 
     public void swipeLeft() {
+        StepTracker.record("Swipe left");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
@@ -266,6 +273,7 @@ public class ActionsAppIOS {
     }
 
     public void swipeRight() {
+        StepTracker.record("Swipe right");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
@@ -276,6 +284,7 @@ public class ActionsAppIOS {
     }
 
     public WebElement scrollToElement(By locator, int maxSwipes) {
+        StepTracker.record("Scroll to " + locator);
         int attempts = 0;
         while (attempts < maxSwipes) {
             try {
@@ -300,6 +309,7 @@ public class ActionsAppIOS {
     }
 
     public String takeScreenshot(boolean settleBeforeCapture) {
+        StepTracker.record(settleBeforeCapture ? "Take screenshot" : "Take fast screenshot");
         try {
             if (settleBeforeCapture) {
                 waitForScreenshotMoment();
@@ -325,6 +335,7 @@ public class ActionsAppIOS {
     }
 
     public void tapCenter() {
+        StepTracker.record("Tap screen center");
         Dimension size = driver.manage().window().getSize();
         tapPoint(size.width / 2, size.height / 2, 80);
     }
@@ -340,6 +351,7 @@ public class ActionsAppIOS {
     }
 
     public void safeScrollToElement(By locator) {
+        StepTracker.record("Safe scroll to " + locator);
         ScrollUtils scroller = new ScrollUtils(driver);
         scroller.scrollToElement(locator, 12);
     }
@@ -349,6 +361,7 @@ public class ActionsAppIOS {
                                int times,
                                double percent,
                                int durationMs) {
+        StepTracker.record("Swipe " + direction + " on " + locator + " x" + times);
         waitStableScreen();
         WebElement el = waitToBeVisible(locator);
         Rectangle r = el.getRect();
@@ -429,6 +442,7 @@ public class ActionsAppIOS {
                                   int times,
                                   double percent,
                                   int durationMs) {
+        StepTracker.record("Swipe " + direction + " on " + locator + " x" + times + " (iOS)");
 
         waitStableScreen();
         WebElement el = waitToBeVisible(locator);
