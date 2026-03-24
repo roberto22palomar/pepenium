@@ -14,6 +14,7 @@ public class DefaultDriverSessionFactory implements DriverSessionFactory {
 
     @Override
     public DriverSession create(DriverRequest request) throws Exception {
+        PepeniumBanner.print(request);
         WebDriver driver;
 
         switch (request.getDriverType()) {
