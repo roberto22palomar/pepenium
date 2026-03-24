@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added optional detailed framework logging through `PEPENIUM_DETAIL_LOGGING` or `pepenium.detail.logging`.
 - Added safe capability summaries for diagnostics instead of logging raw capability payloads.
 - Added JUL test logging configuration to suppress noisy Selenium warnings during normal runs.
+- Added step tracking with bounded history so failure summaries can show the latest recorded actions.
 
 ### Changed
 
@@ -51,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Improved runtime logging readability with shorter logger names, compact prefixes and cleaner default console output.
 - Reduced duplicated framework stacktraces in normal error output while keeping full detail available through the detail-logging switch.
 - Trimmed Maven Surefire stacktraces and aligned logging bindings to a clean SLF4J 2.x plus Log4j2 setup.
+- Step tracking now keeps only the most recent steps by default and can be configured for longer or shorter histories.
 
 ### Dependencies
 

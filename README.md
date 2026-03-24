@@ -47,6 +47,7 @@ See [QUICK-START.md](QUICK-START.md) for the fastest way to run it and [CHANGELO
 - Added compact logging with execution context such as profile, target, driver and session
 - Added automatic failure diagnostics with screenshot path plus web or mobile runtime context
 - Added optional detailed framework logging through `PEPENIUM_DETAIL_LOGGING=true`
+- Added step tracking so failure summaries can show the latest recorded actions
 
 ## Current Architecture
 
@@ -66,6 +67,7 @@ Framework runtime and execution pieces:
 - `FailureContextReporter`
 - `LoggingContext`
 - `PepeniumBanner`
+- `StepTracker`
 - `TestTarget`
 
 Provider-specific request builders currently live under:
@@ -227,6 +229,7 @@ Pepenium includes:
 - a Pepenium ASCII banner when a session starts
 - compact logs with profile, target, driver and short session id
 - automatic failure reporting with screenshot path and runtime context
+- recent step tracking in failure summaries
 
 Automatic failure context includes:
 
@@ -234,6 +237,14 @@ Automatic failure context includes:
 - web URL and title for web sessions
 - package, activity or context details for mobile sessions when available
 - a summarized capabilities view instead of noisy raw capability dumps
+- the last recorded framework steps before the failure
+
+Step tracking behavior:
+
+- records common `Actions*` operations automatically
+- keeps only the last `10` steps by default
+- can be tuned with `PEPENIUM_STEP_TRACKER_LIMIT` or `-Dpepenium.step.tracker.limit=...`
+- can be enriched manually from tests or flows with `step("Open search")`
 
 If you need extra framework detail, enable:
 

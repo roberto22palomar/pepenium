@@ -140,6 +140,19 @@ Cuando falla un test, Pepenium reporta automaticamente:
 - session id
 - URL y titulo en sesiones web
 - package, activity o contexto en sesiones mobile cuando estan disponibles
+- los pasos recientes registrados antes del fallo
+
+Por defecto, el step tracking:
+
+- registra automaticamente operaciones comunes de `Actions*`
+- conserva los ultimos `10` pasos
+- se puede configurar con `PEPENIUM_STEP_TRACKER_LIMIT` o `-Dpepenium.step.tracker.limit=...`
+
+Tambien puedes anadir pasos mas humanos desde tests o flows con:
+
+```java
+step("Aceptar aviso legal");
+```
 
 Si quieres mas detalle tecnico del framework, activa:
 
