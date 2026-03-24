@@ -68,10 +68,12 @@ public class ActionsWeb {
             return new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.visibilityOfElementLocated(locator));
         } catch (TimeoutException e) {
-            log.error("Timeout waiting for element visibility: {}", locator, e);
+            log.error("Timeout waiting for element visibility: {}", locator);
+            log.debug("Visibility wait stacktrace", e);
             throw e;
         } catch (Exception e) {
-            log.error("Unexpected error while waiting for element visibility: {}", locator, e);
+            log.error("Unexpected error while waiting for element visibility: {} ({})", locator, e.getClass().getSimpleName());
+            log.debug("Visibility wait stacktrace", e);
             throw e;
         }
     }
@@ -125,10 +127,12 @@ public class ActionsWeb {
             waitForPostActionSettle();
             log.info("Click performed on: {}", locator);
         } catch (TimeoutException e) {
-            log.error("Timeout clicking element: {}", locator, e);
+            log.error("Timeout clicking element: {}", locator);
+            log.debug("Click stacktrace", e);
             throw e;
         } catch (Exception e) {
-            log.error("Error clicking element: {}", locator, e);
+            log.error("Error clicking element: {} ({})", locator, e.getClass().getSimpleName());
+            log.debug("Click stacktrace", e);
             throw e;
         }
     }
@@ -208,7 +212,8 @@ public class ActionsWeb {
             element.sendKeys(text);
             log.info("Text sent to: {}", locator);
         } catch (Exception e) {
-            log.error("Error sending text to element: {}", locator, e);
+            log.error("Error sending text to element: {} ({})", locator, e.getClass().getSimpleName());
+            log.debug("Type stacktrace", e);
             throw e;
         }
     }
@@ -225,7 +230,8 @@ public class ActionsWeb {
             wait.until(ExpectedConditions.invisibilityOfElementLocated(loadingIndicator));
             log.info("Loading screen disappeared");
         } catch (TimeoutException e) {
-            log.error("Loading screen did not disappear after 2 minutes", e);
+            log.error("Loading screen did not disappear after 2 minutes");
+            log.debug("Loading wait stacktrace", e);
             throw e;
         }
     }
@@ -295,10 +301,12 @@ public class ActionsWeb {
             return fullPath;
 
         } catch (IOException e) {
-            log.error("Error saving screenshot", e);
+            log.error("Error saving screenshot ({})", e.getClass().getSimpleName());
+            log.debug("Screenshot stacktrace", e);
             return null;
         } catch (Exception e) {
-            log.error("Unexpected error taking screenshot", e);
+            log.error("Unexpected error taking screenshot ({})", e.getClass().getSimpleName());
+            log.debug("Screenshot stacktrace", e);
             return null;
         }
     }

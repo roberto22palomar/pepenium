@@ -132,7 +132,8 @@ public class ActionsAppIOS {
             el.click();
             log.info("CLICK on: {}", locator);
         } catch (TimeoutException e) {
-            log.error("Timeout clicking element: {}", locator, e);
+            log.error("Timeout clicking element: {}", locator);
+            log.debug("Click stacktrace", e);
             throw e;
         } catch (ElementClickInterceptedException e) {
             log.warn("Click intercepted, retrying with W3C tap: {}", locator);
@@ -142,7 +143,8 @@ public class ActionsAppIOS {
             int cy = r.getY() + r.getHeight() / 2;
             tapPoint(cx, cy, 80);
         } catch (Exception e) {
-            log.error("Error clicking element: {}", locator, e);
+            log.error("Error clicking element: {} ({})", locator, e.getClass().getSimpleName());
+            log.debug("Click stacktrace", e);
             throw e;
         }
     }
@@ -167,7 +169,8 @@ public class ActionsAppIOS {
             }
             log.info("Text sent to {}: '{}'", locator, text);
         } catch (Exception e) {
-            log.error("Error sending text to element: {}", locator, e);
+            log.error("Error sending text to element: {} ({})", locator, e.getClass().getSimpleName());
+            log.debug("Type stacktrace", e);
             throw e;
         }
     }
@@ -310,10 +313,12 @@ public class ActionsAppIOS {
             log.info("Screenshot saved at: {}", fullPath);
             return fullPath;
         } catch (IOException e) {
-            log.error("Error saving screenshot", e);
+            log.error("Error saving screenshot ({})", e.getClass().getSimpleName());
+            log.debug("Screenshot stacktrace", e);
             return null;
         } catch (Exception e) {
-            log.error("Unexpected error taking screenshot", e);
+            log.error("Unexpected error taking screenshot ({})", e.getClass().getSimpleName());
+            log.debug("Screenshot stacktrace", e);
             return null;
         }
     }

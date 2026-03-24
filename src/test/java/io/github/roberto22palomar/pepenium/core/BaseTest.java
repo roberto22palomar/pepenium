@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.TestWatcher;
 import org.openqa.selenium.WebDriver;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -16,6 +19,14 @@ public abstract class BaseTest {
 
     private final DriverSessionFactory sessionFactory = new DefaultDriverSessionFactory();
     private final ExecutionProfileResolver profileResolver = new ExecutionProfileResolver();
+
+    @RegisterExtension
+    final TestWatcher failureWatcher = new TestWatcher() {
+        @Override
+        public void testFailed(ExtensionContext context, Throwable cause) {
+            FailureContextReporter.report(context.getDisplayName(), session, cause);
+        }
+    };
 
     @FunctionalInterface
     protected interface ThrowingRunnable {
