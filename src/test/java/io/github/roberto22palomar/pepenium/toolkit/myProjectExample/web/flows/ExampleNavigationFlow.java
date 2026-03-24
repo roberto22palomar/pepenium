@@ -1,6 +1,5 @@
 package io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.flows;
 
-
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.pages.HeaderPage;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.web.pages.NavigationTabsPage;
 import lombok.RequiredArgsConstructor;

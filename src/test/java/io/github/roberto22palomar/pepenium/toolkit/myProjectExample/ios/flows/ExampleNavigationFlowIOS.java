@@ -1,6 +1,5 @@
 package io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.flows;
 
-
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages.BottomNavigationPageIOS;
 import io.github.roberto22palomar.pepenium.toolkit.myProjectExample.ios.pages.SearchPageIOS;
 import lombok.RequiredArgsConstructor;
