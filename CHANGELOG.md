@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added safe capability summaries for diagnostics instead of logging raw capability payloads.
 - Added JUL test logging configuration to suppress noisy Selenium warnings during normal runs.
 - Added step tracking with bounded history so failure summaries can show the latest recorded actions.
+- Added an external `execution-profiles.yml` catalog for built-in execution profiles.
 
 ### Changed
 
@@ -53,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Reduced duplicated framework stacktraces in normal error output while keeping full detail available through the detail-logging switch.
 - Trimmed Maven Surefire stacktraces and aligned logging bindings to a clean SLF4J 2.x plus Log4j2 setup.
 - Step tracking now keeps only the most recent steps by default and can be configured for longer or shorter histories.
+- Execution profile metadata is no longer hardcoded in Java and is now loaded from a visible YAML catalog.
 
 ### Dependencies
 

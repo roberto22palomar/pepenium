@@ -48,6 +48,7 @@ Consulta [QUICK-START.es.md](QUICK-START.es.md) para empezar rapido y [CHANGELOG
 - Diagnostico automatico de fallos con ruta de screenshot y contexto web o mobile
 - Logging detallado opcional mediante `PEPENIUM_DETAIL_LOGGING=true`
 - Step tracking para que los resumentes de fallo muestren las ultimas acciones registradas
+- Traslado de la definicion de execution profiles a un catalogo YAML visible
 
 ## Arquitectura Actual
 
@@ -115,6 +116,7 @@ En runtime, Pepenium resuelve un execution profile:
 - desde `-Dpepenium.profile=...`
 - o desde `PEPENIUM_PROFILE`
 - o desde el perfil por defecto del target cuando existe
+- con la metadata de perfiles cargada desde `src/test/resources/execution-profiles.yml`
 
 Eso permite ejecutar el mismo test en varios entornos sin tocar su codigo.
 
@@ -140,6 +142,10 @@ Eso permite ejecutar el mismo test en varios entornos sin tocar su codigo.
 - `browserstack-ios-web`
 - `browserstack-windows-web`
 - `browserstack-mac-web`
+
+El catalogo de perfiles incluido se define en:
+
+- `src/test/resources/execution-profiles.yml`
 
 ## Tests de Ejemplo
 
@@ -218,6 +224,8 @@ Los perfiles de BrowserStack se apoyan en los YAML de ejemplo de:
 - `src/test/resources/browserstackExamples/browserstack.yml.example`
 
 Los perfiles de AWS Device Farm siguen el mismo modelo de `TestTarget`, aunque continuan orientados a flujos de ejecucion empaquetados definidos en `pom.xml`.
+
+El catalogo de execution profiles ahora esta externalizado en `src/test/resources/execution-profiles.yml`, asi que los ids y descripciones disponibles se pueden consultar sin entrar al codigo Java.
 
 ## Screenshots, Logging y Diagnostico de Fallos
 

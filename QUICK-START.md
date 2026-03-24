@@ -49,6 +49,10 @@ The environment is selected through an execution profile.
 - `browserstack-windows-web`
 - `browserstack-mac-web`
 
+These built-in profiles are defined in:
+
+- `src/test/resources/execution-profiles.yml`
+
 ## 5. Run From the IDE
 
 ### Android Native
@@ -184,6 +188,7 @@ Core classes involved:
 - [ExecutionProfiles.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/ExecutionProfiles.java)
 - [ExecutionProfileResolver.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/ExecutionProfileResolver.java)
 - [DefaultDriverSessionFactory.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/DefaultDriverSessionFactory.java)
+- `src/test/resources/execution-profiles.yml`
 
 ## 12. Suggested First Steps
 
