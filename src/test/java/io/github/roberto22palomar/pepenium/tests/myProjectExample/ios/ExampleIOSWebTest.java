@@ -7,9 +7,11 @@ import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web
 import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.HeaderPage;
 import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.NavigationTabsPage;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
+@Tag("pepenium-example")
 public class ExampleIOSWebTest extends BaseTest {
 
     @Override

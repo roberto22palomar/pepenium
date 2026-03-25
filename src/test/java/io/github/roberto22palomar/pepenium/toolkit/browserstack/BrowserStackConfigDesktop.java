@@ -19,6 +19,7 @@ public class BrowserStackConfigDesktop {
     private String userName;
     private String accessKey;
     private String framework;
+    private String app;
     private List<Platform> platforms;
     private int parallelsPerPlatform;
     private boolean browserstackLocal;
