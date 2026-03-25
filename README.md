@@ -46,6 +46,7 @@ Use [ENVIRONMENT.md](ENVIRONMENT.md) as the central reference for environment va
 - Kept `toolkit` focused on reusable authoring helpers such as actions and support utilities
 - Kept example tests and page objects isolated in `pepenium-examples`
 - Preserved root-level build, test and example packaging workflows across the modular structure
+- Updated CI so GitHub Actions runs framework tests before packaging
 
 ## Current Architecture
 
