@@ -6,6 +6,7 @@ target/
 "logs/"
 
 *.yml
+!pepenium-core/src/main/resources/execution-profiles.yml
 *.env
 *.exe
 *.log
