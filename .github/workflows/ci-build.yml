@@ -1,4 +1,4 @@
-name: CI Build (no tests)
+name: CI Build
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,5 +21,23 @@ jobs:
           java-version: "11"
           cache: maven
 
-      - name: Build (compile + package) without tests
-        run: mvn -B -ntp clean package -DskipTests
+      - name: Run framework tests
+        run: mvn -B -ntp test
+
+  package:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "11"
+          cache: maven
+
+      - name: Validate packaging
+        run: mvn -B -ntp package -DskipTests
