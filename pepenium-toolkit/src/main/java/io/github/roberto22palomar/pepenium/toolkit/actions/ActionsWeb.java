@@ -1,10 +1,10 @@
 package io.github.roberto22palomar.pepenium.toolkit.actions;
 
+import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
+import io.github.roberto22palomar.pepenium.toolkit.support.ActionLoggingSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import io.github.roberto22palomar.pepenium.core.observability.LoggingPreferences;
-import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -71,12 +71,10 @@ public class ActionsWeb {
             return new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.visibilityOfElementLocated(locator));
         } catch (TimeoutException e) {
-            log.error("Timeout waiting for element visibility: {}", locator);
-            LoggingPreferences.logDetail(log, "Visibility wait stacktrace", e);
+            ActionLoggingSupport.logTimeout(log, "visibility wait", locator, e);
             throw e;
         } catch (Exception e) {
-            log.error("Unexpected error while waiting for element visibility: {} ({})", locator, e.getClass().getSimpleName());
-            LoggingPreferences.logDetail(log, "Visibility wait stacktrace", e);
+            ActionLoggingSupport.logFailure(log, "visibility wait", locator, e);
             throw e;
         }
     }
@@ -116,7 +114,7 @@ public class ActionsWeb {
             WebElement element = waitToBeVisible(locator);
             return element.getText();
         } catch (Exception e) {
-            log.error("Error getting element text: {}", locator, e);
+            ActionLoggingSupport.logFailure(log, "read text", locator, e);
             return null;
         }
     }
@@ -129,14 +127,11 @@ public class ActionsWeb {
                     .until(ExpectedConditions.elementToBeClickable(locator));
             element.click();
             waitForPostActionSettle();
-            log.info("Click performed on: {}", locator);
         } catch (TimeoutException e) {
-            log.error("Timeout clicking element: {}", locator);
-            LoggingPreferences.logDetail(log, "Click stacktrace", e);
+            ActionLoggingSupport.logTimeout(log, "click", locator, e);
             throw e;
         } catch (Exception e) {
-            log.error("Error clicking element: {} ({})", locator, e.getClass().getSimpleName());
-            LoggingPreferences.logDetail(log, "Click stacktrace", e);
+            ActionLoggingSupport.logFailure(log, "click", locator, e);
             throw e;
         }
     }
@@ -183,24 +178,16 @@ public class ActionsWeb {
                     .until(ExpectedConditions.elementToBeClickable(element));
             element.click();
             waitForPostActionSettle();
-            log.info("Click by index {} in list: {}", index, locator);
         } catch (Exception e) {
-            log.warn("Standard click failed, trying JS click. Reason: {}", e.getMessage());
+            log.warn("Standard click failed, retrying with JS click on {} index {}", locator, index);
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
             waitForPostActionSettle();
-            log.info("JS click performed for index {} on: {}", index, locator);
         }
     }
 
     public void waitToBePresent(By locator) {
-        log.info("<<< WAITING FOR ELEMENT TO BE PRESENT: {} >>>", locator);
         WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
-
-        if (wait.until(ExpectedConditions.presenceOfElementLocated(locator)) != null) {
-            log.info("<<< ELEMENT IS PRESENT: {} >>>", locator);
-        } else {
-            log.warn("<<< ELEMENT IS NOT PRESENT: {} >>>", locator);
-        }
+        wait.until(ExpectedConditions.presenceOfElementLocated(locator));
     }
 
     public boolean clickIfVisible(By locator) {
@@ -217,10 +204,8 @@ public class ActionsWeb {
             WebElement element = waitToBeVisible(locator);
             element.clear();
             element.sendKeys(text);
-            log.info("Text sent to: {}", locator);
         } catch (Exception e) {
-            log.error("Error sending text to element: {} ({})", locator, e.getClass().getSimpleName());
-            LoggingPreferences.logDetail(log, "Type stacktrace", e);
+            ActionLoggingSupport.logFailure(log, "type", locator, e);
             throw e;
         }
     }
@@ -229,17 +214,11 @@ public class ActionsWeb {
         StepTracker.record("Wait loading screen " + xpath);
         By loadingIndicator = By.xpath(xpath);
         try {
-            log.info("Waiting for loading indicator visibility...");
             WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
-
             wait.until(ExpectedConditions.visibilityOfElementLocated(loadingIndicator));
-            log.info("Loading screen visible");
-
             wait.until(ExpectedConditions.invisibilityOfElementLocated(loadingIndicator));
-            log.info("Loading screen disappeared");
         } catch (TimeoutException e) {
-            log.error("Loading screen did not disappear after 2 minutes");
-            LoggingPreferences.logDetail(log, "Loading wait stacktrace", e);
+            ActionLoggingSupport.logTimeout(log, "loading wait", loadingIndicator, e);
             throw e;
         }
     }
@@ -257,7 +236,6 @@ public class ActionsWeb {
                 Thread.sleep(300);
                 el.click();
                 waitForPostActionSettle();
-                log.info("Click performed on {} after {} scrolls", locator, i);
                 return;
 
             } catch (NoSuchElementException e) {
@@ -311,12 +289,10 @@ public class ActionsWeb {
             return fullPath;
 
         } catch (IOException e) {
-            log.error("Error saving screenshot ({})", e.getClass().getSimpleName());
-            LoggingPreferences.logDetail(log, "Screenshot stacktrace", e);
+            ActionLoggingSupport.logFailure(log, "save screenshot", "driver capture", e);
             return null;
         } catch (Exception e) {
-            log.error("Unexpected error taking screenshot ({})", e.getClass().getSimpleName());
-            LoggingPreferences.logDetail(log, "Screenshot stacktrace", e);
+            ActionLoggingSupport.logFailure(log, "take screenshot", "driver capture", e);
             return null;
         }
     }
@@ -386,10 +362,6 @@ public class ActionsWeb {
     }
 
     private Path resolveScreenshotBaseDir() {
-        String baseDir = System.getenv("DEVICEFARM_SCREENSHOT_PATH");
-        if (baseDir == null || baseDir.isBlank()) {
-            baseDir = System.getProperty("java.io.tmpdir");
-        }
-        return Path.of(baseDir);
+        return ActionLoggingSupport.resolveScreenshotBaseDir();
     }
 }

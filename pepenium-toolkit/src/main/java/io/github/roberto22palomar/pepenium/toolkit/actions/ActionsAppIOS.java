@@ -2,8 +2,8 @@ package io.github.roberto22palomar.pepenium.toolkit.actions;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
-import io.github.roberto22palomar.pepenium.core.observability.LoggingPreferences;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
+import io.github.roberto22palomar.pepenium.toolkit.support.ActionLoggingSupport;
 import io.github.roberto22palomar.pepenium.toolkit.support.FastUiSettle;
 import io.github.roberto22palomar.pepenium.toolkit.support.ScrollUtils;
 import lombok.RequiredArgsConstructor;
@@ -77,17 +77,14 @@ public class ActionsAppIOS {
     }
 
     public WebElement waitToBeVisible(By locator) {
-        log.info("<<< WAIT visible: {} >>>", locator);
         return untilLong(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
     public WebElement waitToBePresent(By locator) {
-        log.info("<<< WAIT present: {} >>>", locator);
         return untilLong(ExpectedConditions.presenceOfElementLocated(locator));
     }
 
     public WebElement waitToBeClickable(By locator) {
-        log.info("<<< WAIT clickable: {} >>>", locator);
         return untilLong(ExpectedConditions.elementToBeClickable(locator));
     }
 
@@ -124,7 +121,7 @@ public class ActionsAppIOS {
             WebElement el = waitToBeVisible(locator);
             return el.getText();
         } catch (Exception e) {
-            log.error("Error getting text from element: {}", locator, e);
+            ActionLoggingSupport.logFailure(log, "read text", locator, e);
             return null;
         }
     }
@@ -135,10 +132,8 @@ public class ActionsAppIOS {
         try {
             WebElement el = waitToBeClickable(locator);
             el.click();
-            log.info("CLICK on: {}", locator);
         } catch (TimeoutException e) {
-            log.error("Timeout clicking element: {}", locator);
-            LoggingPreferences.logDetail(log, "Click stacktrace", e);
+            ActionLoggingSupport.logTimeout(log, "tap", locator, e);
             throw e;
         } catch (ElementClickInterceptedException e) {
             log.warn("Click intercepted, retrying with W3C tap: {}", locator);
@@ -148,8 +143,7 @@ public class ActionsAppIOS {
             int cy = r.getY() + r.getHeight() / 2;
             tapPoint(cx, cy, 80);
         } catch (Exception e) {
-            log.error("Error clicking element: {} ({})", locator, e.getClass().getSimpleName());
-            LoggingPreferences.logDetail(log, "Click stacktrace", e);
+            ActionLoggingSupport.logFailure(log, "tap", locator, e);
             throw e;
         }
     }
@@ -169,27 +163,19 @@ public class ActionsAppIOS {
             WebElement el = waitToBeVisible(locator);
             el.clear();
             el.sendKeys(text);
-            try {
-                // Optional keyboard hide if the platform/app needs it.
-            } catch (Exception ignore) {
-            }
-            log.info("Text sent to {}: '{}'", locator, text);
         } catch (Exception e) {
-            log.error("Error sending text to element: {} ({})", locator, e.getClass().getSimpleName());
-            LoggingPreferences.logDetail(log, "Type stacktrace", e);
+            ActionLoggingSupport.logFailure(log, "type", locator, e);
             throw e;
         }
     }
 
     public void waitLoadingScreenToDisappear(By loadingLocator) {
         StepTracker.record("Wait loading screen " + loadingLocator);
-        log.info("<<< WAIT loader visible: {} >>>", loadingLocator);
         try {
             untilLong(ExpectedConditions.visibilityOfElementLocated(loadingLocator));
         } catch (TimeoutException e) {
             log.warn("Loader did not appear (may be OK): {}", loadingLocator);
         }
-        log.info("<<< WAIT loader gone: {} >>>", loadingLocator);
         waitGone(loadingLocator);
     }
 
@@ -326,12 +312,10 @@ public class ActionsAppIOS {
             log.info("Screenshot saved at: {}", fullPath);
             return fullPath;
         } catch (IOException e) {
-            log.error("Error saving screenshot ({})", e.getClass().getSimpleName());
-            LoggingPreferences.logDetail(log, "Screenshot stacktrace", e);
+            ActionLoggingSupport.logFailure(log, "save screenshot", "driver capture", e);
             return null;
         } catch (Exception e) {
-            log.error("Unexpected error taking screenshot ({})", e.getClass().getSimpleName());
-            LoggingPreferences.logDetail(log, "Screenshot stacktrace", e);
+            ActionLoggingSupport.logFailure(log, "take screenshot", "driver capture", e);
             return null;
         }
     }
@@ -396,7 +380,6 @@ public class ActionsAppIOS {
             Point start = clampToViewport(startX, startY);
             Point end = clampToViewport(endX, endY);
             performSwipe(start, end, durationMs);
-            log.info("Swipe {} on {} ({} -> {})", direction, locator, start, end);
         }
     }
 
@@ -481,7 +464,6 @@ public class ActionsAppIOS {
             Point end = clampToViewportIOS(endX, endY);
 
             performSwipeIOS(el, start, end, durationMs);
-            log.info("Swipe {} (iOS) on {} -> {} to {}", direction, locator, start, end);
         }
     }
 
@@ -506,10 +488,6 @@ public class ActionsAppIOS {
     }
 
     private Path resolveScreenshotBaseDir() {
-        String baseDir = System.getenv("DEVICEFARM_SCREENSHOT_PATH");
-        if (baseDir == null || baseDir.isBlank()) {
-            baseDir = System.getProperty("java.io.tmpdir");
-        }
-        return Path.of(baseDir);
+        return ActionLoggingSupport.resolveScreenshotBaseDir();
     }
 }
