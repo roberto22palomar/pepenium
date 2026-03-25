@@ -11,9 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Added `ActionLoggingSupport` in `pepenium-toolkit` to centralize action timeout/error logging and shared screenshot output path resolution.
 
 ### Changed
 
+- Cleaned up `toolkit` action observability so `StepTracker` remains the main functional trace while repetitive success/info logs were reduced across web, Android and iOS actions.
 
 ### Dependencies
 
