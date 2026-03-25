@@ -1,11 +1,11 @@
 userName: user
 accessKey: 1234
 framework: junit5
-app: bs://app_url or custom id
 platforms:
-  - platformName: android
-    deviceName: Samsung Galaxy S22 Ultra
-    platformVersion: 12.0
+  - os: Windows
+    osVersion: "11"
+    browserName: Chrome
+    browserVersion: latest
 parallelsPerPlatform: 1
 browserstackLocal: false
 buildName: browserstack-build-1

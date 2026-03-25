@@ -43,6 +43,7 @@
         <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
         <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
         <maven.dependency.plugin.version>3.9.0</maven.dependency.plugin.version>
+        <pepenium.excludedTags>pepenium-example</pepenium.excludedTags>
     </properties>
 
     <!-- =========================================================
@@ -166,6 +167,7 @@
                 <version>${maven.surefire.plugin.version}</version>
                 <configuration>
                     <trimStackTrace>true</trimStackTrace>
+                    <excludedGroups>${pepenium.excludedTags}</excludedGroups>
                     <systemPropertyVariables>
                         <java.util.logging.config.file>${project.basedir}/src/test/resources/jul.properties</java.util.logging.config.file>
                     </systemPropertyVariables>
