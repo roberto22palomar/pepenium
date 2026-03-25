@@ -38,20 +38,22 @@ Its current direction is simple to understand and practical to run: tests declar
 See [QUICK-START.md](QUICK-START.md) for the fastest way to run it and [CHANGELOG.md](CHANGELOG.md) for release history.
 Use [ENVIRONMENT.md](ENVIRONMENT.md) as the central reference for environment variables and runtime properties.
 
-## What v0.5.0 Adds
+## What v0.6.0 Adds
 
-- Unified session creation around `DriverRequest`, `DriverSession` and `DefaultDriverSessionFactory`
-- Introduced `TestTarget` and execution profiles so tests no longer return provider-specific config classes
-- Simplified examples to one test per functional target
-- Added a Pepenium startup banner when a driver session is created
-- Improved screenshot settling and added `takeScreenshotFast()`
-- Added compact logging with execution context such as profile, target, driver and session
-- Added automatic failure diagnostics with screenshot path plus web or mobile runtime context
-- Added optional detailed framework logging through `PEPENIUM_DETAIL_LOGGING=true`
-- Added step tracking so failure summaries can show the latest recorded actions
-- Moved execution profile definitions into a visible YAML catalog
+- Split the repository into `pepenium-core`, `pepenium-toolkit` and `pepenium-examples`
+- Moved framework runtime code into real `src/main` production sources
+- Moved BrowserStack config models and YAML loading into `core`
+- Kept `toolkit` focused on reusable authoring helpers such as actions and support utilities
+- Kept example tests and page objects isolated in `pepenium-examples`
+- Preserved root-level build, test and example packaging workflows across the modular structure
 
 ## Current Architecture
+
+Repository modules:
+
+- `pepenium-core`: framework engine, runtime, execution and provider configuration
+- `pepenium-toolkit`: reusable test-author helpers such as actions and support utilities
+- `pepenium-examples`: example tests, flows and page objects
 
 ### `core`
 
@@ -71,6 +73,8 @@ Framework runtime and execution pieces:
 - `PepeniumBanner`
 - `StepTracker`
 - `TestTarget`
+- `core/config/browserstack`: BrowserStack config models
+- `core/config/yaml`: YAML loaders for BrowserStack catalogs
 
 Provider-specific request builders currently live under:
 
@@ -83,18 +87,15 @@ Provider-specific request builders currently live under:
 Reusable building blocks:
 
 - `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
-- `toolkit/browserstack`: BrowserStack YAML config models
-- `toolkit/yaml`: YAML loaders for BrowserStack catalogs
 - `toolkit/support`: reusable settle and scroll helpers
-- `toolkit/examples`: example page objects and flows
 
-### `tests`
+### `examples`
 
 Example tests showing the intended usage pattern:
 
-- `tests/myProjectExample/android`
-- `tests/myProjectExample/ios`
-- `tests/myProjectExample/web`
+- `pepenium-examples/src/test/java/.../tests/myProjectExample/android`
+- `pepenium-examples/src/test/java/.../tests/myProjectExample/ios`
+- `pepenium-examples/src/test/java/.../tests/myProjectExample/web`
 
 Examples are grouped by functional target instead of by environment.
 
@@ -117,7 +118,7 @@ At runtime, Pepenium resolves an execution profile:
 - from `-Dpepenium.profile=...`
 - or from `PEPENIUM_PROFILE`
 - or from the target default profile when one exists
-- with built-in profile metadata loaded from `src/test/resources/execution-profiles.yml`
+- with built-in profile metadata loaded from `pepenium-core/src/main/resources/execution-profiles.yml`
 
 This keeps the same test portable across environments without changing its code.
 
@@ -146,15 +147,15 @@ This keeps the same test portable across environments without changing its code.
 
 The built-in profile catalog is defined in:
 
-- `src/test/resources/execution-profiles.yml`
+- `pepenium-core/src/main/resources/execution-profiles.yml`
 
 ## Example Tests
 
-- Android native: [ExampleAndroidNativeTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidNativeTest.java)
-- Android web: [ExampleAndroidWebTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidWebTest.java)
-- iOS native: [ExampleIOSNativeTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSNativeTest.java)
-- iOS web: [ExampleIOSWebTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
-- Desktop web: [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
+- Android native: [ExampleAndroidNativeTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidNativeTest.java)
+- Android web: [ExampleAndroidWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidWebTest.java)
+- iOS native: [ExampleIOSNativeTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSNativeTest.java)
+- iOS web: [ExampleIOSWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
+- Desktop web: [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
 
 ## Running From the IDE
 
@@ -218,15 +219,15 @@ PEPENIUM_BASE_URL=https://example.com
 
 BrowserStack profiles are backed by the YAML example files under:
 
-- `src/test/resources/browserstackExamples/browserstackAndroid.yml.example`
-- `src/test/resources/browserstackExamples/browserstackAndroidWEB.yml.example`
-- `src/test/resources/browserstackExamples/browserstackIOS.yml.example`
-- `src/test/resources/browserstackExamples/browserstackIOSWEB.yml.example`
-- `src/test/resources/browserstackExamples/browserstack.yml.example`
+- `pepenium-core/src/main/resources/browserstackExamples/browserstackAndroid.yml.example`
+- `pepenium-core/src/main/resources/browserstackExamples/browserstackAndroidWEB.yml.example`
+- `pepenium-core/src/main/resources/browserstackExamples/browserstackIOS.yml.example`
+- `pepenium-core/src/main/resources/browserstackExamples/browserstackIOSWEB.yml.example`
+- `pepenium-core/src/main/resources/browserstackExamples/browserstack.yml.example`
 
 AWS Device Farm profiles follow the same `TestTarget` model, but are still geared toward packaged execution flows defined in `pom.xml`.
 
-The execution profile catalog itself is now externalized in `src/test/resources/execution-profiles.yml`, so available profile ids and descriptions are visible without reading Java code.
+The execution profile catalog itself is now externalized in `pepenium-core/src/main/resources/execution-profiles.yml`, so available profile ids and descriptions are visible without reading Java code.
 
 ## Screenshots, Logging and Failure Diagnostics
 
@@ -277,3 +278,4 @@ Pepenium is already useful for real automation work. It has been exercised again
 - Spanish quick start: [QUICK-START.es.md](QUICK-START.es.md)
 - Spanish README: [README.es.md](README.es.md)
 - Environment reference: [ENVIRONMENT.md](ENVIRONMENT.md)
+

@@ -202,12 +202,12 @@ BrowserStack execution in the current codebase is primarily configured through Y
 
 Main files:
 
-- `src/test/resources/browserstack.yml`
-- `src/test/resources/browserstackMac.yml`
-- `src/test/resources/browserstackAndroid.yml`
-- `src/test/resources/browserstackAndroidWEB.yml`
-- `src/test/resources/browserstackIOS.yml`
-- `src/test/resources/browserstackIOSWEB.yml`
+- `pepenium-examples/src/test/resources/browserstack.yml`
+- `pepenium-examples/src/test/resources/browserstackMac.yml`
+- `pepenium-examples/src/test/resources/browserstackAndroid.yml`
+- `pepenium-examples/src/test/resources/browserstackAndroidWEB.yml`
+- `pepenium-examples/src/test/resources/browserstackIOS.yml`
+- `pepenium-examples/src/test/resources/browserstackIOSWEB.yml`
 
 Those YAML files define items such as:
 
@@ -240,3 +240,4 @@ PEPENIUM_BASE_URL=https://example.com
 PEPENIUM_DETAIL_LOGGING=true
 PEPENIUM_STEP_TRACKER_LIMIT=20
 ```
+

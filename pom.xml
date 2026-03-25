@@ -4,26 +4,22 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- =========================================================
-         Project coordinates
-         ========================================================= -->
     <groupId>io.github.roberto22palomar</groupId>
-    <artifactId>pepenium</artifactId>
-    <version>0.5.0</version>
+    <artifactId>pepenium-parent</artifactId>
+    <version>0.6.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>pepenium-core</module>
+        <module>pepenium-toolkit</module>
+        <module>pepenium-examples</module>
+    </modules>
 
     <properties>
-        <!-- =====================================================
-             Build settings
-             ===================================================== -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <!-- Note: profiles compile to Java 8, but the root pom uses Java 11. -->
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <!-- =====================================================
-             Centralized versions (single source of truth)
-             ===================================================== -->
         <selenium.bom.version>4.39.0</selenium.bom.version>
         <appium.java.client.version>10.0.0</appium.java.client.version>
 
@@ -36,22 +32,17 @@
         <slf4j.version>2.0.17</slf4j.version>
         <log4j2.version>2.25.3</log4j2.version>
 
-        <!-- =====================================================
-             Plugin versions
-             ===================================================== -->
         <maven.compiler.plugin.version>3.14.1</maven.compiler.plugin.version>
         <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
         <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
         <maven.dependency.plugin.version>3.9.0</maven.dependency.plugin.version>
+
         <pepenium.excludedTags>pepenium-example</pepenium.excludedTags>
+        <pepenium.examples.skip.tests>true</pepenium.examples.skip.tests>
     </properties>
 
-    <!-- =========================================================
-         Dependency management
-         ========================================================= -->
     <dependencyManagement>
         <dependencies>
-            <!-- Locks the entire Selenium family to a single version -->
             <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-bom</artifactId>
@@ -61,103 +52,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-
-        <!-- =====================================================
-             Mobile automation (Appium)
-             ===================================================== -->
-        <dependency>
-            <groupId>io.appium</groupId>
-            <artifactId>java-client</artifactId>
-            <version>${appium.java.client.version}</version>
-            <!-- Selenium excluded to avoid version conflicts; Selenium is controlled by the BOM -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- =====================================================
-             Web automation (Selenium) - version managed by selenium-bom
-             ===================================================== -->
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-        </dependency>
-
-        <!-- =====================================================
-             Testing (JUnit 5)
-             ===================================================== -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Standalone ConsoleLauncher (used as the Main-Class for tests.jar) -->
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-console-standalone</artifactId>
-            <version>${junit.platform.console.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- =====================================================
-             Utilities
-             ===================================================== -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>${snakeyaml.version}</version>
-        </dependency>
-
-        <!-- =====================================================
-             Logging (SLF4J API + Log4j2 implementation)
-             ===================================================== -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j2-impl</artifactId>
-            <version>${log4j2.version}</version>
-        </dependency>
-
-        <!-- Align Log4j2 modules to the same version -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j2.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j2.version}</version>
-        </dependency>
-
-    </dependencies>
 
     <build>
         <plugins>
@@ -169,18 +63,14 @@
                     <trimStackTrace>true</trimStackTrace>
                     <excludedGroups>${pepenium.excludedTags}</excludedGroups>
                     <systemPropertyVariables>
-                        <java.util.logging.config.file>${project.basedir}/src/test/resources/jul.properties</java.util.logging.config.file>
+                        <java.util.logging.config.file>${maven.multiModuleProjectDirectory}/pepenium-core/src/main/resources/jul.properties</java.util.logging.config.file>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
 
-        <!-- =====================================================
-             Centralize plugin versions so profiles can omit them
-             ===================================================== -->
         <pluginManagement>
             <plugins>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -204,111 +94,8 @@
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>${maven.dependency.plugin.version}</version>
                 </plugin>
-
             </plugins>
         </pluginManagement>
     </build>
-
-    <profiles>
-
-        <!-- =====================================================
-             Profile: Android app tests
-             ===================================================== -->
-        <profile>
-            <id>my-app-android</id>
-            <build>
-                <plugins>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>${maven.compiler.plugin.version}</version>
-                        <configuration>
-                            <!-- AWS Device Farm commonly runs Java 8 -->
-                            <source>1.8</source>
-                            <target>1.8</target>
-                            <compilerArgs>
-                                <arg>-parameters</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </plugin>
-
-                    <!-- Executable tests.jar with Class-Path pointing to dependency-jars/ -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>tests-jar</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <configuration>
-                                    <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-                                    <classifier>tests</classifier>
-                                    <includes>
-                                        <include>io/github/roberto22palomar/pepenium/core/**/*.class</include>
-                                        <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/android/*Test.class</include>
-                                        <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/*Test.class</include>
-                                        <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/web/*Test.class</include>
-                                        <include>io/github/roberto22palomar/pepenium/toolkit/**/*.class</include>
-                                    </includes>
-                                    <archive>
-                                        <manifest>
-                                            <mainClass>org.junit.platform.console.ConsoleLauncher</mainClass>
-                                            <addClasspath>true</addClasspath>
-                                            <classpathPrefix>dependency-jars/</classpathPrefix>
-                                        </manifest>
-                                    </archive>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <!-- Copies runtime (Appium + Selenium) and test dependencies (ConsoleLauncher) -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-
-                            <execution>
-                                <id>copy-runtime-deps</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/dependency-jars</outputDirectory>
-                                    <includeScope>runtime</includeScope>
-                                    <includeTypes>jar</includeTypes>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>copy-test-deps</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/dependency-jars</outputDirectory>
-                                    <includeScope>test</includeScope>
-                                    <includeTypes>jar</includeTypes>
-                                </configuration>
-                            </execution>
-
-                        </executions>
-                    </plugin>
-
-                </plugins>
-            </build>
-        </profile>
-
-        <!-- iOS and Web profiles are identical except for test includes -->
-        <!-- my-app-ios -->
-        <!-- my-web-android -->
-
-    </profiles>
 
 </project>
