@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - `pepenium-examples`
 - Added `pepenium-toolkit` as a dedicated reusable module for test-author helpers such as actions and support utilities.
 - Added explicit repository-module documentation in English and Spanish to explain the new architecture and intended responsibilities.
+- Added framework-test execution to GitHub Actions before packaging so CI now validates the core test suite instead of only compiling and packaging.
 
 ### Changed
 
@@ -38,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Moved example tests, flows and page objects into `pepenium-examples`, keeping demos separate from the framework artifacts.
 - Updated example packaging so the Android packaging profile now operates from the examples module while preserving the generated `tests.jar` and dependency bundle behavior.
 - Updated YAML resolution and runtime paths so BrowserStack example configuration files continue to resolve correctly after the module split.
+- Updated repository ignore rules so `pepenium-core/src/main/resources/execution-profiles.yml` is tracked correctly and available in CI/test classpaths.
 - Updated the main documentation set (`README`, quick starts, environment reference) to reflect the new module structure, paths and responsibilities.
 - Updated project metadata and module versions for the `0.6.0` release line.
 

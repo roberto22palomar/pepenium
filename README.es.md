@@ -46,6 +46,7 @@ Usa [ENVIRONMENT.md](ENVIRONMENT.md) como referencia central de variables de ent
 - Enfoque de `toolkit` en helpers reutilizables de autoria de tests como acciones y utilidades de soporte
 - Aislamiento de tests y page objects de ejemplo en `pepenium-examples`
 - Conservacion de los flujos de build, test y packaging de ejemplos desde la raiz del repositorio
+- Actualizacion de CI para que GitHub Actions ejecute los tests del framework antes del packaging
 
 ## Arquitectura Actual
 
