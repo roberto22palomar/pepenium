@@ -18,6 +18,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Dependencies
 
 
+## [0.6.0] - 2026-03-25
+
+### Added
+
+- Added a real multi-module Maven layout with:
+  - `pepenium-core`
+  - `pepenium-toolkit`
+  - `pepenium-examples`
+- Added `pepenium-toolkit` as a dedicated reusable module for test-author helpers such as actions and support utilities.
+- Added explicit repository-module documentation in English and Spanish to explain the new architecture and intended responsibilities.
+
+### Changed
+
+- Refactored the root project into an aggregator parent POM so builds, tests and packaging now run across the modularized repository structure.
+- Moved framework runtime, execution, observability and provider-configuration infrastructure from the old `src/test` layout into `pepenium-core/src/main`.
+- Moved BrowserStack config models and YAML loaders into the `core` area to reflect that provider configuration is framework infrastructure, not test-author toolkit code.
+- Kept `toolkit` focused on reusable authoring helpers by limiting it to actions and support utilities.
+- Moved example tests, flows and page objects into `pepenium-examples`, keeping demos separate from the framework artifacts.
+- Updated example packaging so the Android packaging profile now operates from the examples module while preserving the generated `tests.jar` and dependency bundle behavior.
+- Updated YAML resolution and runtime paths so BrowserStack example configuration files continue to resolve correctly after the module split.
+- Updated the main documentation set (`README`, quick starts, environment reference) to reflect the new module structure, paths and responsibilities.
+- Updated project metadata and module versions for the `0.6.0` release line.
+
+### Dependencies
+
+- No third-party dependency version changes in this release.
+
+
 ## [0.5.0] - 2026-03-24
 
 ### Added

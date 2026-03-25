@@ -1,6 +1,6 @@
 # Guia Rapida
 
-Esta guia muestra la forma mas rapida de entender y ejecutar Pepenium tal y como esta en `v0.5.0`.
+Esta guia muestra la forma mas rapida de entender y ejecutar Pepenium tal y como esta en `v0.6.0`.
 
 ## 1. Requisitos
 
@@ -28,11 +28,11 @@ El entorno se selecciona mediante un execution profile.
 
 ## 3. Tests Principales de Ejemplo
 
-- Android nativo: [ExampleAndroidNativeTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidNativeTest.java)
-- Android web: [ExampleAndroidWebTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidWebTest.java)
-- iOS nativo: [ExampleIOSNativeTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSNativeTest.java)
-- iOS web: [ExampleIOSWebTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
-- Web desktop: [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
+- Android nativo: [ExampleAndroidNativeTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidNativeTest.java)
+- Android web: [ExampleAndroidWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidWebTest.java)
+- iOS nativo: [ExampleIOSNativeTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSNativeTest.java)
+- iOS web: [ExampleIOSWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
+- Web desktop: [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
 
 ## 4. Execution Profiles Incluidos
 
@@ -51,13 +51,13 @@ El entorno se selecciona mediante un execution profile.
 
 Estos perfiles incluidos se definen en:
 
-- `src/test/resources/execution-profiles.yml`
+- `pepenium-core/src/main/resources/execution-profiles.yml`
 
 ## 5. Ejecutar Desde el IDE
 
 ### Android Nativo
 
-Ejecuta directamente [ExampleAndroidNativeTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidNativeTest.java).
+Ejecuta directamente [ExampleAndroidNativeTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidNativeTest.java).
 
 Resolucion por defecto:
 
@@ -77,7 +77,7 @@ APP_ACTIVITY=com.example.MainActivity
 
 ### Web Desktop
 
-Ejecuta directamente [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java).
+Ejecuta directamente [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java).
 
 Resolucion por defecto:
 
@@ -183,12 +183,12 @@ Helpers disponibles:
 
 Clases principales:
 
-- [BaseTest.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)
-- [TestTarget.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/execution/TestTarget.java)
-- [ExecutionProfiles.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfiles.java)
-- [ExecutionProfileResolver.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfileResolver.java)
-- [DefaultDriverSessionFactory.java](/C:/dev/workspace/personal/pepenium/src/test/java/io/github/roberto22palomar/pepenium/core/runtime/DefaultDriverSessionFactory.java)
-- `src/test/resources/execution-profiles.yml`
+- [BaseTest.java](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)
+- [TestTarget.java](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/TestTarget.java)
+- [ExecutionProfiles.java](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfiles.java)
+- [ExecutionProfileResolver.java](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfileResolver.java)
+- [DefaultDriverSessionFactory.java](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/DefaultDriverSessionFactory.java)
+- `pepenium-core/src/main/resources/execution-profiles.yml`
 
 ## 12. Primeros Pasos Recomendados
 
@@ -196,4 +196,6 @@ Clases principales:
 2. Crea una segunda run configuration con `-Dpepenium.profile=browserstack-android`.
 3. Ejecuta `ExampleDesktopWebTest` en local.
 4. Revisa `core/configs/...` para ver como cada proveedor construye una `DriverRequest` neutral.
-5. Usa [ENVIRONMENT.md](ENVIRONMENT.md) para ver todas las variables de entorno y system properties soportadas en un unico sitio.
+5. Explora `toolkit/actions/...` para helpers reutilizables de interaccion y `core/config/...` para la carga de configuracion de providers.
+6. Usa [ENVIRONMENT.md](ENVIRONMENT.md) para ver todas las variables de entorno y system properties soportadas en un unico sitio.
+
