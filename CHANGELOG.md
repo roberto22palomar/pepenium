@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added platform-specific toolkit assertions for web, Android and iOS under `pepenium-toolkit/src/main/java/.../toolkit/assertions`.
 - Added `API.md` to define the current public, evolving and internal API surface on the road to `1.0.0`.
 - Added a standalone `consumer-smoke` project to validate the documented public API from a separate Maven consumer.
+- Added direct `pepenium-toolkit` tests for action helpers, assertion helpers and support utilities.
 
 ### Changed
 
