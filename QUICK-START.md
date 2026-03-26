@@ -34,6 +34,14 @@ The environment is selected through an execution profile.
 - iOS web: [ExampleIOSWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
 - Desktop web: [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
 
+The current web example is a live showcase against `https://the-internet.herokuapp.com/login` and demonstrates:
+
+- real login
+- assertions and actions from the toolkit
+- step tracking
+- screenshots
+- navigation across multiple stable public demo pages
+
 ## 4. Built-In Execution Profiles
 
 - `local-android`
@@ -87,7 +95,15 @@ Default resolution:
 Optional:
 
 ```text
-PEPENIUM_BASE_URL=https://example.com
+PEPENIUM_BASE_URL=https://the-internet.herokuapp.com/login
+PEPENIUM_WEB_USERNAME=tomsmith
+PEPENIUM_WEB_PASSWORD=SuperSecretPassword!
+```
+
+Run only the desktop web live showcase with:
+
+```text
+mvn -pl pepenium-examples -am "-Dpepenium.examples.skip.tests=false" "-Dpepenium.excludedTags=" "-Dtest=ExampleDesktopWebTest" "-Dsurefire.failIfNoSpecifiedTests=false" test
 ```
 
 ## 6. Run the Same Test Somewhere Else

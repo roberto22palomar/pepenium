@@ -1,0 +1,37 @@
+package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages;
+
+import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
+
+@Slf4j
+@RequiredArgsConstructor
+public class DropdownPage {
+
+    private final By pageTitle = By.cssSelector("h3");
+    private final By dropdown = By.id("dropdown");
+
+    private final WebDriver driver;
+    private final ActionsWeb actionsWeb;
+
+    public void open(String baseUrl) {
+        String dropdownUrl = baseUrl.replace("/login", "/dropdown");
+        log.info("Opening dropdown example page");
+        driver.get(dropdownUrl);
+    }
+
+    public void waitUntilLoaded() {
+        actionsWeb.waitToBeVisible(pageTitle);
+        actionsWeb.waitToBeVisible(dropdown);
+    }
+
+    public void selectByVisibleText(String visibleText) {
+        WebElement dropdownElement = driver.findElement(dropdown);
+        new Select(dropdownElement).selectByVisibleText(visibleText);
+        actionsWeb.takeScreenshot();
+    }
+}

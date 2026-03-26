@@ -88,6 +88,7 @@ Provider-specific request builders currently live under:
 Reusable building blocks:
 
 - `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
+- `toolkit/assertions`: `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS`
 - `toolkit/support`: reusable settle and scroll helpers
 
 ### `examples`
@@ -158,6 +159,36 @@ The built-in profile catalog is defined in:
 - iOS web: [ExampleIOSWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
 - Desktop web: [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
 
+### Web Showcase Example
+
+The web examples are now functional live examples against [The Internet](https://the-internet.herokuapp.com/), not only structural templates.
+
+The desktop/mobile-web showcase currently demonstrates:
+
+- profile-driven execution with the same test class
+- reusable `ActionsWeb` and `AssertionsWeb`
+- step-oriented tracing with `StepTracker`
+- screenshots as evidence points
+- page objects plus flow orchestration
+- a real multi-page public flow:
+  - login
+  - secure area validation
+  - dropdown interaction
+  - checkbox state validation
+  - add/remove elements example navigation
+
+Default live example values:
+
+- `PEPENIUM_BASE_URL=https://the-internet.herokuapp.com/login`
+- `PEPENIUM_WEB_USERNAME=tomsmith`
+- `PEPENIUM_WEB_PASSWORD=SuperSecretPassword!`
+
+Run the desktop web showcase directly with:
+
+```text
+mvn -pl pepenium-examples -am "-Dpepenium.examples.skip.tests=false" "-Dpepenium.excludedTags=" "-Dtest=ExampleDesktopWebTest" "-Dsurefire.failIfNoSpecifiedTests=false" test
+```
+
 ## Running From the IDE
 
 The intended workflow is:
@@ -213,7 +244,9 @@ Default profile for `WEB_DESKTOP`: `local-web`
 Useful environment variables:
 
 ```text
-PEPENIUM_BASE_URL=https://example.com
+PEPENIUM_BASE_URL=https://the-internet.herokuapp.com/login
+PEPENIUM_WEB_USERNAME=tomsmith
+PEPENIUM_WEB_PASSWORD=SuperSecretPassword!
 ```
 
 ## BrowserStack and AWS

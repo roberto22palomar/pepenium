@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Cleaned up `toolkit` action observability so `StepTracker` remains the main functional trace while repetitive success/info logs were reduced across web, Android and iOS actions.
 - Updated example tests to demonstrate the new toolkit assertions for web, Android and iOS flows.
+- Replaced abstract web examples with a functional login/logout flow against The Internet (`https://the-internet.herokuapp.com/login`) so the web examples now exercise a real public testing site.
+- Expanded the real web example flow to demonstrate step-oriented tracing with `StepTracker` plus a post-login interaction on the public dropdown example page.
+- Extended the web showcase further with stable public examples for checkboxes and dynamic controls, so the web examples now demonstrate a broader end-to-end flow.
+- Refined the public web showcase to favor more stable public pages, using the `inputs` example for value entry and validation in the extended flow.
+- Refined the final showcase block again to use the public add/remove-elements example, prioritizing stability while keeping a longer multi-step web flow.
 
 ### Dependencies
 

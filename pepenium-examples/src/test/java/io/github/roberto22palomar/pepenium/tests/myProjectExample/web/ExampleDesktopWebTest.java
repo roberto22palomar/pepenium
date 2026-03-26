@@ -4,9 +4,12 @@ import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import io.github.roberto22palomar.pepenium.core.runtime.BaseTest;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
 import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb;
-import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.flows.ExampleNavigationFlow;
-import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.HeaderPage;
-import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.NavigationTabsPage;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.flows.ExampleAuthenticationFlow;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.AddRemoveElementsPage;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.CheckboxesPage;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.DropdownPage;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.LoginPage;
+import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.SecureAreaPage;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -16,8 +19,7 @@ import org.openqa.selenium.By;
 @Tag("pepenium-example")
 public class ExampleDesktopWebTest extends BaseTest {
 
-    private static final By SEARCH_BUTTON = By.xpath("//*[@data-testid='HEADER-search']");
-    private static final By FIRST_TAB = By.xpath("//*[@data-testid='TABS-ONE']");
+    private static final By LOGIN_BUTTON = By.cssSelector("button[type='submit']");
 
     @Override
     protected TestTarget getTarget() {
@@ -28,15 +30,26 @@ public class ExampleDesktopWebTest extends BaseTest {
     void basicNavigationFlow_shouldRun() {
         ActionsWeb actionsWeb = new ActionsWeb(driver);
         AssertionsWeb assertionsWeb = new AssertionsWeb(driver);
-        HeaderPage headerPage = new HeaderPage(actionsWeb);
-        NavigationTabsPage navigationTabsPage = new NavigationTabsPage(actionsWeb);
-        ExampleNavigationFlow flow = new ExampleNavigationFlow(headerPage, navigationTabsPage);
-        String baseUrl = System.getenv().getOrDefault("PEPENIUM_BASE_URL", "https://example.com");
+        LoginPage loginPage = new LoginPage(actionsWeb);
+        SecureAreaPage secureAreaPage = new SecureAreaPage(actionsWeb);
+        DropdownPage dropdownPage = new DropdownPage(driver, actionsWeb);
+        CheckboxesPage checkboxesPage = new CheckboxesPage(driver, actionsWeb);
+        AddRemoveElementsPage addRemoveElementsPage = new AddRemoveElementsPage(driver, actionsWeb);
+        ExampleAuthenticationFlow flow = new ExampleAuthenticationFlow(
+                loginPage,
+                secureAreaPage,
+                dropdownPage,
+                checkboxesPage,
+                addRemoveElementsPage,
+                assertionsWeb,
+                this::step
+        );
+        String baseUrl = System.getenv().getOrDefault("PEPENIUM_BASE_URL", "https://the-internet.herokuapp.com/login");
+        String username = System.getenv().getOrDefault("PEPENIUM_WEB_USERNAME", "tomsmith");
+        String password = System.getenv().getOrDefault("PEPENIUM_WEB_PASSWORD", "SuperSecretPassword!");
         driver.get(baseUrl);
-        assertionsWeb.assertVisible(SEARCH_BUTTON);
-        assertionsWeb.assertVisible(FIRST_TAB);
-        flow.runBasicNavigationFlow();
-        assertionsWeb.assertVisible(SEARCH_BUTTON);
+        assertionsWeb.assertVisible(LOGIN_BUTTON);
+        flow.runSuccessfulLoginAndDropdownSelection(baseUrl, username, password);
         log.info("Example desktop web flow finished");
     }
 }
