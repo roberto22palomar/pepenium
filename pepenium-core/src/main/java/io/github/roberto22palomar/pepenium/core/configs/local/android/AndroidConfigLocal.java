@@ -1,12 +1,13 @@
 package io.github.roberto22palomar.pepenium.core.configs.local.android;
 
 import io.appium.java_client.android.options.UiAutomator2Options;
+import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 
-import java.net.URL;
 import java.time.Duration;
+import java.util.List;
 
 public class AndroidConfigLocal implements DriverConfig {
 
@@ -15,6 +16,11 @@ public class AndroidConfigLocal implements DriverConfig {
         String appiumUrl = envOrDefault("APPIUM_URL", "http://localhost:4723");
         String udid = envOrDefault("ANDROID_UDID", "emulator-5554");
         String deviceName = envOrDefault("ANDROID_DEVICE_NAME", "Android Device");
+        var serverUrl = ConfigValidationSupport.requireUrl(
+                appiumUrl,
+                "APPIUM_URL",
+                "Use a valid Appium server URL such as http://localhost:4723."
+        );
 
         UiAutomator2Options opts = new UiAutomator2Options()
                 .setPlatformName("Android")
@@ -28,7 +34,11 @@ public class AndroidConfigLocal implements DriverConfig {
 
         String appPath = System.getenv("APP_PATH");
         if (notBlank(appPath)) {
-            opts.setApp(stripQuotes(appPath));
+            opts.setApp(ConfigValidationSupport.requireExistingFile(
+                    stripQuotes(appPath),
+                    "APP_PATH",
+                    "Point it to a valid APK when running local Android native tests."
+            ));
         }
 
         String appPackage = System.getenv("APP_PACKAGE");
@@ -38,9 +48,22 @@ public class AndroidConfigLocal implements DriverConfig {
             opts.setAppActivity(appActivity);
         }
 
+        ConfigValidationSupport.requireAtLeastOneFilled(
+                "Local Android native app configuration",
+                List.of(appPath, appPackage),
+                "Provide APP_PATH, or provide both APP_PACKAGE and APP_ACTIVITY."
+        );
+        if (notBlank(appPackage) || notBlank(appActivity)) {
+            ConfigValidationSupport.requireAllFilled(
+                    "Local Android native package/activity configuration",
+                    List.of(appPackage, appActivity),
+                    "APP_PACKAGE and APP_ACTIVITY must be provided together."
+            );
+        }
+
         return DriverRequest.builder()
                 .driverType(DriverType.ANDROID_APPIUM)
-                .serverUrl(new URL(appiumUrl))
+                .serverUrl(serverUrl)
                 .capabilities(opts)
                 .description("Local Android native app")
                 .build();

@@ -43,6 +43,7 @@ class ExecutionProfileResolverTest {
         );
 
         assertTrue(error.getMessage().contains("Compatible profiles for ANDROID_NATIVE"));
+        assertTrue(error.getMessage().contains("Description:"));
     }
 
     @Test
@@ -53,5 +54,18 @@ class ExecutionProfileResolverTest {
         );
 
         assertTrue(error.getMessage().contains("No execution profile was provided for target IOS_NATIVE"));
+    }
+
+    @Test
+    void rejectsUnknownOverrideWithHelpfulSourceMessage() {
+        System.setProperty("pepenium.profile", "does-not-exist");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> resolver.resolve(TestTarget.WEB_DESKTOP, null)
+        );
+
+        assertTrue(error.getMessage().contains("Unknown execution profile 'does-not-exist'"));
+        assertTrue(error.getMessage().contains("-Dpepenium.profile"));
     }
 }

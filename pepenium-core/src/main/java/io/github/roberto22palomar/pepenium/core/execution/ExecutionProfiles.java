@@ -58,6 +58,7 @@ public final class ExecutionProfiles {
             throw new IllegalStateException(
                     "Execution profile '" + profile.getId() + "' targets " + profile.getTarget()
                             + " but the test targets " + target
+                            + ". Description: " + profile.getDescription()
                             + ". Compatible profiles for " + target + ": " + compatibleProfileIds(target)
             );
         }

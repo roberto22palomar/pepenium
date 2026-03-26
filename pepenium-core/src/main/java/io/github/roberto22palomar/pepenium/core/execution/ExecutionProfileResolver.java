@@ -4,6 +4,7 @@ public class ExecutionProfileResolver {
 
     public ExecutionProfile resolve(TestTarget target, String defaultProfileId) {
         String profileId = readOverride();
+        String overrideSource = profileId != null && !profileId.isBlank() ? overrideSource() : null;
         if (profileId == null || profileId.isBlank()) {
             profileId = defaultProfileId != null ? defaultProfileId : target.getDefaultProfileId();
         }
@@ -16,7 +17,20 @@ public class ExecutionProfileResolver {
             );
         }
 
-        ExecutionProfile profile = ExecutionProfiles.get(profileId);
+        ExecutionProfile profile;
+        try {
+            profile = ExecutionProfiles.get(profileId);
+        } catch (IllegalArgumentException e) {
+            String sourceMessage = overrideSource != null
+                    ? " via " + overrideSource
+                    : "";
+            throw new IllegalStateException(
+                    "Unknown execution profile '" + profileId + "'" + sourceMessage
+                            + " for target " + target
+                            + ". Available profiles: " + ExecutionProfiles.availableProfileIds(),
+                    e
+            );
+        }
         ExecutionProfiles.validateCompatibility(profile, target);
         return profile;
     }
@@ -30,6 +44,20 @@ public class ExecutionProfileResolver {
         String envVar = System.getenv("PEPENIUM_PROFILE");
         if (envVar != null && !envVar.isBlank()) {
             return envVar.trim();
+        }
+
+        return null;
+    }
+
+    private String overrideSource() {
+        String systemProperty = System.getProperty("pepenium.profile");
+        if (systemProperty != null && !systemProperty.isBlank()) {
+            return "-Dpepenium.profile";
+        }
+
+        String envVar = System.getenv("PEPENIUM_PROFILE");
+        if (envVar != null && !envVar.isBlank()) {
+            return "PEPENIUM_PROFILE";
         }
 
         return null;
