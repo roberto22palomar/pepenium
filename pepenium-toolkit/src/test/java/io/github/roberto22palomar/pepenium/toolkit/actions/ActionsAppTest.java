@@ -55,6 +55,7 @@ class ActionsAppTest {
             By requested = invocation.getArgument(0);
             return requested.equals(LOCATOR) ? element : rootElement;
         });
+        when(element.isDisplayed()).thenReturn(true);
         when(rootElement.getRect()).thenReturn(new Rectangle(0, 0, 100, 200));
 
         ActionsApp actions = new ActionsApp(driver);
@@ -62,24 +63,5 @@ class ActionsAppTest {
 
         verify(element).clear();
         verify(element).sendKeys("android");
-    }
-
-    @Test
-    void compatibilityAliasesStillWork() {
-        when(driver.findElements(any(By.class))).thenReturn(java.util.List.of());
-        when(driver.findElement(any(By.class))).thenAnswer(invocation -> {
-            By requested = invocation.getArgument(0);
-            return requested.equals(LOCATOR) ? element : rootElement;
-        });
-        when(element.isDisplayed()).thenReturn(true);
-        when(element.isEnabled()).thenReturn(true);
-        when(rootElement.getRect()).thenReturn(new Rectangle(0, 0, 100, 200));
-        ActionsApp actions = new ActionsApp(driver);
-
-        actions.makeClick(LOCATOR);
-        actions.sendText(LOCATOR, "legacy");
-
-        verify(element).click();
-        verify(element).sendKeys("legacy");
     }
 }

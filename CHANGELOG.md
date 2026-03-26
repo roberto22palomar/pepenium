@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated the English and Spanish documentation so the example strategy is explicit: web is the live showcase, while Android and iOS native are stronger showcase templates.
 - Updated contributor guidance to reflect the real multi-module structure and the new public API policy document.
 - Updated contributor and root documentation to include the standalone public-API consumer smoke validation flow.
-- Aligned `ActionsApp` with the cross-platform `click(...)` and `type(...)` naming used in web and iOS, while keeping the older Android method names as compatibility aliases for now.
+- Cleaned the public `Actions*` API by removing legacy Android aliases and several overly specific action helpers, leaving a smaller and more consistent cross-platform surface for web, Android and iOS.
 - Updated GitHub Actions so CI installs the framework artifacts locally and runs the standalone `consumer-smoke` validation before packaging.
 - Refactored `BaseTest` into a thinner public facade while moving runtime lifecycle, session initialization and failure reporting into dedicated internal runtime classes.
 
