@@ -37,6 +37,8 @@ Its current direction is simple to understand and practical to run: tests declar
 
 See [QUICK-START.md](QUICK-START.md) for the fastest way to run it and [CHANGELOG.md](CHANGELOG.md) for release history.
 Use [ENVIRONMENT.md](ENVIRONMENT.md) as the central reference for environment variables and runtime properties.
+Use [API.md](API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
+Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone public-API consumer smoke validation flow.
 
 ## What v0.6.0 Adds
 
@@ -202,6 +204,20 @@ That Android showcase now emphasizes:
 - a short but representative bottom-navigation plus search flow that can be adapted to a real product app
 
 This keeps the Android example honest and useful while avoiding dependence on a third-party public app that may not be stable enough for an official framework showcase.
+
+### iOS Native Showcase Template
+
+The iOS native example follows the same strategy as Android native: it is a stronger showcase template rather than a live public-app example.
+
+That iOS showcase emphasizes:
+
+- semantic flow steps through `StepTracker`
+- reusable `ActionsAppIOS` and `AssertionsAppIOS`
+- explicit page-load boundaries
+- screenshots as evidence points
+- a short but representative bottom-navigation plus search flow that can be adapted to a real product app
+
+This keeps the iOS example aligned with the Android example and gives the repository a more coherent native-mobile story.
 
 ## Running From the IDE
 

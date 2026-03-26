@@ -23,6 +23,13 @@ public class SearchPageIOS {
     // Actions
     // ============================================================
 
+    public void waitUntilLoaded() {
+        actionsApp.waitToBePresent(tabQuickSearch);
+        actionsApp.waitToBePresent(tabFilters);
+        actionsApp.waitToBePresent(btnClose);
+        actionsApp.takeScreenshotFast();
+    }
+
     public void close() {
         log.info("Closing Search page (iOS)");
         actionsApp.click(btnClose);

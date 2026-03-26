@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.roberto22palomar.pepenium.smoke</groupId>
+    <artifactId>pepenium-consumer-smoke</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <pepenium.version>0.6.0</pepenium.version>
+        <junit.jupiter.version>5.13.1</junit.jupiter.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.roberto22palomar</groupId>
+            <artifactId>pepenium</artifactId>
+            <version>${pepenium.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.roberto22palomar</groupId>
+            <artifactId>pepenium-toolkit</artifactId>
+            <version>${pepenium.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
