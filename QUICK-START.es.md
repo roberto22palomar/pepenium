@@ -42,6 +42,14 @@ El example web actual es un showcase funcional real sobre `https://the-internet.
 - screenshots
 - navegacion por varias paginas demo publicas y estables
 
+El ejemplo Android nativo actual es un showcase template, no un example funcional contra una app publica. Sirve para demostrar:
+
+- `ActionsApp`
+- `AssertionsApp`
+- diseno de flows orientado a pasos
+- page objects con limites de carga explicitos
+- una estructura de test Android preparada para adaptarse a una app real
+
 ## 4. Execution Profiles Incluidos
 
 - `local-android`

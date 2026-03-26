@@ -22,6 +22,12 @@ public class SearchPage {
     // Actions
     // ============================================================
 
+    public void waitUntilLoaded() {
+        actionsApp.waitToBePresent(tabQuickSearch);
+        actionsApp.waitToBePresent(tabFilters);
+        actionsApp.waitToBePresent(btnClose);
+    }
+
     public void close() {
         log.info("Closing Search page (Android)");
         actionsApp.makeClick(btnClose);

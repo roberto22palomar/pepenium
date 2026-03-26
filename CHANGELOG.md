@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Extended the web showcase further with stable public examples for checkboxes and dynamic controls, so the web examples now demonstrate a broader end-to-end flow.
 - Refined the public web showcase to favor more stable public pages, using the `inputs` example for value entry and validation in the extended flow.
 - Refined the final showcase block again to use the public add/remove-elements example, prioritizing stability while keeping a longer multi-step web flow.
+- Upgraded the Android native example from a minimal navigation sample to a stronger showcase template with semantic steps, explicit assertions and clearer page-load boundaries.
 
 ### Dependencies
 
