@@ -42,6 +42,14 @@ The current web example is a live showcase against `https://the-internet.herokua
 - screenshots
 - navigation across multiple stable public demo pages
 
+The current Android native example is a showcase template rather than a live public-app example. It is intended to demonstrate:
+
+- `ActionsApp`
+- `AssertionsApp`
+- step-oriented flow design
+- page objects with explicit load boundaries
+- an Android-friendly test structure ready to adapt to a real app
+
 ## 4. Built-In Execution Profiles
 
 - `local-android`

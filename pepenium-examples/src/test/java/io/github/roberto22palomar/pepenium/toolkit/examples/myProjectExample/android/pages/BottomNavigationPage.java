@@ -23,6 +23,13 @@ public class BottomNavigationPage {
     // Actions
     // ============================================================
 
+    public void waitUntilLoaded() {
+        actionsApp.waitToBePresent(tabOne);
+        actionsApp.waitToBePresent(tabTwo);
+        actionsApp.waitToBePresent(tabThree);
+        actionsApp.waitToBePresent(tabHome);
+    }
+
     public void openTabOne() {
         log.info("Opening bottom navigation: Tab One");
         actionsApp.makeClick(tabOne);

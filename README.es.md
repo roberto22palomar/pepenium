@@ -189,6 +189,20 @@ Puedes ejecutar el showcase desktop web con:
 mvn -pl pepenium-examples -am "-Dpepenium.examples.skip.tests=false" "-Dpepenium.excludedTags=" "-Dtest=ExampleDesktopWebTest" "-Dsurefire.failIfNoSpecifiedTests=false" test
 ```
 
+### Showcase Template De Android Nativo
+
+El ejemplo Android nativo queda ahora planteado como un showcase template mas serio, no como un example funcional contra una app publica.
+
+Ese showcase Android pone el foco en:
+
+- pasos semanticos mediante `StepTracker`
+- uso reutilizable de `ActionsApp` y `AssertionsApp`
+- limites de carga de pagina explicitos
+- screenshots como evidencia
+- un flujo corto pero representativo de busqueda y bottom navigation, pensado para adaptarse a una app real
+
+Asi el ejemplo Android sigue siendo honesto y util sin depender de una app publica de terceros que no sea lo bastante estable como carta de presentacion oficial del framework.
+
 ## Ejecucion Desde el IDE
 
 El flujo recomendado es:
