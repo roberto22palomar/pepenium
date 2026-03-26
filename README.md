@@ -37,6 +37,7 @@ Its current direction is simple to understand and practical to run: tests declar
 
 See [QUICK-START.md](QUICK-START.md) for the fastest way to run it and [CHANGELOG.md](CHANGELOG.md) for release history.
 Use [ENVIRONMENT.md](ENVIRONMENT.md) as the central reference for environment variables and runtime properties.
+Use [API.md](API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
 
 ## What v0.6.0 Adds
 

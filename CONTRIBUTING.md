@@ -1,108 +1,123 @@
 # Contributing to Pepenium
 
-First of all, thank you for taking the time to contribute to **Pepenium** 🙌  
+First of all, thank you for taking the time to contribute to **Pepenium**.
 Contributions of any kind are welcome: code, documentation, bug reports, or suggestions.
 
 ---
 
-## 📌 Project Language
+## Project Language
 
 To keep the project consistent and accessible:
 
-- **Issues and Pull Requests:** English
-- **Documentation:** English (Spanish version available where applicable)
+- **Issues and pull requests:** English
+- **Documentation:** English, with Spanish mirrors where applicable
 - **Code and comments:** English
 
 Please stick to English for all new contributions.
 
 ---
 
-## 🐛 Reporting Bugs
+## Reporting Bugs
 
 Before opening a bug report:
 
-1. Check existing issues to avoid duplicates
-2. Make sure you are using the latest version of the project
+1. Check existing issues to avoid duplicates.
+2. Make sure you are using the latest version of the project.
 
-When opening a bug report, please use the **Bug report** issue template and include:
-- Clear description of the problem
-- Steps to reproduce
-- Expected vs actual behavior
-- Relevant logs or stack traces
-- Environment details (OS, Java version, provider, etc.)
+When opening a bug report, please use the bug-report issue template and include:
 
----
-
-## ✨ Requesting Features
-
-Feature requests are welcome.  
-Please use the **Feature request** issue template and clearly describe:
-- The problem you are trying to solve
-- The proposed solution
-- Why it would be useful for the project
-
-Well-defined feature requests are more likely to be accepted.
+- a clear description of the problem
+- steps to reproduce
+- expected vs actual behavior
+- relevant logs or stack traces
+- environment details such as OS, Java version and provider
 
 ---
 
-## 🧪 Running the Project Locally
+## Requesting Features
+
+Feature requests are welcome.
+Please use the feature-request issue template and clearly describe:
+
+- the problem you are trying to solve
+- the proposed solution
+- why it would be useful for the project
+
+Well-defined feature requests are much easier to evaluate and prioritize.
+
+---
+
+## Running the Project Locally
 
 Basic requirements:
-- Java
+
+- Java 11
 - Maven
-- Appium (for mobile testing)
+- Appium, when working with mobile automation
 
 Typical commands:
 
 ```bash
-mvn clean test
-mvn clean package
+mvn test
+mvn package
 ```
 
-Some features may require specific Maven profiles (e.g. BrowserStack or AWS Device Farm).
+Some features require specific execution profiles or provider credentials, especially BrowserStack and AWS Device Farm flows.
 
 ---
 
-## 🔀 Pull Requests
+## Pull Requests
 
-Before submitting a Pull Request:
+Before submitting a pull request:
 
-- Ensure the project builds successfully
-- Keep changes focused and scoped
-- Update documentation if behavior changes
-- Avoid breaking changes unless clearly justified
+- ensure the project builds successfully
+- keep changes focused and scoped
+- update documentation if behavior changes
+- update `CHANGELOG.md` when the change is notable
+- avoid breaking changes unless clearly justified
 
-Pull Requests should:
-- Reference an existing issue when possible
-- Include a clear description of what was changed and why
+Pull requests should:
+
+- reference an existing issue when possible
+- include a clear description of what changed and why
 
 ---
 
-## 🧱 Project Structure
+## Project Structure
 
 High-level structure:
 
-- `core/` – Shared configuration and driver setup
-- `toolkit/` – Utilities and reusable components
-- `tests/` – Project-specific tests and flows
+- `pepenium-core/` - framework runtime, execution model and provider/config infrastructure
+- `pepenium-toolkit/` - reusable test-author helpers such as actions and assertions
+- `pepenium-examples/` - showcase tests, flows and page objects
 
-Please respect the existing architecture and avoid adding project-specific logic to `core/` unless it benefits all users.
+Please respect the existing module boundaries and avoid adding project-specific logic to `pepenium-core` unless it benefits all users of the framework.
+
+When deciding where to place a change:
+
+- prefer `pepenium-core` for framework lifecycle, execution and provider/config infrastructure
+- prefer `pepenium-toolkit` for reusable authoring helpers
+- prefer `pepenium-examples` for showcase code and templates
+
+For public-vs-internal API expectations, see [API.md](API.md).
 
 ---
 
-## 🔖 Versioning & Changelog
+## Versioning and Changelog
 
 This project follows **Semantic Versioning**.
 
 Notable changes should be documented in `CHANGELOG.md` under the **[Unreleased]** section.
 
+Until `1.0.0`, structural refactors are still possible, but changes to documented public API should already be treated carefully.
+
 ---
 
-## 🤝 Code of Conduct
+## Code of Conduct
 
-Be respectful and constructive in discussions.  
+Be respectful and constructive in discussions.
 This project aims to maintain a friendly and professional environment for everyone.
 
 ---
 
-Thanks again for contributing to Pepenium 🚀
+Thanks again for contributing to Pepenium.
