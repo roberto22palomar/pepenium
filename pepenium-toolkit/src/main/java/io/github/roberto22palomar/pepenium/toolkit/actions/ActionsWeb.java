@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -75,6 +74,19 @@ public class ActionsWeb {
             throw e;
         } catch (Exception e) {
             ActionLoggingSupport.logFailure(log, "visibility wait", locator, e);
+            throw e;
+        }
+    }
+
+    public WebElement waitToBePresent(By locator) {
+        try {
+            return new WebDriverWait(driver, LONG_TIMEOUT)
+                    .until(ExpectedConditions.presenceOfElementLocated(locator));
+        } catch (TimeoutException e) {
+            ActionLoggingSupport.logTimeout(log, "presence wait", locator, e);
+            throw e;
+        } catch (Exception e) {
+            ActionLoggingSupport.logFailure(log, "presence wait", locator, e);
             throw e;
         }
     }
@@ -136,60 +148,6 @@ public class ActionsWeb {
         }
     }
 
-    public List<WebElement> waitAndGetAll(By locator) {
-        new WebDriverWait(driver, DEFAULT_TIMEOUT)
-                .until(ExpectedConditions.numberOfElementsToBeMoreThan(locator, 0));
-        return driver.findElements(locator);
-    }
-
-    public int count(By locator) {
-        return waitAndGetAll(locator).size();
-    }
-
-    public void clickByIndexInList(By locator, int index) {
-        StepTracker.record("Click index " + index + " from " + locator);
-        List<WebElement> elements = waitAndGetAll(locator);
-        if (index < 0 || index >= elements.size()) {
-            throw new IllegalArgumentException(
-                    "Index out of range: " + index + " (size=" + elements.size() + ")"
-            );
-        }
-        WebElement target = elements.get(index);
-        clickWithFallback(target, locator, index);
-    }
-
-    public void clickRandomInList(By locator) {
-        List<WebElement> elements = waitAndGetAll(locator);
-        int size = elements.size();
-        if (size == 0) {
-            throw new NoSuchElementException("No elements found for: " + locator);
-        }
-        int index = ThreadLocalRandom.current().nextInt(size);
-        StepTracker.record("Click random index " + index + " from " + locator);
-        WebElement target = elements.get(index);
-        clickWithFallback(target, locator, index);
-    }
-
-    private void clickWithFallback(WebElement element, By locator, int index) {
-        try {
-            ((JavascriptExecutor) driver).executeScript(
-                    "arguments[0].scrollIntoView({block:'center'})", element);
-            new WebDriverWait(driver, DEFAULT_TIMEOUT)
-                    .until(ExpectedConditions.elementToBeClickable(element));
-            element.click();
-            waitForPostActionSettle();
-        } catch (Exception e) {
-            log.warn("Standard click failed, retrying with JS click on {} index {}", locator, index);
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-            waitForPostActionSettle();
-        }
-    }
-
-    public void waitToBePresent(By locator) {
-        WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
-        wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-    }
-
     public boolean clickIfVisible(By locator) {
         if (isElementVisible(locator)) {
             click(locator);
@@ -210,52 +168,16 @@ public class ActionsWeb {
         }
     }
 
-    public void waitLoadingScreen(String xpath) {
-        StepTracker.record("Wait loading screen " + xpath);
-        By loadingIndicator = By.xpath(xpath);
+    public void waitUntilHidden(By locator) {
+        StepTracker.record("Wait until hidden " + locator);
         try {
             WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(loadingIndicator));
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(loadingIndicator));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
         } catch (TimeoutException e) {
-            ActionLoggingSupport.logTimeout(log, "loading wait", loadingIndicator, e);
+            ActionLoggingSupport.logTimeout(log, "hidden wait", locator, e);
             throw e;
         }
-    }
-
-    public void scrollUntilFoundAndClick(By locator, int maxScrolls, int stepPx) {
-        StepTracker.record("Scroll until found and click " + locator);
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-
-        for (int i = 0; i < maxScrolls; i++) {
-            try {
-                WebElement el = driver.findElement(locator);
-                wait.until(ExpectedConditions.visibilityOf(el));
-                js.executeScript("arguments[0].scrollIntoView({block:'center', behavior:'instant'});", el);
-                Thread.sleep(300);
-                el.click();
-                waitForPostActionSettle();
-                return;
-
-            } catch (NoSuchElementException e) {
-                js.executeScript("window.scrollBy(0, arguments[0]);", stepPx);
-                log.debug("Scroll {} (+{} px)", i + 1, stepPx);
-                try {
-                    Thread.sleep(400);
-                } catch (InterruptedException ignored) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException(ignored);
-                }
-            } catch (TimeoutException e) {
-                log.debug("Element found but not visible yet (scroll {}), retrying...", i + 1);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-            }
-        }
-
-        throw new NoSuchElementException("Element not found after " + maxScrolls + " scrolls: " + locator);
     }
 
     public String takeScreenshotFast() {

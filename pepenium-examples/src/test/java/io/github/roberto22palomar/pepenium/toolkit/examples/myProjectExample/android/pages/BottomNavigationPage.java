@@ -32,25 +32,25 @@ public class BottomNavigationPage {
 
     public void openTabOne() {
         log.info("Opening bottom navigation: Tab One");
-        actionsApp.makeClick(tabOne);
+        actionsApp.click(tabOne);
         actionsApp.takeScreenshot();
     }
 
     public void openTabTwo() {
         log.info("Opening bottom navigation: Tab Two");
-        actionsApp.makeClick(tabTwo);
+        actionsApp.click(tabTwo);
         actionsApp.takeScreenshot();
     }
 
     public void openTabThree() {
         log.info("Opening bottom navigation: Tab Three");
-        actionsApp.makeClick(tabThree);
+        actionsApp.click(tabThree);
         actionsApp.takeScreenshot();
     }
 
     public void openHome() {
         log.info("Opening bottom navigation: Home");
-        actionsApp.makeClick(tabHome);
+        actionsApp.click(tabHome);
         actionsApp.takeScreenshot();
     }
 }

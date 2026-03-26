@@ -5,7 +5,6 @@ import io.appium.java_client.AppiumDriver;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import io.github.roberto22palomar.pepenium.toolkit.support.ActionLoggingSupport;
 import io.github.roberto22palomar.pepenium.toolkit.support.FastUiSettle;
-import io.github.roberto22palomar.pepenium.toolkit.support.ScrollUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -169,8 +168,8 @@ public class ActionsAppIOS {
         }
     }
 
-    public void waitLoadingScreenToDisappear(By loadingLocator) {
-        StepTracker.record("Wait loading screen " + loadingLocator);
+    public void waitUntilHidden(By loadingLocator) {
+        StepTracker.record("Wait until hidden " + loadingLocator);
         try {
             untilLong(ExpectedConditions.visibilityOfElementLocated(loadingLocator));
         } catch (TimeoutException e) {
@@ -336,12 +335,6 @@ public class ActionsAppIOS {
         driver.perform(Collections.singletonList(tap));
     }
 
-    public void safeScrollToElement(By locator) {
-        StepTracker.record("Safe scroll to " + locator);
-        ScrollUtils scroller = new ScrollUtils(driver);
-        scroller.scrollToElement(locator, 12);
-    }
-
     public void swipeAtElement(By locator,
                                Direction direction,
                                int times,
@@ -395,77 +388,7 @@ public class ActionsAppIOS {
         driver.perform(Collections.singletonList(swipe));
     }
 
-    private void performSwipeIOS(WebElement el, Point start, Point end, int durationMs) {
-        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
-        int safeDuration = Math.max(durationMs, 400);
-
-        Sequence swipe = new Sequence(finger, 1)
-                .addAction(finger.createPointerMove(Duration.ZERO,
-                        PointerInput.Origin.viewport(), start.getX(), start.getY()))
-                .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
-                .addAction(finger.createPointerMove(Duration.ofMillis(safeDuration),
-                        PointerInput.Origin.viewport(), end.getX(), end.getY()))
-                .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-
-        driver.perform(Collections.singletonList(swipe));
-    }
-
-    private Point clampToViewportIOS(int x, int y) {
-        Dimension size = driver.manage().window().getSize();
-        int margin = 20;
-
-        int safeX = Math.max(margin, Math.min(size.getWidth() - margin, x));
-        int safeY = Math.max(margin, Math.min(size.getHeight() - margin, y));
-
-        return new Point(safeX, safeY);
-    }
-
     public enum Direction { UP, DOWN, LEFT, RIGHT }
-
-    public void swipeAtElementIOS(By locator,
-                                  Direction direction,
-                                  int times,
-                                  double percent,
-                                  int durationMs) {
-        StepTracker.record("Swipe " + direction + " on " + locator + " x" + times + " (iOS)");
-
-        waitStableScreen();
-        WebElement el = waitToBeVisible(locator);
-        Rectangle r = el.getRect();
-
-        int cx = r.getX() + r.getWidth() / 2;
-        int cy = r.getY() + r.getHeight() / 2;
-
-        int dy = (int) Math.max(10, r.getHeight() * percent);
-        int dx = (int) Math.max(10, r.getWidth() * percent);
-
-        for (int i = 0; i < times; i++) {
-            int startX = cx;
-            int startY = cy;
-            int endX = cx;
-            int endY = cy;
-
-            switch (direction) {
-                case UP:
-                    endY = cy - dy;
-                    break;
-                case DOWN:
-                    endY = cy + dy;
-                    break;
-                case LEFT:
-                    endX = cx - dx;
-                    break;
-                case RIGHT:
-                    endX = cx + dx;
-                    break;
-            }
-
-            Point start = clampToViewportIOS(startX, startY);
-            Point end = clampToViewportIOS(endX, endY);
-
-            performSwipeIOS(el, start, end, durationMs);
-        }
-    }
 
     private Point clampToViewport(int x, int y) {
         Dimension size = driver.manage().window().getSize();
