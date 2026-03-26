@@ -44,6 +44,8 @@ These classes define the main authoring model:
 
 These are intended as the reusable building blocks for writing tests, flows and page objects.
 
+For cross-platform consistency, new usage should prefer the converged `click(...)` and `type(...)` naming across web, Android and iOS action helpers.
+
 ## Advanced / Evolving API
 
 These classes are visible and may be useful to advanced adopters, but should be considered less stable until the `1.0.0` contract is finalized.
@@ -135,5 +137,5 @@ Typical validation flow:
 
 ```bash
 mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -U -f consumer-smoke/pom.xml test-compile
+mvn -q -U -f consumer-smoke/pom.xml clean test-compile
 ```

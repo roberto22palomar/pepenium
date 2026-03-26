@@ -86,8 +86,7 @@ public class ActionsApp {
         }
     }
 
-    @SneakyThrows
-    public void makeClick(By locator) {
+    public void click(By locator) {
         StepTracker.record("Tap " + locator);
         try {
             WebElement element = new WebDriverWait(driver, DEFAULT_TIMEOUT)
@@ -100,6 +99,12 @@ public class ActionsApp {
             ActionLoggingSupport.logFailure(log, "tap", locator, e);
             throw e;
         }
+    }
+
+    @SneakyThrows
+    @Deprecated(forRemoval = false)
+    public void makeClick(By locator) {
+        click(locator);
     }
 
     public boolean waitStableScreen() {
@@ -142,13 +147,13 @@ public class ActionsApp {
 
     public boolean makeClickIfVisible(By locator) throws InterruptedException {
         if (isElementVisible(locator)) {
-            makeClick(locator);
+            click(locator);
             return true;
         }
         return false;
     }
 
-    public void sendText(By locator, String text) {
+    public void type(By locator, String text) {
         StepTracker.record("Type into " + locator);
         try {
             waitStableScreen();
@@ -159,6 +164,11 @@ public class ActionsApp {
             ActionLoggingSupport.logFailure(log, "type", locator, e);
             throw e;
         }
+    }
+
+    @Deprecated(forRemoval = false)
+    public void sendText(By locator, String text) {
+        type(locator, text);
     }
 
     public void waitLoadingScreenToDisappear(String xpath) {
