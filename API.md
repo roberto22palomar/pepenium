@@ -124,3 +124,16 @@ Before `1.0.0`, Pepenium should tighten this guide further by:
 - deciding whether execution/configuration types should become stable public API
 - deciding whether `BaseTest` remains the main public entry point or evolves into a more annotation/extension-driven JUnit model
 - documenting compatibility expectations between minor releases
+
+## Consumer Smoke Validation
+
+Pepenium now includes a standalone smoke consumer under [consumer-smoke](/C:/dev/workspace/personal/pepenium/consumer-smoke/README.md).
+
+That smoke project is intentionally outside the main Maven reactor so it behaves more like an external consumer.
+
+Typical validation flow:
+
+```bash
+mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
+mvn -q -U -f consumer-smoke/pom.xml test-compile
+```

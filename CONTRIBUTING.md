@@ -64,6 +64,13 @@ mvn package
 
 Some features require specific execution profiles or provider credentials, especially BrowserStack and AWS Device Farm flows.
 
+When validating public API compatibility, also run:
+
+```bash
+mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
+mvn -q -U -f consumer-smoke/pom.xml test-compile
+```
+
 ---
 
 ## Pull Requests
@@ -74,6 +81,7 @@ Before submitting a pull request:
 - keep changes focused and scoped
 - update documentation if behavior changes
 - update `CHANGELOG.md` when the change is notable
+- run the standalone consumer smoke when changing documented public API
 - avoid breaking changes unless clearly justified
 
 Pull requests should:

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `ActionLoggingSupport` in `pepenium-toolkit` to centralize action timeout/error logging and shared screenshot output path resolution.
 - Added platform-specific toolkit assertions for web, Android and iOS under `pepenium-toolkit/src/main/java/.../toolkit/assertions`.
 - Added `API.md` to define the current public, evolving and internal API surface on the road to `1.0.0`.
+- Added a standalone `consumer-smoke` project to validate the documented public API from a separate Maven consumer.
 
 ### Changed
 
@@ -28,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Aligned the iOS native example with the Android showcase approach, adding semantic flow steps, explicit assertions and clearer page-load boundaries for a stronger template example.
 - Updated the English and Spanish documentation so the example strategy is explicit: web is the live showcase, while Android and iOS native are stronger showcase templates.
 - Updated contributor guidance to reflect the real multi-module structure and the new public API policy document.
+- Updated contributor and root documentation to include the standalone public-API consumer smoke validation flow.
 
 ### Dependencies
 
