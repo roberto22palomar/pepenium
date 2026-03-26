@@ -50,6 +50,14 @@ The current Android native example is a showcase template rather than a live pub
 - page objects with explicit load boundaries
 - an Android-friendly test structure ready to adapt to a real app
 
+The current iOS native example follows the same approach. It is intended to demonstrate:
+
+- `ActionsAppIOS`
+- `AssertionsAppIOS`
+- step-oriented flow design
+- page objects with explicit load boundaries
+- an iOS-friendly test structure ready to adapt to a real app
+
 ## 4. Built-In Execution Profiles
 
 - `local-android`

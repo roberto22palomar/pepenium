@@ -24,6 +24,14 @@ public class BottomNavigationPageIOS {
     // Actions
     // ============================================================
 
+    public void waitUntilLoaded() {
+        actionsApp.waitToBePresent(tabOne);
+        actionsApp.waitToBePresent(tabTwo);
+        actionsApp.waitToBePresent(tabThree);
+        actionsApp.waitToBePresent(tabHome);
+        actionsApp.takeScreenshotFast();
+    }
+
     public void openTabOne() {
         log.info("Opening bottom navigation: Tab One");
         actionsApp.click(tabOne);

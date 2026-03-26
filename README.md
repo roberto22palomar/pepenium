@@ -203,6 +203,20 @@ That Android showcase now emphasizes:
 
 This keeps the Android example honest and useful while avoiding dependence on a third-party public app that may not be stable enough for an official framework showcase.
 
+### iOS Native Showcase Template
+
+The iOS native example follows the same strategy as Android native: it is a stronger showcase template rather than a live public-app example.
+
+That iOS showcase emphasizes:
+
+- semantic flow steps through `StepTracker`
+- reusable `ActionsAppIOS` and `AssertionsAppIOS`
+- explicit page-load boundaries
+- screenshots as evidence points
+- a short but representative bottom-navigation plus search flow that can be adapted to a real product app
+
+This keeps the iOS example aligned with the Android example and gives the repository a more coherent native-mobile story.
+
 ## Running From the IDE
 
 The intended workflow is:

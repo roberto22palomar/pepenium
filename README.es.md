@@ -203,6 +203,20 @@ Ese showcase Android pone el foco en:
 
 Asi el ejemplo Android sigue siendo honesto y util sin depender de una app publica de terceros que no sea lo bastante estable como carta de presentacion oficial del framework.
 
+### Showcase Template De iOS Nativo
+
+El ejemplo iOS nativo sigue la misma estrategia que Android nativo: queda planteado como un showcase template mas serio, no como un example funcional contra una app publica.
+
+Ese showcase iOS pone el foco en:
+
+- pasos semanticos mediante `StepTracker`
+- uso reutilizable de `ActionsAppIOS` y `AssertionsAppIOS`
+- limites de carga de pagina explicitos
+- screenshots como evidencia
+- un flujo corto pero representativo de busqueda y bottom navigation, pensado para adaptarse a una app real
+
+Asi el ejemplo iOS queda alineado con Android y deja una historia mas coherente para la parte mobile del framework.
+
 ## Ejecucion Desde el IDE
 
 El flujo recomendado es:
