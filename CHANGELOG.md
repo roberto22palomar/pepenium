@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated contributor guidance to reflect the real multi-module structure and the new public API policy document.
 - Updated contributor and root documentation to include the standalone public-API consumer smoke validation flow.
 - Cleaned the public `Actions*` API by removing legacy Android aliases and several overly specific action helpers, leaving a smaller and more consistent cross-platform surface for web, Android and iOS.
+- Cleaned the public `Assertions*` API by extracting a shared cross-platform assertion core and narrowing web-specific assertions to clearly browser-oriented checks.
 - Updated GitHub Actions so CI installs the framework artifacts locally and runs the standalone `consumer-smoke` validation before packaging.
 - Refactored `BaseTest` into a thinner public facade while moving runtime lifecycle, session initialization and failure reporting into dedicated internal runtime classes.
 

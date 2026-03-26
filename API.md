@@ -46,6 +46,8 @@ These are intended as the reusable building blocks for writing tests, flows and 
 
 For cross-platform consistency, the supported cross-platform action surface should converge on the same core verbs across web, Android and iOS, especially `click(...)`, `clickIfVisible(...)`, `type(...)` and `waitUntilHidden(...)`.
 
+The shared assertion surface should likewise stay aligned around `assertVisible(...)`, `assertNotVisible(...)`, `assertPresent(...)`, `assertTextEquals(...)` and `assertTextContains(...)`, while web-only assertions should be reserved for browser-specific concerns such as URL, title and input-value checks.
+
 ## Advanced / Evolving API
 
 These classes are visible and may be useful to advanced adopters, but should be considered less stable until the `1.0.0` contract is finalized.
