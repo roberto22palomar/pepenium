@@ -88,6 +88,7 @@ Los builders de request especificos de proveedor viven actualmente en:
 Bloques reutilizables:
 
 - `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
+- `toolkit/assertions`: `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS`
 - `toolkit/support`: helpers reutilizables de settle y scroll
 
 ### `examples`
@@ -158,6 +159,36 @@ El catalogo de perfiles incluido se define en:
 - iOS web: [ExampleIOSWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
 - Web desktop: [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
 
+### Showcase Web Funcional
+
+Los ejemplos web ahora son examples funcionales reales sobre [The Internet](https://the-internet.herokuapp.com/), no solo plantillas de estructura.
+
+El showcase actual de desktop/mobile-web demuestra:
+
+- ejecucion por profile reutilizando la misma clase de test
+- uso de `ActionsWeb` y `AssertionsWeb`
+- trazabilidad semantica con `StepTracker`
+- screenshots como evidencia
+- page objects y orquestacion mediante flows
+- un flujo publico real de varias pantallas:
+  - login
+  - validacion del area segura
+  - interaccion con dropdown
+  - validacion de estados en checkboxes
+  - navegacion al example de add/remove elements
+
+Valores por defecto del example funcional:
+
+- `PEPENIUM_BASE_URL=https://the-internet.herokuapp.com/login`
+- `PEPENIUM_WEB_USERNAME=tomsmith`
+- `PEPENIUM_WEB_PASSWORD=SuperSecretPassword!`
+
+Puedes ejecutar el showcase desktop web con:
+
+```text
+mvn -pl pepenium-examples -am "-Dpepenium.examples.skip.tests=false" "-Dpepenium.excludedTags=" "-Dtest=ExampleDesktopWebTest" "-Dsurefire.failIfNoSpecifiedTests=false" test
+```
+
 ## Ejecucion Desde el IDE
 
 El flujo recomendado es:
@@ -213,7 +244,9 @@ Perfil por defecto de `WEB_DESKTOP`: `local-web`
 Variables utiles:
 
 ```text
-PEPENIUM_BASE_URL=https://example.com
+PEPENIUM_BASE_URL=https://the-internet.herokuapp.com/login
+PEPENIUM_WEB_USERNAME=tomsmith
+PEPENIUM_WEB_PASSWORD=SuperSecretPassword!
 ```
 
 ## BrowserStack y AWS
