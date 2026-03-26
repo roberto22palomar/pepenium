@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated contributor guidance to reflect the real multi-module structure and the new public API policy document.
 - Updated contributor and root documentation to include the standalone public-API consumer smoke validation flow.
 - Aligned `ActionsApp` with the cross-platform `click(...)` and `type(...)` naming used in web and iOS, while keeping the older Android method names as compatibility aliases for now.
+- Updated GitHub Actions so CI installs the framework artifacts locally and runs the standalone `consumer-smoke` validation before packaging.
 
 ### Dependencies
 

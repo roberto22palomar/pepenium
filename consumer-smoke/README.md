@@ -35,3 +35,5 @@ The smoke sources intentionally model the expected user-facing workflow:
 - enriching steps with `step("...")`
 
 The tests are designed for compilation validation, not live execution.
+
+This same flow is intended to run in CI so public API consumption stays protected over time.

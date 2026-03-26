@@ -40,6 +40,8 @@ Use [ENVIRONMENT.md](ENVIRONMENT.md) as the central reference for environment va
 Use [API.md](API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
 Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone public-API consumer smoke validation flow.
 
+The main CI workflow now validates that standalone consumer smoke before the packaging job, so public API consumption is checked continuously and not only by local convention.
+
 ## What v0.6.0 Adds
 
 - Split the repository into `pepenium-core`, `pepenium-toolkit` and `pepenium-examples`
