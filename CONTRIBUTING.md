@@ -68,7 +68,7 @@ When validating public API compatibility, also run:
 
 ```bash
 mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -U -f consumer-smoke/pom.xml test-compile
+mvn -q -U -f consumer-smoke/pom.xml clean test-compile
 ```
 
 ---

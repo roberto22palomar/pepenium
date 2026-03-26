@@ -15,13 +15,13 @@ mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
 Then compile the smoke consumer:
 
 ```bash
-mvn -q -U -f consumer-smoke/pom.xml test-compile
+mvn -q -U -f consumer-smoke/pom.xml clean test-compile
 ```
 
 If needed, the consumed version can be overridden:
 
 ```bash
-mvn -q -U -f consumer-smoke/pom.xml test-compile -Dpepenium.version=0.6.0
+mvn -q -U -f consumer-smoke/pom.xml clean test-compile -Dpepenium.version=0.6.0
 ```
 
 ## What It Covers

@@ -22,6 +22,6 @@ final class AndroidSearchPage {
     }
 
     void openQuickSearch() {
-        actions.makeClick(QUICK_SEARCH_TAB);
+        actions.click(QUICK_SEARCH_TAB);
     }
 }
