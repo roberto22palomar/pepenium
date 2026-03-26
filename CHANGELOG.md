@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added platform-specific toolkit assertions for web, Android and iOS under `pepenium-toolkit/src/main/java/.../toolkit/assertions`.
 - Added `API.md` to define the current public, evolving and internal API surface on the road to `1.0.0`.
 - Added a standalone `consumer-smoke` project to validate the documented public API from a separate Maven consumer.
+- Added an internal Pepenium runtime and lifecycle extension so `BaseTest` can delegate session lifecycle and failure handling instead of owning the full runtime internally.
 
 ### Changed
 
@@ -32,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated contributor and root documentation to include the standalone public-API consumer smoke validation flow.
 - Aligned `ActionsApp` with the cross-platform `click(...)` and `type(...)` naming used in web and iOS, while keeping the older Android method names as compatibility aliases for now.
 - Updated GitHub Actions so CI installs the framework artifacts locally and runs the standalone `consumer-smoke` validation before packaging.
+- Refactored `BaseTest` into a thinner public facade while moving runtime lifecycle, session initialization and failure reporting into dedicated internal runtime classes.
 
 ### Dependencies
 
