@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated contributor and root documentation to include the standalone public-API consumer smoke validation flow.
 - Aligned `ActionsApp` with the cross-platform `click(...)` and `type(...)` naming used in web and iOS, while keeping the older Android method names as compatibility aliases for now.
 - Updated GitHub Actions so CI installs the framework artifacts locally and runs the standalone `consumer-smoke` validation before packaging.
+- Refactored `BaseTest` into a thinner public facade while moving runtime lifecycle, session initialization and failure reporting into dedicated internal runtime classes.
 
 ### Dependencies
 
