@@ -6,7 +6,6 @@ import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import io.github.roberto22palomar.pepenium.toolkit.support.ActionLoggingSupport;
 import io.github.roberto22palomar.pepenium.toolkit.support.FastUiSettle;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -44,6 +43,11 @@ public class ActionsApp {
     public WebElement waitToBePresent(By locator) {
         WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
         return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+    }
+
+    public WebElement waitToBeVisible(By locator) {
+        WebDriverWait wait = new WebDriverWait(driver, DEFAULT_TIMEOUT);
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
     public boolean waitForElementText(By locator, String expectedText) {
@@ -101,12 +105,6 @@ public class ActionsApp {
         }
     }
 
-    @SneakyThrows
-    @Deprecated(forRemoval = false)
-    public void makeClick(By locator) {
-        click(locator);
-    }
-
     public boolean waitStableScreen() {
         final By root = AppiumBy.androidUIAutomator("new UiSelector().resourceId(\"android:id/content\")");
         final By spinner = AppiumBy.androidUIAutomator("new UiSelector().className(\"android.widget.ProgressBar\")");
@@ -145,7 +143,7 @@ public class ActionsApp {
         return false;
     }
 
-    public boolean makeClickIfVisible(By locator) throws InterruptedException {
+    public boolean clickIfVisible(By locator) {
         if (isElementVisible(locator)) {
             click(locator);
             return true;
@@ -157,7 +155,7 @@ public class ActionsApp {
         StepTracker.record("Type into " + locator);
         try {
             waitStableScreen();
-            WebElement element = waitToBePresent(locator);
+            WebElement element = waitToBeVisible(locator);
             element.clear();
             element.sendKeys(text);
         } catch (Exception e) {
@@ -166,20 +164,14 @@ public class ActionsApp {
         }
     }
 
-    @Deprecated(forRemoval = false)
-    public void sendText(By locator, String text) {
-        type(locator, text);
-    }
-
-    public void waitLoadingScreenToDisappear(String xpath) {
-        StepTracker.record("Wait loading screen " + xpath);
-        By loadingIndicator = By.xpath(xpath);
+    public void waitUntilHidden(By locator) {
+        StepTracker.record("Wait until hidden " + locator);
         try {
             WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(loadingIndicator));
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(loadingIndicator));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
         } catch (TimeoutException e) {
-            ActionLoggingSupport.logTimeout(log, "loading wait", loadingIndicator, e);
+            ActionLoggingSupport.logTimeout(log, "hidden wait", locator, e);
             throw e;
         }
     }

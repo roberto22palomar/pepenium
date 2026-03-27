@@ -44,7 +44,9 @@ These classes define the main authoring model:
 
 These are intended as the reusable building blocks for writing tests, flows and page objects.
 
-For cross-platform consistency, new usage should prefer the converged `click(...)` and `type(...)` naming across web, Android and iOS action helpers.
+For cross-platform consistency, the supported cross-platform action surface should converge on the same core verbs across web, Android and iOS, especially `click(...)`, `clickIfVisible(...)`, `type(...)` and `waitUntilHidden(...)`.
+
+The shared assertion surface should likewise stay aligned around `assertVisible(...)`, `assertNotVisible(...)`, `assertPresent(...)`, `assertTextEquals(...)` and `assertTextContains(...)`, while web-only assertions should be reserved for browser-specific concerns such as URL, title and input-value checks.
 
 ## Advanced / Evolving API
 

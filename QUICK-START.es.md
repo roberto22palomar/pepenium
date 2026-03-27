@@ -10,6 +10,8 @@ Esta guia muestra la forma mas rapida de entender y ejecutar Pepenium tal y como
 - Un emulador o dispositivo Android si quieres ejecucion Android local
 - Credenciales y configuracion de BrowserStack o AWS para ejecucion remota
 
+Si prefieres no instalar Appium directamente en tu maquina, usa el `docker-compose.yaml` de la raiz para ejecutar Appium en Docker mientras el emulador Android sigue en el host.
+
 ## 2. Idea Clave
 
 Ahora los tests declaran un target funcional, no una clase de config especifica del proveedor.
@@ -98,6 +100,51 @@ APP_PATH=C:\ruta\app.apk
 APP_PACKAGE=com.example.app
 APP_ACTIVITY=com.example.MainActivity
 ```
+
+Si ejecutas Appium con Docker Compose y mantienes el emulador en el host, usa:
+
+```text
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=host.docker.internal:5555
+ANDROID_DEVICE_NAME=Android Emulator
+```
+
+Flujo tipico:
+
+1. Arranca el emulador Android en la maquina host.
+2. Arranca Appium con `docker compose up -d appium`.
+3. Espera a que `http://localhost:4723/status` responda.
+4. Ejecuta los mismos tests Android locales de siempre.
+
+El compose habilita ADB remoto para que el contenedor pueda conectarse de vuelta al emulador del host mediante `host.docker.internal:5555`.
+
+Opcion experimental totalmente dockerizada:
+
+- fichero base: `docker-compose.yaml`
+- overlay del emulador: `docker-compose.emulator.yaml`
+- recomendable solo en Linux o en Windows 11 + WSL2 con virtualizacion anidada y `/dev/kvm` disponible
+- imagen comunitaria usada para el emulador: `budtmo/docker-android:emulator_13.0`
+
+Arranque:
+
+```text
+docker compose -f docker-compose.yaml -f docker-compose.emulator.yaml up -d
+```
+
+Valores a usar en el entorno del test:
+
+```text
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=android-emulator:5555
+ANDROID_DEVICE_NAME=Android Emulator
+```
+
+Endpoints utiles:
+
+- estado de Appium: `http://localhost:4723/status`
+- noVNC del emulador: `http://localhost:6080`
+
+Esta modalidad queda documentada como experimental a proposito porque los emuladores Android en Docker dependen mucho de la virtualizacion hardware y suelen ser bastante menos predecibles que un emulador en host.
 
 ### Web Desktop
 

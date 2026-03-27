@@ -10,6 +10,8 @@ This guide shows the fastest path to understand and run Pepenium as it stands in
 - An Android emulator or device if you want local Android execution
 - BrowserStack or AWS credentials and config for remote execution
 
+If you prefer not to install Appium directly on your machine, use the root `docker-compose.yaml` to run Appium in Docker while keeping the Android emulator on the host.
+
 ## 2. Core Idea
 
 Tests declare a functional target, not a provider-specific config class.
@@ -98,6 +100,51 @@ APP_PATH=C:\path\to\app.apk
 APP_PACKAGE=com.example.app
 APP_ACTIVITY=com.example.MainActivity
 ```
+
+If you run Appium through Docker Compose and keep the emulator on the host, use:
+
+```text
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=host.docker.internal:5555
+ANDROID_DEVICE_NAME=Android Emulator
+```
+
+Typical workflow:
+
+1. Start the Android emulator on the host machine.
+2. Start Appium with `docker compose up -d appium`.
+3. Wait until `http://localhost:4723/status` responds.
+4. Run the same local Android tests as usual.
+
+The compose file enables Appium remote ADB wiring so the container can connect back to the host emulator through `host.docker.internal:5555`.
+
+Experimental fully dockerized option:
+
+- Base file: `docker-compose.yaml`
+- Emulator overlay: `docker-compose.emulator.yaml`
+- Recommended only on Linux or Windows 11 + WSL2 with nested virtualization and `/dev/kvm` available
+- Community image used for the emulator: `budtmo/docker-android:emulator_13.0`
+
+Start it with:
+
+```text
+docker compose -f docker-compose.yaml -f docker-compose.emulator.yaml up -d
+```
+
+Use these values in the test environment:
+
+```text
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=android-emulator:5555
+ANDROID_DEVICE_NAME=Android Emulator
+```
+
+Useful endpoints:
+
+- Appium status: `http://localhost:4723/status`
+- Emulator noVNC: `http://localhost:6080`
+
+This mode is intentionally documented as experimental because Android emulators in Docker depend heavily on hardware virtualization and tend to be far less predictable than host emulators.
 
 ### Desktop Web
 

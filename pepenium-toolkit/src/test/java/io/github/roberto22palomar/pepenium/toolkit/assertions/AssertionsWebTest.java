@@ -10,8 +10,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -59,14 +57,15 @@ class AssertionsWebTest {
     }
 
     @Test
-    void assertCountAtLeastFailsWhenNotEnoughElements() {
-        when(driver.findElements(LOCATOR)).thenReturn(List.of(element));
+    void assertInputValueEqualsUsesReadableMessage() {
+        when(driver.findElement(LOCATOR)).thenReturn(element);
+        when(element.getAttribute("value")).thenReturn("actual");
 
         AssertionsWeb assertions = new AssertionsWeb(driver);
 
         AssertionError error = assertThrows(AssertionError.class,
-                () -> assertions.assertCountAtLeast(LOCATOR, 2));
+                () -> assertions.assertInputValueEquals(LOCATOR, "expected"));
 
-        assertTrue(error.getMessage().contains("Expected at least 2 elements"));
+        assertTrue(error.getMessage().contains("Expected input value 'expected'"));
     }
 }

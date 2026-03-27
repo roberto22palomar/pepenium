@@ -37,6 +37,7 @@ La direccion actual del proyecto es simple de entender y practica de ejecutar: l
 
 Consulta [QUICK-START.es.md](QUICK-START.es.md) para empezar rapido y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
 Usa [ENVIRONMENT.md](ENVIRONMENT.md) como referencia central de variables de entorno y properties de runtime.
+Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 
 ## Que Aporta v0.6.0
 
@@ -251,6 +252,26 @@ APP_PATH=C:\ruta\app.apk
 APP_PACKAGE=com.example.app
 APP_ACTIVITY=com.example.MainActivity
 ```
+
+Appium dockerizado con emulador en host:
+
+```text
+docker compose up -d appium
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=host.docker.internal:5555
+ANDROID_DEVICE_NAME=Android Emulator
+```
+
+Stack experimental totalmente dockerizado con emulador:
+
+```text
+docker compose -f docker-compose.yaml -f docker-compose.emulator.yaml up -d
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=android-emulator:5555
+ANDROID_DEVICE_NAME=Android Emulator
+```
+
+Esta modalidad de emulador queda como experimental y encaja mejor en Linux o en Windows 11 + WSL2 cuando `/dev/kvm` esta disponible.
 
 ### Android Web
 

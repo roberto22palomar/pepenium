@@ -30,19 +30,19 @@ public class SearchPage {
 
     public void close() {
         log.info("Closing Search page (Android)");
-        actionsApp.makeClick(btnClose);
+        actionsApp.click(btnClose);
         actionsApp.takeScreenshot();
     }
 
     public void openQuickSearchTab() {
         log.info("Opening Quick Search tab (Android)");
-        actionsApp.makeClick(tabQuickSearch);
+        actionsApp.click(tabQuickSearch);
         actionsApp.takeScreenshot();
     }
 
     public void openFiltersTab() {
         log.info("Opening Filters tab (Android)");
-        actionsApp.makeClick(tabFilters);
+        actionsApp.click(tabFilters);
         actionsApp.takeScreenshot();
     }
 }

@@ -1,0 +1,24 @@
+services:
+  appium:
+    image: appium/appium:latest
+    container_name: pepenium-appium
+    restart: unless-stopped
+    ports:
+      - "4723:4723"
+    environment:
+      REMOTE_ADB: ${REMOTE_ADB:-true}
+      ANDROID_DEVICES: ${ANDROID_DEVICES:-host.docker.internal:5555}
+      REMOTE_ADB_POLLING_SEC: ${REMOTE_ADB_POLLING_SEC:-30}
+      APPIUM_ADDITIONAL_PARAMS: ${APPIUM_ADDITIONAL_PARAMS:---session-override}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://localhost:4723/status').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
