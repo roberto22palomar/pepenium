@@ -1,0 +1,24 @@
+services:
+  appium:
+    environment:
+      ANDROID_DEVICES: ${ANDROID_DEVICES:-android-emulator:5555}
+
+  android-emulator:
+    image: budtmo/docker-android:emulator_13.0
+    container_name: pepenium-android-emulator
+    restart: unless-stopped
+    privileged: true
+    shm_size: "2gb"
+    ports:
+      - "5555:5555"
+      - "6080:6080"
+    environment:
+      EMULATOR_DEVICE: ${EMULATOR_DEVICE:-Samsung Galaxy S10}
+      WEB_VNC: ${WEB_VNC:-true}
+    devices:
+      - "/dev/kvm:/dev/kvm"
+    volumes:
+      - android-emulator-data:/home/androidusr
+
+volumes:
+  android-emulator-data:

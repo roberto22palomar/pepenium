@@ -46,6 +46,7 @@ PEPENIUM_PROFILE=local-web
   - local Android native
   - local Android web
 - Purpose: Appium server URL for local mobile execution
+- Docker note: when Appium runs through the repository `docker-compose.yaml`, keep using the published host port such as `http://localhost:4723`
 
 ### `ANDROID_UDID`
 
@@ -55,6 +56,8 @@ PEPENIUM_PROFILE=local-web
   - local Android native
   - local Android web
 - Purpose: Target Android emulator or device identifier
+- Docker note: when Appium runs in Docker and the emulator stays on the host, this usually becomes a remote ADB address such as `host.docker.internal:5555`
+- Docker emulator note: when Appium and the emulator both run in Compose, this can stay as `android-emulator:5555`
 
 ### `ANDROID_DEVICE_NAME`
 
@@ -225,6 +228,24 @@ Those YAML files define items such as:
 APPIUM_URL=http://localhost:4723
 ANDROID_UDID=emulator-5554
 ANDROID_DEVICE_NAME=Android Device
+APP_PATH=C:\apps\my-app.apk
+```
+
+### Local Android Native With Dockerized Appium
+
+```text
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=host.docker.internal:5555
+ANDROID_DEVICE_NAME=Android Emulator
+APP_PATH=C:\apps\my-app.apk
+```
+
+### Local Android Native With Dockerized Appium And Emulator
+
+```text
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=android-emulator:5555
+ANDROID_DEVICE_NAME=Android Emulator
 APP_PATH=C:\apps\my-app.apk
 ```
 

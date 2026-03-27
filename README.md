@@ -38,6 +38,7 @@ Its current direction is simple to understand and practical to run: tests declar
 See [QUICK-START.md](QUICK-START.md) for the fastest way to run it and [CHANGELOG.md](CHANGELOG.md) for release history.
 Use [ENVIRONMENT.md](ENVIRONMENT.md) as the central reference for environment variables and runtime properties.
 Use [API.md](API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
+Use the root `docker-compose.yaml` if you want to run the local Appium server in Docker while keeping the Android emulator on the host.
 Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone public-API consumer smoke validation flow.
 
 The main CI workflow now validates that standalone consumer smoke before the packaging job, so public API consumption is checked continuously and not only by local convention.
@@ -255,6 +256,26 @@ APP_PATH=C:\path\to\app.apk
 APP_PACKAGE=com.example.app
 APP_ACTIVITY=com.example.MainActivity
 ```
+
+Dockerized Appium with host emulator:
+
+```text
+docker compose up -d appium
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=host.docker.internal:5555
+ANDROID_DEVICE_NAME=Android Emulator
+```
+
+Experimental fully dockerized emulator stack:
+
+```text
+docker compose -f docker-compose.yaml -f docker-compose.emulator.yaml up -d
+APPIUM_URL=http://localhost:4723
+ANDROID_UDID=android-emulator:5555
+ANDROID_DEVICE_NAME=Android Emulator
+```
+
+This emulator mode is intentionally experimental and is best suited to Linux or Windows 11 + WSL2 setups that expose `/dev/kvm`.
 
 ### Android Web
 
