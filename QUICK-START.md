@@ -2,6 +2,8 @@
 
 This guide shows the fastest path to understand and run Pepenium as it stands in `v0.7.0`.
 
+If this is your first contact with the project, use [START-HERE.md](START-HERE.md) first and come back here once you want the fuller walkthrough.
+
 ## 1. Prerequisites
 
 - Java 11

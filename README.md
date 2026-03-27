@@ -26,6 +26,22 @@ Pepenium is a Java automation framework for Android, iOS and Web built on top of
 
 Its current direction is simple to understand and practical to run: tests declare a functional target, execution profiles decide where they run, and the framework owns session lifecycle, logging and failure diagnostics.
 
+## Start Here
+
+If you are new to the project, start with [START-HERE.md](START-HERE.md).
+
+Recommended first steps:
+
+1. Run `mvn -q -DskipTests test-compile`
+2. Run the desktop web showcase for your first live success
+3. Move to Android only after the web path is working
+
+Ready-to-copy environment examples:
+
+- [`.env.web.example`](/C:/dev/workspace/personal/pepenium/.env.web.example)
+- [`.env.android.host-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.docker-emulator.example)
+
 ## Why Pepenium
 
 - One test per functional target, not one test per provider
@@ -35,7 +51,7 @@ Its current direction is simple to understand and practical to run: tests declar
 - Screenshot helpers designed for fast flows without blurred captures
 - Cleaner logs with automatic runtime context and failure evidence
 
-See [QUICK-START.md](QUICK-START.md) for the fastest way to run it and [CHANGELOG.md](CHANGELOG.md) for release history.
+See [START-HERE.md](START-HERE.md) for the fastest first-run path, [QUICK-START.md](QUICK-START.md) for the fuller walkthrough and [CHANGELOG.md](CHANGELOG.md) for release history.
 Use [ENVIRONMENT.md](ENVIRONMENT.md) as the central reference for environment variables and runtime properties.
 Use [API.md](API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
 Use the root `docker-compose.yaml` if you want to run the local Appium server in Docker while keeping the Android emulator on the host.

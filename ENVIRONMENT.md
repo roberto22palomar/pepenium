@@ -4,6 +4,12 @@ This document lists the environment variables and system properties currently us
 
 It is intended to be the single reference point for configuring local runs, remote executions and observability features.
 
+Ready-to-copy examples for common local setups:
+
+- [`.env.web.example`](/C:/dev/workspace/personal/pepenium/.env.web.example)
+- [`.env.android.host-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.docker-emulator.example)
+
 ## Resolution Order
 
 When a setting supports both a Java system property and an environment variable, Pepenium resolves them in this order:
