@@ -26,6 +26,22 @@ Pepenium es un framework de automatizacion en Java para Android, iOS y Web const
 
 La direccion actual del proyecto es simple de entender y practica de ejecutar: los tests declaran un target funcional, los execution profiles deciden donde corren y el framework se encarga del ciclo de vida de sesion, el logging y el diagnostico de fallos.
 
+## Empieza Aqui
+
+Si eres nuevo en el proyecto, empieza por [START-HERE.es.md](START-HERE.es.md).
+
+Primeros pasos recomendados:
+
+1. Ejecuta `mvn -q -DskipTests test-compile`
+2. Ejecuta el showcase web desktop para tener tu primer exito real
+3. Pasa a Android solo cuando la ruta web ya funcione
+
+Ficheros de entorno listos para copiar:
+
+- [`.env.web.example`](/C:/dev/workspace/personal/pepenium/.env.web.example)
+- [`.env.android.host-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.docker-emulator.example)
+
 ## Por Que Pepenium
 
 - Un test por target funcional, no un test por proveedor
@@ -35,7 +51,7 @@ La direccion actual del proyecto es simple de entender y practica de ejecutar: l
 - Capturas pensadas para flujos rapidos sin screenshots borrosos
 - Logs mas limpios con contexto automatico y evidencia de fallo
 
-Consulta [QUICK-START.es.md](QUICK-START.es.md) para empezar rapido y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
+Consulta [START-HERE.es.md](START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
 Usa [ENVIRONMENT.md](ENVIRONMENT.md) como referencia central de variables de entorno y properties de runtime.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 
