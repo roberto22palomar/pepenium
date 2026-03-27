@@ -12,7 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <pepenium.version>0.6.0</pepenium.version>
+        <pepenium.version>0.7.0</pepenium.version>
         <junit.jupiter.version>5.13.1</junit.jupiter.version>
     </properties>
 

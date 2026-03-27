@@ -11,12 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+### Changed
+
+### Dependencies
+
+
+## [0.7.0] - 2026-03-27
+
+### Added
+
 - Added `ActionLoggingSupport` in `pepenium-toolkit` to centralize action timeout/error logging and shared screenshot output path resolution.
 - Added platform-specific toolkit assertions for web, Android and iOS under `pepenium-toolkit/src/main/java/.../toolkit/assertions`.
 - Added `API.md` to define the current public, evolving and internal API surface on the road to `1.0.0`.
 - Added a standalone `consumer-smoke` project to validate the documented public API from a separate Maven consumer.
 - Added stronger configuration validation in `pepenium-core` for profile resolution, BrowserStack YAML loading and critical local/AWS environment requirements.
 - Added direct `pepenium-toolkit` tests for action helpers, assertion helpers and support utilities.
+- Added `docker-compose.yaml` to run local Appium in Docker while connecting either to a host Android emulator or to a Compose-managed emulator.
+- Added `docker-compose.emulator.yaml` as an experimental Android emulator overlay with noVNC access for fully dockerized local mobile runs.
 
 ### Changed
 
@@ -36,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Cleaned the public `Assertions*` API by extracting a shared cross-platform assertion core and narrowing web-specific assertions to clearly browser-oriented checks.
 - Updated GitHub Actions so CI installs the framework artifacts locally and runs the standalone `consumer-smoke` validation before packaging.
 - Refactored `BaseTest` into a thinner public facade while moving runtime lifecycle, session initialization and failure reporting into dedicated internal runtime classes.
+- Updated local documentation and environment guidance to document both dockerized Appium modes and the recommended host-emulator workflow.
 
 ### Dependencies
 

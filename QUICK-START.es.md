@@ -1,6 +1,6 @@
 # Guia Rapida
 
-Esta guia muestra la forma mas rapida de entender y ejecutar Pepenium tal y como esta en `v0.6.0`.
+Esta guia muestra la forma mas rapida de entender y ejecutar Pepenium tal y como esta en `v0.7.0`.
 
 ## 1. Requisitos
 

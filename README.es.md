@@ -39,7 +39,7 @@ Consulta [QUICK-START.es.md](QUICK-START.es.md) para empezar rapido y [CHANGELOG
 Usa [ENVIRONMENT.md](ENVIRONMENT.md) como referencia central de variables de entorno y properties de runtime.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 
-## Que Aporta v0.6.0
+## Que Aporta v0.7.0
 
 - Division del repositorio en `pepenium-core`, `pepenium-toolkit` y `pepenium-examples`
 - Movimiento del runtime del framework a fuentes reales de produccion en `src/main`

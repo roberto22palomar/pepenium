@@ -1,6 +1,6 @@
 # Quick Start
 
-This guide shows the fastest path to understand and run Pepenium as it stands in `v0.6.0`.
+This guide shows the fastest path to understand and run Pepenium as it stands in `v0.7.0`.
 
 ## 1. Prerequisites
 
