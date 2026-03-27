@@ -1,6 +1,7 @@
 package io.github.roberto22palomar.pepenium.core.config.yaml;
 
 import io.github.roberto22palomar.pepenium.core.config.browserstack.BrowserStackConfig;
+import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -18,9 +19,11 @@ public final class YamlLoader {
     public static BrowserStackConfig load(String yamlPath) {
         Path resolvedPath = resolvePath(yamlPath);
         try (InputStream in = Files.newInputStream(resolvedPath)) {
-            return new Yaml().loadAs(in, BrowserStackConfig.class);
+            BrowserStackConfig config = new Yaml().loadAs(in, BrowserStackConfig.class);
+            return ConfigValidationSupport.validateBrowserStackAppConfig(config, resolvedPath.toString());
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load browserstack.yml from '" + resolvedPath + "': " + e.getMessage(), e);
+            throw ConfigValidationSupport.invalid(
+                    "Failed to load BrowserStack YAML from '" + resolvedPath + "': " + e.getMessage(), e);
         }
     }
 
@@ -40,7 +43,7 @@ public final class YamlLoader {
         return candidates.stream()
                 .filter(Files::exists)
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> ConfigValidationSupport.invalid(
                         "Could not find BrowserStack YAML. Looked for: "
                                 + candidates.stream().map(Path::toString).collect(Collectors.joining(", "))
                 ));

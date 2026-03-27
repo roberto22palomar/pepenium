@@ -1,11 +1,11 @@
 package io.github.roberto22palomar.pepenium.core.configs.local.android;
 
 import io.appium.java_client.android.options.UiAutomator2Options;
+import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 
-import java.net.URL;
 import java.time.Duration;
 
 public class AndroidWebConfigLocal implements DriverConfig {
@@ -15,6 +15,11 @@ public class AndroidWebConfigLocal implements DriverConfig {
         String appiumUrl = envOrDefault("APPIUM_URL", "http://localhost:4723");
         String udid = envOrDefault("ANDROID_UDID", "emulator-5554");
         String deviceName = envOrDefault("ANDROID_DEVICE_NAME", "Android Device");
+        var serverUrl = ConfigValidationSupport.requireUrl(
+                appiumUrl,
+                "APPIUM_URL",
+                "Use a valid Appium server URL such as http://localhost:4723."
+        );
 
         UiAutomator2Options opts = new UiAutomator2Options()
                 .setPlatformName("Android")
@@ -26,7 +31,7 @@ public class AndroidWebConfigLocal implements DriverConfig {
 
         return DriverRequest.builder()
                 .driverType(DriverType.ANDROID_APPIUM)
-                .serverUrl(new URL(appiumUrl))
+                .serverUrl(serverUrl)
                 .capabilities(opts)
                 .description("Local Android mobile web")
                 .build();

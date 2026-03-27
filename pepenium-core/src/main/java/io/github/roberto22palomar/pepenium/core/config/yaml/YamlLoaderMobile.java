@@ -2,6 +2,7 @@ package io.github.roberto22palomar.pepenium.core.config.yaml;
 
 
 import io.github.roberto22palomar.pepenium.core.config.browserstack.BrowserStackConfigMobile;
+import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -16,9 +17,11 @@ public final class YamlLoaderMobile {
     public static BrowserStackConfigMobile load(String yamlPath) {
         Path resolvedPath = YamlLoader.resolvePath(yamlPath);
         try (InputStream in = Files.newInputStream(resolvedPath)) {
-            return new Yaml().loadAs(in, BrowserStackConfigMobile.class);
+            BrowserStackConfigMobile config = new Yaml().loadAs(in, BrowserStackConfigMobile.class);
+            return ConfigValidationSupport.validateBrowserStackMobileWebConfig(config, resolvedPath.toString());
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load browserstack.yml from '" + resolvedPath + "': " + e.getMessage(), e);
+            throw ConfigValidationSupport.invalid(
+                    "Failed to load BrowserStack YAML from '" + resolvedPath + "': " + e.getMessage(), e);
         }
     }
 }

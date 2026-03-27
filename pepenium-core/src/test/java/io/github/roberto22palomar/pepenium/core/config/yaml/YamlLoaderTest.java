@@ -46,11 +46,24 @@ class YamlLoaderTest {
 
     @Test
     void throwsHelpfulErrorWhenNoCandidatePathExists() {
-        RuntimeException error = assertThrows(
-                RuntimeException.class,
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
                 () -> YamlLoader.resolvePath("src/test/resources/does-not-exist.yml")
         );
 
         assertTrue(error.getMessage().contains("Could not find BrowserStack YAML"));
+    }
+
+    @Test
+    void rejectsInvalidBrowserStackYamlContentClearly() throws Exception {
+        Path invalidYaml = java.nio.file.Files.createTempFile("browserstack-invalid", ".yml");
+        java.nio.file.Files.writeString(invalidYaml, "userName: user\naccessKey: key\nplatforms: []\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> YamlLoader.load(invalidYaml.toString())
+        );
+
+        assertTrue(error.getMessage().contains("BrowserStack app is required"));
     }
 }
