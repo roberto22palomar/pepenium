@@ -43,7 +43,7 @@ Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone publ
 
 The main CI workflow now validates that standalone consumer smoke before the packaging job, so public API consumption is checked continuously and not only by local convention.
 
-## What v0.6.0 Adds
+## What v0.7.0 Adds
 
 - Split the repository into `pepenium-core`, `pepenium-toolkit` and `pepenium-examples`
 - Moved framework runtime code into real `src/main` production sources
