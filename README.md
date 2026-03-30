@@ -336,6 +336,7 @@ Pepenium includes:
 
 - `takeScreenshot()` for safer evidence capture
 - `takeScreenshotFast()` for lighter checkpoints
+- HTML test reports under `target/pepenium-reports/`
 - temp-directory fallback when `DEVICEFARM_SCREENSHOT_PATH` is not set
 - a Pepenium ASCII banner when a session starts
 - compact logs with profile, target, driver and short session id
@@ -356,6 +357,17 @@ Step tracking behavior:
 - keeps only the last `10` steps by default
 - can be tuned with `PEPENIUM_STEP_TRACKER_LIMIT` or `-Dpepenium.step.tracker.limit=...`
 - can be enriched manually from tests or flows with `step("Open search")`
+
+HTML report behavior:
+
+- generates one report per Pepenium-managed test
+- writes an `index.html`, `summary.json` and per-test HTML/JSON files under `target/pepenium-reports/`
+- stores report screenshots under `target/pepenium-reports/screenshots/`
+- shows duration, highlights and pass/fail assertion badges in the per-test report
+- includes a richer full event timeline with action/wait/assert/error semantics and grouped screenshot previews
+- surfaces remote session context such as provider, host, project and build when available
+- summarizes pass/fail, target/profile/provider breakdowns and total duration directly in the report index
+- can be redirected with `PEPENIUM_REPORT_DIR` or `-Dpepenium.report.dir=...`
 
 If you need extra framework detail, enable:
 

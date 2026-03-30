@@ -8,6 +8,8 @@ import io.github.roberto22palomar.pepenium.core.execution.ExecutionProfileResolv
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import io.github.roberto22palomar.pepenium.core.observability.FailureContextReporter;
 import io.github.roberto22palomar.pepenium.core.observability.LoggingContext;
+import io.github.roberto22palomar.pepenium.core.observability.PepeniumHtmlReportWriter;
+import io.github.roberto22palomar.pepenium.core.observability.PepeniumTimeline;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
@@ -71,6 +73,14 @@ final class PepeniumRuntime {
 
     void reportFailure(String displayName, Throwable cause) {
         FailureContextReporter.report(displayName, session, cause);
+    }
+
+    void writeTestReport(String displayName, Throwable cause) {
+        PepeniumHtmlReportWriter.write(displayName, session, cause);
+    }
+
+    void beginTestObservability() {
+        PepeniumTimeline.beginTest();
     }
 
     void clearPerTestState() {

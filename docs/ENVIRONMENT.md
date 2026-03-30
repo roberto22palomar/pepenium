@@ -205,6 +205,30 @@ PEPENIUM_DETAIL_LOGGING=true
 PEPENIUM_STEP_TRACKER_LIMIT=20
 ```
 
+### `pepenium.report.dir`
+
+- Type: Java system property
+- Required: No
+- Default: `target/pepenium-reports`
+- Purpose: Overrides the output directory for Pepenium HTML/JSON test reports, suite summary files and generated screenshot previews
+- Example:
+
+```text
+-Dpepenium.report.dir=C:\reports\pepenium
+```
+
+### `PEPENIUM_REPORT_DIR`
+
+- Type: Environment variable
+- Required: No
+- Default: `target/pepenium-reports`
+- Purpose: Environment-variable alternative to override the report output directory and report-owned screenshot/summary artifacts
+- Example:
+
+```text
+PEPENIUM_REPORT_DIR=C:\reports\pepenium
+```
+
 ## BrowserStack Notes
 
 BrowserStack execution in the current codebase is primarily configured through YAML files rather than environment variables.

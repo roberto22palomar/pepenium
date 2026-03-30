@@ -67,6 +67,7 @@ public class ActionsWeb {
     }
 
     public WebElement waitToBeVisible(By locator) {
+        ActionLoggingSupport.recordWait("Wait for visible " + locator);
         try {
             return new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.visibilityOfElementLocated(locator));
@@ -80,6 +81,7 @@ public class ActionsWeb {
     }
 
     public WebElement waitToBePresent(By locator) {
+        ActionLoggingSupport.recordWait("Wait for present " + locator);
         try {
             return new WebDriverWait(driver, LONG_TIMEOUT)
                     .until(ExpectedConditions.presenceOfElementLocated(locator));
@@ -135,6 +137,7 @@ public class ActionsWeb {
     @SneakyThrows
     public void click(By locator) {
         StepTracker.record("Click " + locator);
+        ActionLoggingSupport.recordAction("Click " + locator);
         try {
             WebElement element = new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.elementToBeClickable(locator));
@@ -159,6 +162,7 @@ public class ActionsWeb {
 
     public void type(By locator, String text) {
         StepTracker.record("Type into " + locator);
+        ActionLoggingSupport.recordAction("Type into " + locator);
         try {
             WebElement element = waitToBeVisible(locator);
             element.clear();
@@ -171,6 +175,7 @@ public class ActionsWeb {
 
     public void waitUntilHidden(By locator) {
         StepTracker.record("Wait until hidden " + locator);
+        ActionLoggingSupport.recordWait("Wait until hidden " + locator);
         try {
             WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
             wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
@@ -213,6 +218,7 @@ public class ActionsWeb {
 
             String fullPath = filePath.toAbsolutePath().toString();
             log.info("Screenshot saved at: {}", fullPath);
+            ActionLoggingSupport.recordSavedScreenshot(fullPath);
             return fullPath;
 
         } catch (IOException e) {

@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.toolkit.assertions;
 
+import io.github.roberto22palomar.pepenium.core.observability.PepeniumTimeline;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -11,27 +12,47 @@ abstract class PlatformAssertions extends BaseAssertions {
     }
 
     public void assertVisible(By locator) {
-        StepTracker.record("Assert visible " + locator);
-        super.assertVisible(locator);
+        runAssertion("Assert visible " + locator, () -> super.assertVisible(locator));
     }
 
     public void assertNotVisible(By locator) {
-        StepTracker.record("Assert hidden " + locator);
-        super.assertNotVisible(locator);
+        runAssertion("Assert hidden " + locator, () -> super.assertNotVisible(locator));
     }
 
     public void assertPresent(By locator) {
-        StepTracker.record("Assert present " + locator);
-        super.assertPresent(locator);
+        runAssertion("Assert present " + locator, () -> super.assertPresent(locator));
     }
 
     public void assertTextEquals(By locator, String expectedText) {
-        StepTracker.record("Assert exact text on " + locator);
-        super.assertTextEquals(locator, expectedText);
+        runAssertion("Assert exact text on " + locator, () -> super.assertTextEquals(locator, expectedText));
     }
 
     public void assertTextContains(By locator, String expectedFragment) {
-        StepTracker.record("Assert partial text on " + locator);
-        super.assertTextContains(locator, expectedFragment);
+        runAssertion("Assert partial text on " + locator, () -> super.assertTextContains(locator, expectedFragment));
+    }
+
+    protected void recordPassedAssertion(String description) {
+        StepTracker.record(description);
+        PepeniumTimeline.recordAssertionPassed(description);
+    }
+
+    protected void recordFailedAssertion(String description) {
+        StepTracker.record(description);
+        PepeniumTimeline.recordAssertionFailed(description);
+    }
+
+    protected void runAssertion(String description, ThrowingRunnable runnable) {
+        try {
+            runnable.run();
+            recordPassedAssertion(description);
+        } catch (RuntimeException | AssertionError e) {
+            recordFailedAssertion(description);
+            throw e;
+        }
+    }
+
+    @FunctionalInterface
+    protected interface ThrowingRunnable {
+        void run();
     }
 }
