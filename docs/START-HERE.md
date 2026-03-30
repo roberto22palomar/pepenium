@@ -117,9 +117,25 @@ mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
 mvn -q -U -f consumer-smoke/pom.xml clean test-compile
 ```
 
-## 6. Where To Go Next
+## 6. Check The Native Reports
+
+After a Pepenium-managed execution, the framework now writes a native reporting bundle by default under:
+
+```text
+target/pepenium-reports/
+```
+
+Start with:
+
+- `target/pepenium-reports/index.html`
+- `target/pepenium-reports/summary.json`
+
+The console also prints direct `file:///...` links to the per-test report and the report index so local investigation is faster.
+
+## 7. Where To Go Next
 
 - Use [README.md](../README.md) for the project overview.
 - Use [QUICK-START.md](QUICK-START.md) for the fuller walkthrough.
 - Use [ENVIRONMENT.md](ENVIRONMENT.md) for every supported variable.
 - Use [API.md](API.md) to understand what is public vs internal.
+- Use [REPORTING.md](REPORTING.md) for the reporting-specific details.

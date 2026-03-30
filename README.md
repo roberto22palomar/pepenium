@@ -59,6 +59,61 @@ Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone publ
 
 The main CI workflow now validates that standalone consumer smoke before the packaging job, so public API consumption is checked continuously and not only by local convention.
 
+## Using Pepenium From Another Project
+
+If you want to consume Pepenium from a separate Maven project, the short rule is:
+
+- use `pepenium-toolkit` for normal test-authoring projects
+- use `pepenium` only if you intentionally want the lower-level runtime/core layer without the toolkit helpers
+- do **not** add `pepenium-parent` under `<dependencies>` because it is the Maven parent POM, not the normal runtime dependency for test code
+
+Typical consumer dependency:
+
+```xml
+<dependency>
+    <groupId>io.github.roberto22palomar</groupId>
+    <artifactId>pepenium-toolkit</artifactId>
+    <version>0.8.0</version>
+</dependency>
+```
+
+Why `pepenium-toolkit` is usually the right entry point:
+
+- it is the artifact most external users actually want to build against
+- it gives you `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS`
+- it pulls in the core runtime transitively, so you still get `BaseTest` and `TestTarget` without wiring both layers manually
+
+If you want a concrete consumer example, see [consumer-smoke/README.md](consumer-smoke/README.md).
+
+## Native Reports
+
+Pepenium now generates a native HTML and JSON reporting bundle out of the box after test execution.
+
+![Pepenium report preview](docs/assets/reporting-preview.svg)
+
+What it generates:
+
+- a suite-level `index.html`
+- a suite-level `summary.json`
+- one per-test HTML report
+- one per-test JSON report
+- linked screenshots for evidence when they are available
+
+Where it writes by default:
+
+```text
+target/pepenium-reports/
+```
+
+Why it is useful:
+
+- you can open a clean HTML report instead of reading raw console logs
+- failures surface execution story, diagnostic focus, assertion badges and grouped screenshots
+- the suite index gives you pass/fail summary cards, target/profile/provider breakdowns and quick insights such as slowest tests
+- console output prints direct `file:///...` links to the individual report and the suite index
+
+Use [REPORTING.md](docs/REPORTING.md) for the reporting-specific details and configuration knobs.
+
 ## What v0.8.0 Adds
 
 - Real Maven quality gates through Enforcer, JaCoCo, Checkstyle and SpotBugs
@@ -368,6 +423,8 @@ HTML report behavior:
 - surfaces remote session context such as provider, host, project and build when available
 - summarizes pass/fail, target/profile/provider breakdowns and total duration directly in the report index
 - can be redirected with `PEPENIUM_REPORT_DIR` or `-Dpepenium.report.dir=...`
+
+For a more focused walkthrough, see [REPORTING.md](docs/REPORTING.md).
 
 If you need extra framework detail, enable:
 
