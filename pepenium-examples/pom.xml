@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>pepenium-examples</artifactId>
+    <name>Pepenium Examples</name>
 
     <dependencies>
         <dependency>

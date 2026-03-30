@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>pepenium-toolkit</artifactId>
+    <name>Pepenium Toolkit</name>
 
     <dependencies>
         <dependency>
