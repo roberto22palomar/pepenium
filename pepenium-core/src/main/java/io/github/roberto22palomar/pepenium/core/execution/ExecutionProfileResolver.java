@@ -12,8 +12,11 @@ public class ExecutionProfileResolver {
         if (profileId == null || profileId.isBlank()) {
             throw new IllegalStateException(
                     "No execution profile was provided for target " + target
-                            + ". Use -Dpepenium.profile=<profileId> or override getDefaultProfileId(). "
-                            + "Compatible profiles: " + ExecutionProfiles.compatibleProfileIds(target)
+                            + ". Use -Dpepenium.profile=<profileId> or override getDefaultProfileId()."
+                            + System.lineSeparator() + System.lineSeparator()
+                            + "Compatible profiles for " + target + ":"
+                            + System.lineSeparator()
+                            + ExecutionProfiles.compatibleProfileIdsMultiline(target)
             );
         }
 
@@ -27,7 +30,15 @@ public class ExecutionProfileResolver {
             throw new IllegalStateException(
                     "Unknown execution profile '" + profileId + "'" + sourceMessage
                             + " for target " + target
-                            + ". Available profiles: " + ExecutionProfiles.availableProfileIds(),
+                            + "."
+                            + System.lineSeparator() + System.lineSeparator()
+                            + "Compatible profiles for " + target + ":"
+                            + System.lineSeparator()
+                            + ExecutionProfiles.compatibleProfileIdsMultiline(target)
+                            + System.lineSeparator() + System.lineSeparator()
+                            + "All available profiles:"
+                            + System.lineSeparator()
+                            + ExecutionProfiles.availableProfileIdsMultiline(),
                     e
             );
         }
