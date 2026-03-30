@@ -45,13 +45,9 @@ public class DefaultDriverSessionFactory implements DriverSessionFactory {
                 throw new IllegalArgumentException("Unsupported driver type: " + request.getDriverType());
         }
 
-        if (driver instanceof RemoteWebDriver) {
-            String sessionId = String.valueOf(((RemoteWebDriver) driver).getSessionId());
-            LoggingContext.setSessionId(sessionId);
-            log.info("Driver session created successfully");
-        } else {
-            log.info("Driver session created successfully");
-        }
+        String sessionId = String.valueOf(((RemoteWebDriver) driver).getSessionId());
+        LoggingContext.setSessionId(sessionId);
+        log.info("Driver session created successfully");
 
         return new DriverSession(driver, request);
     }

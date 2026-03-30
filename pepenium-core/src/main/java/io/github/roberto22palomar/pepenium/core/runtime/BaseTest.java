@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.runtime;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.appium.java_client.AppiumDriver;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
@@ -9,6 +10,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.openqa.selenium.WebDriver;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SuppressFBWarnings(
+        value = "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+        justification = "These protected fields are exposed for test subclasses to use directly."
+)
 public abstract class BaseTest {
 
     protected WebDriver driver;

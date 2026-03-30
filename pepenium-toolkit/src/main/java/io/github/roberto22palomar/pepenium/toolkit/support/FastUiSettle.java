@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.toolkit.support;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.appium.java_client.AppiumDriver;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -8,6 +9,10 @@ import org.openqa.selenium.WebElement;
 import java.time.Duration;
 
 @Slf4j
+@SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2",
+        justification = "The Appium driver is a shared mutable runtime handle intentionally owned elsewhere."
+)
 public final class FastUiSettle {
     private final AppiumDriver driver;
     private final Duration maxWait;

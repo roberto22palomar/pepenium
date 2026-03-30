@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.toolkit.actions;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import io.github.roberto22palomar.pepenium.toolkit.support.ActionLoggingSupport;
 import lombok.RequiredArgsConstructor;
@@ -188,6 +189,10 @@ public class ActionsWeb {
         return takeScreenshot(true);
     }
 
+    @SuppressFBWarnings(
+            value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE",
+            justification = "Screenshot output falls back to a concrete filesystem path before resolution."
+    )
     public String takeScreenshot(boolean settleBeforeCapture) {
         StepTracker.record(settleBeforeCapture ? "Take screenshot" : "Take fast screenshot");
         if (driver == null) {

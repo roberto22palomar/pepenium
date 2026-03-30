@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.toolkit.actions;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
@@ -36,6 +37,10 @@ import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Slf4j
+@SuppressFBWarnings(
+        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
+        justification = "The Appium driver is a shared mutable runtime handle intentionally exposed to advanced callers."
+)
 public class ActionsAppIOS {
 
     private final AppiumDriver driver;
@@ -295,6 +300,10 @@ public class ActionsAppIOS {
         return takeScreenshot(true);
     }
 
+    @SuppressFBWarnings(
+            value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE",
+            justification = "Screenshot output falls back to a concrete filesystem path before resolution."
+    )
     public String takeScreenshot(boolean settleBeforeCapture) {
         StepTracker.record(settleBeforeCapture ? "Take screenshot" : "Take fast screenshot");
         try {
