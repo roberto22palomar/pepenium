@@ -24,8 +24,8 @@ These are the main classes Pepenium users are expected to import and rely on dir
 
 ### Core test author API
 
-- [BaseTest](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)
-- [TestTarget](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/TestTarget.java)
+- [BaseTest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)
+- [TestTarget](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/TestTarget.java)
 
 These classes define the main authoring model:
 
@@ -35,12 +35,12 @@ These classes define the main authoring model:
 
 ### Toolkit authoring API
 
-- [ActionsWeb](/C:/dev/workspace/personal/pepenium/pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsWeb.java)
-- [ActionsApp](/C:/dev/workspace/personal/pepenium/pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsApp.java)
-- [ActionsAppIOS](/C:/dev/workspace/personal/pepenium/pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsAppIOS.java)
-- [AssertionsWeb](/C:/dev/workspace/personal/pepenium/pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsWeb.java)
-- [AssertionsApp](/C:/dev/workspace/personal/pepenium/pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsApp.java)
-- [AssertionsAppIOS](/C:/dev/workspace/personal/pepenium/pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsAppIOS.java)
+- [ActionsWeb](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsWeb.java)
+- [ActionsApp](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsApp.java)
+- [ActionsAppIOS](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsAppIOS.java)
+- [AssertionsWeb](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsWeb.java)
+- [AssertionsApp](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsApp.java)
+- [AssertionsAppIOS](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsAppIOS.java)
 
 These are intended as the reusable building blocks for writing tests, flows and page objects.
 
@@ -54,12 +54,12 @@ These classes are visible and may be useful to advanced adopters, but should be 
 
 ### Execution and configuration types
 
-- [DriverConfig](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverConfig.java)
-- [DriverRequest](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverRequest.java)
-- [DriverType](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverType.java)
-- [ExecutionProfile](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfile.java)
-- [ExecutionProfileResolver](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfileResolver.java)
-- [ExecutionProfiles](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfiles.java)
+- [DriverConfig](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverConfig.java)
+- [DriverRequest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverRequest.java)
+- [DriverType](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverType.java)
+- [ExecutionProfile](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfile.java)
+- [ExecutionProfileResolver](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfileResolver.java)
+- [ExecutionProfiles](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfiles.java)
 
 ### Configuration models and loaders
 
@@ -77,25 +77,25 @@ These classes support framework lifecycle, observability and driver wiring, but 
 
 ### Runtime internals
 
-- [DriverSession](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/DriverSession.java)
-- [DriverSessionFactory](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/DriverSessionFactory.java)
-- [DefaultDriverSessionFactory](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/DefaultDriverSessionFactory.java)
+- [DriverSession](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/DriverSession.java)
+- [DriverSessionFactory](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/DriverSessionFactory.java)
+- [DefaultDriverSessionFactory](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/DefaultDriverSessionFactory.java)
 
 ### Observability internals
 
-- [StepTracker](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/StepTracker.java)
-- [FailureContextReporter](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/FailureContextReporter.java)
-- [LoggingContext](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/LoggingContext.java)
-- [LoggingPreferences](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/LoggingPreferences.java)
-- [CapabilitiesSummary](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/CapabilitiesSummary.java)
-- [PepeniumBanner](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/PepeniumBanner.java)
+- [StepTracker](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/StepTracker.java)
+- [FailureContextReporter](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/FailureContextReporter.java)
+- [LoggingContext](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/LoggingContext.java)
+- [LoggingPreferences](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/LoggingPreferences.java)
+- [CapabilitiesSummary](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/CapabilitiesSummary.java)
+- [PepeniumBanner](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/observability/PepeniumBanner.java)
 
 ### Toolkit support internals
 
-- [BaseAssertions](/C:/dev/workspace/personal/pepenium/pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/BaseAssertions.java)
-- [ActionLoggingSupport](/C:/dev/workspace/personal/pepenium/pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/support/ActionLoggingSupport.java)
-- [FastUiSettle](/C:/dev/workspace/personal/pepenium/pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/support/FastUiSettle.java)
-- [ScrollUtils](/C:/dev/workspace/personal/pepenium/pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/support/ScrollUtils.java)
+- [BaseAssertions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/BaseAssertions.java)
+- [ActionLoggingSupport](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/support/ActionLoggingSupport.java)
+- [FastUiSettle](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/support/FastUiSettle.java)
+- [ScrollUtils](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/support/ScrollUtils.java)
 
 Even when these classes are public in Java terms, they should currently be treated as framework internals unless Pepenium documentation explicitly promotes them for direct consumption.
 
@@ -103,8 +103,8 @@ Even when these classes are public in Java terms, they should currently be treat
 
 Until `1.0.0`, Pepenium may still make structural improvements. Even so, the project should already treat the following as breaking changes:
 
-- changing the expected usage model of [BaseTest](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)
-- removing or renaming [TestTarget](/C:/dev/workspace/personal/pepenium/pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/TestTarget.java) values
+- changing the expected usage model of [BaseTest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)
+- removing or renaming [TestTarget](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/TestTarget.java) values
 - removing or renaming public `Actions*` methods that user page objects and flows are expected to call
 - removing or renaming public `Assertions*` methods that user tests are expected to call
 - changing the default execution-profile resolution model in a way that breaks existing test launch setups
@@ -131,7 +131,7 @@ Before `1.0.0`, Pepenium should tighten this guide further by:
 
 ## Consumer Smoke Validation
 
-Pepenium now includes a standalone smoke consumer under [consumer-smoke](/C:/dev/workspace/personal/pepenium/consumer-smoke/README.md).
+Pepenium now includes a standalone smoke consumer under [consumer-smoke](../consumer-smoke/README.md).
 
 That smoke project is intentionally outside the main Maven reactor so it behaves more like an external consumer.
 

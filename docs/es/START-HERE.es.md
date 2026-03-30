@@ -67,7 +67,7 @@ Arranca tu emulador Android de la forma habitual en tu maquina.
 
 ### 3.3 Usa Estos Valores De Entorno
 
-Fichero ejemplo: [`.env.android.host-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.host-emulator.example)
+Fichero ejemplo: [`.env.android.host-emulator.example`](../../.env.android.host-emulator.example)
 
 ```text
 APPIUM_URL=http://localhost:4723
@@ -89,7 +89,7 @@ Arranque:
 docker compose -f docker-compose.yaml -f docker-compose.emulator.yaml up -d
 ```
 
-Fichero ejemplo: [`.env.android.docker-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.docker-emulator.example)
+Fichero ejemplo: [`.env.android.docker-emulator.example`](../../.env.android.docker-emulator.example)
 
 ```text
 APPIUM_URL=http://localhost:4723
@@ -119,7 +119,7 @@ mvn -q -U -f consumer-smoke/pom.xml clean test-compile
 
 ## 6. Donde Seguir
 
-- Usa [README.es.md](/C:/dev/workspace/personal/pepenium/README.es.md) para la vision general del proyecto.
-- Usa [QUICK-START.es.md](/C:/dev/workspace/personal/pepenium/docs/es/QUICK-START.es.md) para la guia mas completa.
-- Usa [ENVIRONMENT.md](/C:/dev/workspace/personal/pepenium/docs/ENVIRONMENT.md) para todas las variables soportadas.
-- Usa [API.md](/C:/dev/workspace/personal/pepenium/docs/API.md) para entender que es publico y que es interno.
+- Usa [README.es.md](../../README.es.md) para la vision general del proyecto.
+- Usa [QUICK-START.es.md](QUICK-START.es.md) para la guia mas completa.
+- Usa [ENVIRONMENT.md](../ENVIRONMENT.md) para todas las variables soportadas.
+- Usa [API.md](../API.md) para entender que es publico y que es interno.
