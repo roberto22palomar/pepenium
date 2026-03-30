@@ -42,6 +42,12 @@ public final class ExecutionProfiles {
         return PROFILES.keySet().stream().collect(Collectors.joining(", "));
     }
 
+    public static String availableProfileIdsMultiline() {
+        return PROFILES.keySet().stream()
+                .map(profileId -> "- " + profileId)
+                .collect(Collectors.joining(System.lineSeparator()));
+    }
+
     public static String describeAll() {
         return list().stream()
                 .map(profile -> String.format("- %s [%s] %s",
@@ -67,6 +73,14 @@ public final class ExecutionProfiles {
                 .filter(profile -> profile.getTarget() == target)
                 .map(ExecutionProfile::getId)
                 .collect(Collectors.joining(", "));
+    }
+
+    public static String compatibleProfileIdsMultiline(TestTarget target) {
+        return list().stream()
+                .filter(profile -> profile.getTarget() == target)
+                .map(ExecutionProfile::getId)
+                .map(profileId -> "- " + profileId)
+                .collect(Collectors.joining(System.lineSeparator()));
     }
 
     private static Map<String, ExecutionProfile> loadProfiles() {

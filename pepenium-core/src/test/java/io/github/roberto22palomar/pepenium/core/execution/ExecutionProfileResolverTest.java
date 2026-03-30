@@ -54,6 +54,9 @@ class ExecutionProfileResolverTest {
         );
 
         assertTrue(error.getMessage().contains("No execution profile was provided for target IOS_NATIVE"));
+        assertTrue(error.getMessage().contains("Compatible profiles for IOS_NATIVE:"));
+        assertTrue(error.getMessage().contains("- aws-ios"));
+        assertTrue(error.getMessage().contains("- browserstack-ios"));
     }
 
     @Test
@@ -67,5 +70,10 @@ class ExecutionProfileResolverTest {
 
         assertTrue(error.getMessage().contains("Unknown execution profile 'does-not-exist'"));
         assertTrue(error.getMessage().contains("-Dpepenium.profile"));
+        assertTrue(error.getMessage().contains("Compatible profiles for WEB_DESKTOP:"));
+        assertTrue(error.getMessage().contains("- local-web"));
+        assertTrue(error.getMessage().contains("- browserstack-windows-web"));
+        assertTrue(error.getMessage().contains("- browserstack-mac-web"));
+        assertTrue(error.getMessage().contains("All available profiles:"));
     }
 }
