@@ -55,15 +55,13 @@ Consulta [START-HERE.es.md](START-HERE.es.md) para el camino mas rapido al prime
 Usa [ENVIRONMENT.md](ENVIRONMENT.md) como referencia central de variables de entorno y properties de runtime.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 
-## Que Aporta v0.7.0
+## Que Aporta v0.8.0
 
-- Division del repositorio en `pepenium-core`, `pepenium-toolkit` y `pepenium-examples`
-- Movimiento del runtime del framework a fuentes reales de produccion en `src/main`
-- Traslado de los modelos de BrowserStack y la carga YAML al `core`
-- Enfoque de `toolkit` en helpers reutilizables de autoria de tests como acciones y utilidades de soporte
-- Aislamiento de tests y page objects de ejemplo en `pepenium-examples`
-- Conservacion de los flujos de build, test y packaging de ejemplos desde la raiz del repositorio
-- Actualizacion de CI para que GitHub Actions ejecute los tests del framework antes del packaging
+- Quality gates reales de Maven con Enforcer, JaCoCo, Checkstyle y SpotBugs
+- Un camino de `verify` mas fuerte en CI para comprobar higiene de libreria de forma continua
+- Metadata y packaging orientados a release con sources y Javadocs
+- Un workflow dedicado de GitHub Actions para publicar releases etiquetadas
+- Endurecimiento de `core` y `toolkit` para mantener util y en verde la nueva linea base de analisis estatico
 
 ## Arquitectura Actual
 

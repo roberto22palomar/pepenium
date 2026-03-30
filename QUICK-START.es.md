@@ -1,6 +1,6 @@
 # Guia Rapida
 
-Esta guia muestra la forma mas rapida de entender y ejecutar Pepenium tal y como esta en `v0.7.0`.
+Esta guia muestra la forma mas rapida de entender y ejecutar Pepenium tal y como esta en `v0.8.0`.
 
 Si este es tu primer contacto con el proyecto, usa primero [START-HERE.es.md](START-HERE.es.md) y vuelve aqui cuando quieras la guia mas completa.
 

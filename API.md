@@ -1,6 +1,6 @@
 # Public API Guide
 
-This document defines the intended public API surface of Pepenium as of the `0.7.0` line planning stage.
+This document defines the intended public API surface of Pepenium as of the `0.8.0` line planning stage.
 
 Its goal is simple:
 
