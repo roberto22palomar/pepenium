@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>pepenium</artifactId>
+    <name>Pepenium Core</name>
 
     <dependencies>
         <dependency>
