@@ -1,0 +1,81 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="80" y1="60" x2="1080" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0E1B2A"/>
+      <stop offset="1" stop-color="#10243A"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="140" y1="120" x2="1020" y2="640" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#12314C"/>
+      <stop offset="1" stop-color="#0F2235"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="1200" height="760" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#06111D" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="760" rx="32" fill="url(#bg)"/>
+  <rect x="36" y="36" width="1128" height="688" rx="28" fill="#0B1622" stroke="#1E3852"/>
+
+  <text x="86" y="104" fill="#EAF4FF" font-size="30" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Pepenium Native Reports</text>
+  <text x="86" y="136" fill="#8FB1CE" font-size="17" font-family="Segoe UI, Arial, sans-serif">Shareable HTML reports with suite insights, failure stories and rich execution context</text>
+
+  <g filter="url(#shadow)">
+    <rect x="76" y="170" width="742" height="500" rx="24" fill="url(#hero)" stroke="#274867"/>
+    <text x="112" y="220" fill="#F3F8FD" font-size="27" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Suite Index</text>
+    <text x="112" y="248" fill="#92B4D4" font-size="15" font-family="Segoe UI, Arial, sans-serif">target / profile / provider breakdowns, slowest tests and screenshot-heavy runs</text>
+
+    <rect x="112" y="286" width="146" height="94" rx="18" fill="#102739" stroke="#31506D"/>
+    <text x="132" y="320" fill="#9CB7D2" font-size="14" font-family="Segoe UI, Arial, sans-serif">Total Reports</text>
+    <text x="132" y="356" fill="#F4FBFF" font-size="30" font-family="Segoe UI, Arial, sans-serif" font-weight="700">18</text>
+
+    <rect x="278" y="286" width="146" height="94" rx="18" fill="#102739" stroke="#31506D"/>
+    <text x="298" y="320" fill="#9CB7D2" font-size="14" font-family="Segoe UI, Arial, sans-serif">Passed</text>
+    <text x="298" y="356" fill="#9EF0B2" font-size="30" font-family="Segoe UI, Arial, sans-serif" font-weight="700">16</text>
+
+    <rect x="444" y="286" width="146" height="94" rx="18" fill="#102739" stroke="#31506D"/>
+    <text x="464" y="320" fill="#9CB7D2" font-size="14" font-family="Segoe UI, Arial, sans-serif">Failed</text>
+    <text x="464" y="356" fill="#FFAA9B" font-size="30" font-family="Segoe UI, Arial, sans-serif" font-weight="700">2</text>
+
+    <rect x="610" y="286" width="146" height="94" rx="18" fill="#102739" stroke="#31506D"/>
+    <text x="630" y="320" fill="#9CB7D2" font-size="14" font-family="Segoe UI, Arial, sans-serif">Duration</text>
+    <text x="630" y="356" fill="#F4FBFF" font-size="30" font-family="Segoe UI, Arial, sans-serif" font-weight="700">4m 12s</text>
+
+    <rect x="112" y="414" width="644" height="74" rx="16" fill="#0D2131" stroke="#31506D"/>
+    <rect x="134" y="436" width="90" height="30" rx="15" fill="#163951"/>
+    <text x="155" y="456" fill="#A9CFF3" font-size="13" font-family="Segoe UI, Arial, sans-serif" font-weight="700">web</text>
+    <rect x="238" y="436" width="154" height="30" rx="15" fill="#163951"/>
+    <text x="260" y="456" fill="#A9CFF3" font-size="13" font-family="Segoe UI, Arial, sans-serif" font-weight="700">browserstack-windows-web</text>
+    <rect x="632" y="434" width="102" height="34" rx="17" fill="#153B28"/>
+    <text x="660" y="456" fill="#B8F1C4" font-size="13" font-family="Segoe UI, Arial, sans-serif" font-weight="700">PASSED</text>
+    <text x="414" y="457" fill="#E9F4FF" font-size="15" font-family="Segoe UI, Arial, sans-serif">ExampleDesktopWebTest</text>
+
+    <rect x="112" y="506" width="644" height="122" rx="18" fill="#0D2131" stroke="#31506D"/>
+    <text x="138" y="540" fill="#F4FBFF" font-size="18" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Suite Insights</text>
+    <text x="138" y="570" fill="#9CB7D2" font-size="14" font-family="Segoe UI, Arial, sans-serif">Slowest tests, screenshot-heavy runs and profile/provider distribution</text>
+    <rect x="514" y="532" width="196" height="54" rx="16" fill="#102739" stroke="#31506D"/>
+    <text x="532" y="554" fill="#9CB7D2" font-size="12" font-family="Segoe UI, Arial, sans-serif">Top slowest</text>
+    <text x="532" y="576" fill="#EAF4FF" font-size="14" font-family="Segoe UI, Arial, sans-serif">ExampleAndroidNativeTest</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="844" y="170" width="280" height="500" rx="24" fill="#F6FAFD" stroke="#D7E5F2"/>
+    <text x="876" y="216" fill="#0D2235" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Test Report</text>
+    <rect x="876" y="242" width="102" height="30" rx="15" fill="#DCF7E5"/>
+    <text x="904" y="262" fill="#17693E" font-size="13" font-family="Segoe UI, Arial, sans-serif" font-weight="700">PASSED</text>
+    <text x="876" y="302" fill="#3E5B74" font-size="13" font-family="Segoe UI, Arial, sans-serif">Execution Story</text>
+    <text x="876" y="330" fill="#10283E" font-size="16" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Finished after 14 events and 3 assertions</text>
+
+    <rect x="876" y="358" width="216" height="92" rx="18" fill="#EAF3FA" stroke="#D5E3EF"/>
+    <text x="894" y="388" fill="#3E5B74" font-size="12" font-family="Segoe UI, Arial, sans-serif">Diagnostic Focus</text>
+    <text x="894" y="414" fill="#10283E" font-size="14" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Last assertion:</text>
+    <text x="894" y="434" fill="#334D63" font-size="13" font-family="Segoe UI, Arial, sans-serif">Assert secure area is visible</text>
+
+    <text x="876" y="492" fill="#3E5B74" font-size="13" font-family="Segoe UI, Arial, sans-serif">Execution Context</text>
+    <text x="876" y="520" fill="#10283E" font-size="14" font-family="Segoe UI, Arial, sans-serif">Platform: Windows 11</text>
+    <text x="876" y="544" fill="#10283E" font-size="14" font-family="Segoe UI, Arial, sans-serif">Browser: Chrome latest</text>
+    <text x="876" y="568" fill="#10283E" font-size="14" font-family="Segoe UI, Arial, sans-serif">Provider: BrowserStack</text>
+
+    <rect x="876" y="602" width="216" height="40" rx="14" fill="#10283E"/>
+    <text x="924" y="627" fill="#F4FBFF" font-size="14" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Open screenshot</text>
+  </g>
+</svg>

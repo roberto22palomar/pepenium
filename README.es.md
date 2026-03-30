@@ -54,6 +54,64 @@ Ficheros de entorno listos para copiar:
 Consulta [START-HERE.es.md](docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
 Usa [ENVIRONMENT.md](docs/ENVIRONMENT.md) como referencia central de variables de entorno y properties de runtime.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
+Usa [consumer-smoke/README.md](consumer-smoke/README.md) si quieres validar el consumo de la API publica desde un proyecto Maven separado.
+
+El workflow principal de CI valida ese consumer smoke antes del packaging, de modo que el consumo externo no dependa solo de una convencion local.
+
+## Usar Pepenium Desde Otro Proyecto
+
+Si quieres consumir Pepenium desde otro proyecto Maven, la regla corta es:
+
+- usa `pepenium-toolkit` para proyectos normales de automatizacion
+- usa `pepenium` solo si quieres intencionadamente la capa core/runtime sin los helpers del toolkit
+- no anadas `pepenium-parent` en `<dependencies>` porque es el parent POM de Maven, no la dependencia normal para escribir tests
+
+Dependencia tipica de consumo:
+
+```xml
+<dependency>
+    <groupId>io.github.roberto22palomar</groupId>
+    <artifactId>pepenium-toolkit</artifactId>
+    <version>0.8.0</version>
+</dependency>
+```
+
+Por que `pepenium-toolkit` suele ser el punto de entrada correcto:
+
+- es el artefacto contra el que la mayoria de usuarios externos querran construir
+- te da `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `AssertionsWeb`, `AssertionsApp` y `AssertionsAppIOS`
+- arrastra transitivamente el core/runtime, asi que sigues teniendo `BaseTest` y `TestTarget` sin cablear ambas capas a mano
+
+Si quieres un ejemplo concreto de consumidor, mira [consumer-smoke/README.md](consumer-smoke/README.md).
+
+## Reportes Nativos
+
+Pepenium genera ahora un bundle nativo de reporting HTML y JSON listo para usar despues de cada ejecucion.
+
+![Vista previa del reporte de Pepenium](docs/assets/reporting-preview.svg)
+
+Que genera:
+
+- un `index.html` a nivel de suite
+- un `summary.json` a nivel de suite
+- un HTML por test
+- un JSON por test
+- screenshots enlazadas como evidencia cuando estan disponibles
+
+Donde lo escribe por defecto:
+
+```text
+target/pepenium-reports/
+```
+
+Por que aporta valor:
+
+- puedes abrir un HTML limpio en vez de leer toda la consola
+- los fallos muestran execution story, diagnostic focus, badges de assertions y screenshots agrupadas
+- el indice de suite da tarjetas resumen, desglose por target/profile/provider e insights rapidos como los tests mas lentos
+- la consola imprime enlaces directos `file:///...` al reporte individual y al indice
+
+Usa [REPORTING.es.md](docs/es/REPORTING.es.md) para la guia especifica de reporting y sus opciones de configuracion.
 
 ## Que Aporta v0.8.0
 
