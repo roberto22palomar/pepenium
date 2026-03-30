@@ -64,6 +64,7 @@ public final class PepeniumTimeline {
         }
         ensureStarted();
         EVENTS.get().add(new Event(
+                Instant.now().toEpochMilli(),
                 LocalTime.now().format(TIME_FORMAT),
                 type,
                 status,
@@ -117,13 +118,19 @@ public final class PepeniumTimeline {
         private final EventStatus status;
         private final String message;
         private final String screenshotPath;
+        private final long epochMillis;
 
-        private Event(String time, EventType type, EventStatus status, String message, String screenshotPath) {
+        private Event(long epochMillis, String time, EventType type, EventStatus status, String message, String screenshotPath) {
+            this.epochMillis = epochMillis;
             this.time = time;
             this.type = type;
             this.status = status;
             this.message = message;
             this.screenshotPath = screenshotPath;
+        }
+
+        public long getEpochMillis() {
+            return epochMillis;
         }
 
         public String getTime() {

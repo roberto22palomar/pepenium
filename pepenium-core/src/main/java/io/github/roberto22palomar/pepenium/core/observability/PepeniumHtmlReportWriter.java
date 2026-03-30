@@ -79,6 +79,7 @@ public final class PepeniumHtmlReportWriter {
         String outcome = cause == null ? "PASSED" : "FAILED";
         Instant startedAt = timelineSnapshot.getStartedAt() == null ? finishedAt : timelineSnapshot.getStartedAt();
         RemoteContext remoteContext = resolveRemoteContext(request, driver);
+        DeviceContext deviceContext = resolveDeviceContext(request == null ? null : request.getCapabilities());
 
         return new ReportContext(
                 startedAt,
@@ -97,6 +98,7 @@ public final class PepeniumHtmlReportWriter {
                 safe(mobileContext(driver)),
                 safe(mobilePackage(driver)),
                 safe(mobileActivity(driver)),
+                deviceContext,
                 safe(CapabilitiesSummary.summarize(request == null ? null : request.getCapabilities())),
                 stepSnapshot,
                 timelineSnapshot,
@@ -143,8 +145,8 @@ public final class PepeniumHtmlReportWriter {
                 .append(".status{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;} .status.passed{background:var(--pass-bg);color:var(--pass);} .status.failed{background:var(--fail-bg);color:var(--fail);} .pill{display:inline-flex;align-items:center;padding:8px 12px;border-radius:999px;background:#eef5ff;color:#244f8f;font-size:12px;font-weight:700;}")
                 .append(".metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px;} .metric,.card,.panel,.timeline-card,.artifact-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 24px rgba(16,24,40,.04);} .metric{padding:16px 18px;background:linear-gradient(180deg,#ffffff 0,#fbfdff 100%);} .metric-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;} .metric-value{margin-top:8px;font-size:22px;font-weight:700;}")
                 .append(".section{margin-top:24px;} .section h2{margin:0 0 12px;font-size:18px;} .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;} .card,.panel,.artifact-card,.story-card{padding:18px;} .card strong{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:8px;} .value{font-size:15px;line-height:1.45;word-break:break-word;}")
-                .append(".keyvals{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:10px 16px;align-items:start;} .key{font-weight:700;color:#374151;} .keyvals div{word-break:break-word;} .report-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:18px;margin-top:24px;} @media (max-width:980px){.report-layout{grid-template-columns:1fr;}}")
-                .append(".badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;margin-right:6px;} .badge-step{background:#eef2ff;color:#3730a3;} .badge-action{background:var(--action-bg);color:var(--action);} .badge-wait{background:var(--wait-bg);color:var(--wait);} .badge-assert{background:var(--assert-bg);color:var(--assert);} .badge-screenshot{background:var(--shot-bg);color:var(--shot);} .badge-error{background:var(--error-bg);color:var(--error);} .badge-pass{background:var(--pass-bg);color:var(--pass);} .badge-fail{background:var(--fail-bg);color:var(--fail);} .timeline{display:flex;flex-direction:column;gap:10px;} .timeline-card{padding:12px 14px;background:linear-gradient(180deg,#fff 0,#fbfcff 100%);} .timeline-card.is-failure{border-color:#ef9a9a;box-shadow:0 10px 24px rgba(207,34,46,.12);} .timeline-card.is-warning{border-color:#d8b4fe;box-shadow:0 10px 24px rgba(124,58,237,.10);} .timeline-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;} .timeline-time{font-size:11px;color:var(--muted);font-weight:700;} .timeline-message{margin-top:6px;font-size:14px;line-height:1.4;}")
+                .append(".keyvals{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:10px 16px;align-items:start;} .key{font-weight:700;color:#374151;} .keyvals div{word-break:break-word;} .report-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:18px;margin-top:24px;} .sidebar{display:flex;flex-direction:column;gap:0;align-self:start;position:sticky;top:18px;} @media (max-width:980px){.report-layout{grid-template-columns:1fr;}.sidebar{position:static;}}")
+                .append(".badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;margin-right:6px;} .badge-step{background:#eef2ff;color:#3730a3;} .badge-action{background:var(--action-bg);color:var(--action);} .badge-wait{background:var(--wait-bg);color:var(--wait);} .badge-assert{background:var(--assert-bg);color:var(--assert);} .badge-screenshot{background:var(--shot-bg);color:var(--shot);} .badge-error{background:var(--error-bg);color:var(--error);} .badge-pass{background:var(--pass-bg);color:var(--pass);} .badge-fail{background:var(--fail-bg);color:var(--fail);} .timeline{display:flex;flex-direction:column;gap:10px;} .timeline-card{padding:12px 14px;background:linear-gradient(180deg,#fff 0,#fbfcff 100%);} .timeline-card.is-failure{border-color:#ef9a9a;box-shadow:0 10px 24px rgba(207,34,46,.12);} .timeline-card.is-warning{border-color:#d8b4fe;box-shadow:0 10px 24px rgba(124,58,237,.10);} .timeline-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;} .timeline-time{font-size:11px;color:var(--muted);font-weight:700;} .timeline-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;} .timeline-pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:#eef2f8;color:#475467;font-size:10px;font-weight:700;} .timeline-message{margin-top:6px;font-size:14px;line-height:1.4;}")
                 .append(".attachments{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px;} .attachment{background:var(--surface-alt);border:1px dashed #c6d1e1;border-radius:12px;padding:10px;} .thumb{display:block;width:100%;max-height:180px;object-fit:cover;border-radius:10px;border:1px solid var(--border);margin-top:8px;background:#fff;} .path{margin-top:6px;font-size:11px;color:var(--muted);word-break:break-word;}")
                 .append(".list{display:flex;flex-direction:column;gap:10px;} .list-item{padding:12px 14px;border-radius:14px;background:var(--surface-alt);border:1px solid #e3e8f1;font-size:14px;line-height:1.45;} .stack{margin-top:12px;} details summary{cursor:pointer;font-weight:700;} pre{margin:10px 0 0;padding:16px;background:#0f172a;color:#e2e8f0;border-radius:16px;overflow:auto;white-space:pre-wrap;word-break:break-word;} .empty{padding:22px;border-radius:16px;border:1px dashed #c6d1e1;color:var(--muted);background:#fbfcfe;} .story-card{background:linear-gradient(135deg,#ffffff 0,#f7fbff 100%);border:1px solid var(--border);border-radius:18px;box-shadow:0 12px 24px rgba(16,24,40,.04);} .story-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:10px;} .story-body{font-size:15px;line-height:1.6;} .artifact-list,.focus-list{display:flex;flex-direction:column;gap:10px;} .artifact-link,.focus-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--surface-alt);border:1px solid #e3e8f1;font-size:14px;} .focus-item{align-items:flex-start;flex-direction:column;} .focus-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;} .focus-value{font-size:14px;line-height:1.5;word-break:break-word;}")
                 .append("</style></head><body><div class=\"wrap\">");
@@ -216,6 +218,9 @@ public final class PepeniumHtmlReportWriter {
                         .append(renderEventTypeBadge(anchor))
                         .append(renderEventStatusBadge(anchor))
                         .append("<span class=\"timeline-time\">").append(escapeHtml(anchor.getTime())).append("</span>")
+                        .append("</div><div class=\"timeline-meta\">")
+                        .append("<span class=\"timeline-pill\">+").append(escapeHtml(formatElapsed(report.startedAt, anchor.getEpochMillis()))).append("</span>")
+                        .append("<span class=\"timeline-pill\">Δ ").append(escapeHtml(formatDelta(group))).append("</span>")
                         .append("</div><div class=\"timeline-message\">").append(escapeHtml(anchor.getMessage())).append("</div>");
                 if (!group.screenshots.isEmpty()) {
                     html.append("<details><summary>Show ")
@@ -256,9 +261,15 @@ public final class PepeniumHtmlReportWriter {
             html.append("</div></section>");
         }
 
-        html.append("</div><div>");
+        html.append("</div><div class=\"sidebar\">");
         html.append("<section class=\"section\"><h2>Execution Context</h2><div class=\"panel\"><div class=\"keyvals\">")
                 .append(renderKeyValue("Description", report.description))
+                .append(renderKeyValue("Platform", report.deviceContext.platformName))
+                .append(renderKeyValue("Platform version", report.deviceContext.platformVersion))
+                .append(renderKeyValue("Device", report.deviceContext.deviceName))
+                .append(renderKeyValue("Browser", report.deviceContext.browserName))
+                .append(renderKeyValue("Browser version", report.deviceContext.browserVersion))
+                .append(renderKeyValue("Automation", report.deviceContext.automationName))
                 .append(renderKeyValue("Current URL", report.currentUrl))
                 .append(renderKeyValue("Page title", report.pageTitle))
                 .append(renderKeyValue("Mobile context", report.mobileContext))
@@ -338,6 +349,12 @@ public final class PepeniumHtmlReportWriter {
         appendJsonField(json, "lastScreenshotPath", report.lastScreenshotPath, false, 4);
         json.append("  },\n");
         json.append("  \"execution\": {\n");
+        appendJsonField(json, "platform", report.deviceContext.platformName, true, 4);
+        appendJsonField(json, "platformVersion", report.deviceContext.platformVersion, true, 4);
+        appendJsonField(json, "deviceName", report.deviceContext.deviceName, true, 4);
+        appendJsonField(json, "browserName", report.deviceContext.browserName, true, 4);
+        appendJsonField(json, "browserVersion", report.deviceContext.browserVersion, true, 4);
+        appendJsonField(json, "automationName", report.deviceContext.automationName, true, 4);
         appendJsonField(json, "currentUrl", report.currentUrl, true, 4);
         appendJsonField(json, "pageTitle", report.pageTitle, true, 4);
         appendJsonField(json, "mobileContext", report.mobileContext, true, 4);
@@ -684,6 +701,17 @@ public final class PepeniumHtmlReportWriter {
         return value.toString();
     }
 
+    private static DeviceContext resolveDeviceContext(Capabilities capabilities) {
+        return new DeviceContext(
+                firstCapability(capabilities, "platformName", "appium:platformName"),
+                firstCapability(capabilities, "platformVersion", "appium:platformVersion", "osVersion"),
+                firstCapability(capabilities, "deviceName", "appium:deviceName"),
+                firstCapability(capabilities, "browserName"),
+                firstCapability(capabilities, "browserVersion"),
+                firstCapability(capabilities, "automationName", "appium:automationName")
+        );
+    }
+
     private static String renderEventTypeBadge(PepeniumTimeline.Event event) {
         return "<span class=\"badge " + eventTypeBadgeClass(event.getType()) + "\">" + escapeHtml(event.getType().name()) + "</span>";
     }
@@ -708,6 +736,18 @@ public final class PepeniumHtmlReportWriter {
         return "";
     }
 
+    private static String formatElapsed(Instant startedAt, long epochMillis) {
+        return formatDurationMillis(epochMillis - startedAt.toEpochMilli());
+    }
+
+    private static String formatDelta(EventGroup group) {
+        PepeniumTimeline.Event anchor = group.anchorEvent;
+        if (group.previousAnchorEpochMillis <= 0L) {
+            return "start";
+        }
+        return formatDurationMillis(anchor.getEpochMillis() - group.previousAnchorEpochMillis);
+    }
+
     private static String eventTypeBadgeClass(PepeniumTimeline.EventType type) {
         switch (type) {
             case ACTION:
@@ -729,18 +769,21 @@ public final class PepeniumHtmlReportWriter {
     private static List<EventGroup> buildEventGroups(PepeniumTimeline.Snapshot snapshot) {
         List<EventGroup> groups = new ArrayList<>();
         EventGroup current = null;
+        long previousAnchorEpochMillis = -1L;
         for (PepeniumTimeline.Event event : snapshot.getEvents()) {
             if (event.getType() == PepeniumTimeline.EventType.SCREENSHOT && event.getScreenshotPath() != null) {
                 if (current == null) {
-                    current = new EventGroup(event);
+                    current = new EventGroup(event, previousAnchorEpochMillis);
                     groups.add(current);
+                    previousAnchorEpochMillis = event.getEpochMillis();
                 } else {
                     current.screenshots.add(event);
                 }
                 continue;
             }
-            current = new EventGroup(event);
+            current = new EventGroup(event, previousAnchorEpochMillis);
             groups.add(current);
+            previousAnchorEpochMillis = event.getEpochMillis();
         }
         return groups;
     }
@@ -849,6 +892,19 @@ public final class PepeniumHtmlReportWriter {
         if (value instanceof Map) {
             Object nested = ((Map<?, ?>) value).get(nestedKey);
             return nested == null ? null : String.valueOf(nested);
+        }
+        return null;
+    }
+
+    private static String firstCapability(Capabilities capabilities, String... keys) {
+        if (capabilities == null || keys == null) {
+            return null;
+        }
+        for (String key : keys) {
+            Object value = capabilities.getCapability(key);
+            if (value != null && !String.valueOf(value).isBlank()) {
+                return String.valueOf(value);
+            }
         }
         return null;
     }
@@ -1200,10 +1256,12 @@ public final class PepeniumHtmlReportWriter {
 
     private static final class EventGroup {
         private final PepeniumTimeline.Event anchorEvent;
+        private final long previousAnchorEpochMillis;
         private final List<PepeniumTimeline.Event> screenshots = new ArrayList<>();
 
-        private EventGroup(PepeniumTimeline.Event anchorEvent) {
+        private EventGroup(PepeniumTimeline.Event anchorEvent, long previousAnchorEpochMillis) {
             this.anchorEvent = anchorEvent;
+            this.previousAnchorEpochMillis = previousAnchorEpochMillis;
             if (anchorEvent.getType() == PepeniumTimeline.EventType.SCREENSHOT && anchorEvent.getScreenshotPath() != null) {
                 this.screenshots.add(anchorEvent);
             }
@@ -1245,6 +1303,31 @@ public final class PepeniumHtmlReportWriter {
 
         private static RemoteContext disabled() {
             return new RemoteContext(false, null, null, null, null, null, null, null, null);
+        }
+    }
+
+    private static final class DeviceContext {
+        private final String platformName;
+        private final String platformVersion;
+        private final String deviceName;
+        private final String browserName;
+        private final String browserVersion;
+        private final String automationName;
+
+        private DeviceContext(
+                String platformName,
+                String platformVersion,
+                String deviceName,
+                String browserName,
+                String browserVersion,
+                String automationName
+        ) {
+            this.platformName = platformName;
+            this.platformVersion = platformVersion;
+            this.deviceName = deviceName;
+            this.browserName = browserName;
+            this.browserVersion = browserVersion;
+            this.automationName = automationName;
         }
     }
 
@@ -1310,6 +1393,7 @@ public final class PepeniumHtmlReportWriter {
         private final String mobileContext;
         private final String mobilePackage;
         private final String mobileActivity;
+        private final DeviceContext deviceContext;
         private final String capabilitiesSummary;
         private final StepTracker.Snapshot stepSnapshot;
         private final PepeniumTimeline.Snapshot timelineSnapshot;
@@ -1348,6 +1432,7 @@ public final class PepeniumHtmlReportWriter {
                 String mobileContext,
                 String mobilePackage,
                 String mobileActivity,
+                DeviceContext deviceContext,
                 String capabilitiesSummary,
                 StepTracker.Snapshot stepSnapshot,
                 PepeniumTimeline.Snapshot timelineSnapshot,
@@ -1385,6 +1470,7 @@ public final class PepeniumHtmlReportWriter {
             this.mobileContext = mobileContext;
             this.mobilePackage = mobilePackage;
             this.mobileActivity = mobileActivity;
+            this.deviceContext = deviceContext;
             this.capabilitiesSummary = capabilitiesSummary;
             this.stepSnapshot = stepSnapshot;
             this.timelineSnapshot = timelineSnapshot;
