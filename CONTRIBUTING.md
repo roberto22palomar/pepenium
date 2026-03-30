@@ -107,7 +107,7 @@ When deciding where to place a change:
 - prefer `pepenium-toolkit` for reusable authoring helpers
 - prefer `pepenium-examples` for showcase code and templates
 
-For public-vs-internal API expectations, see [API.md](API.md).
+For public-vs-internal API expectations, see [API.md](docs/API.md).
 
 ---
 

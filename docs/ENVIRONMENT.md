@@ -6,9 +6,9 @@ It is intended to be the single reference point for configuring local runs, remo
 
 Ready-to-copy examples for common local setups:
 
-- [`.env.web.example`](/C:/dev/workspace/personal/pepenium/.env.web.example)
-- [`.env.android.host-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.host-emulator.example)
-- [`.env.android.docker-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.docker-emulator.example)
+- [`.env.web.example`](../.env.web.example)
+- [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
 
 ## Resolution Order
 

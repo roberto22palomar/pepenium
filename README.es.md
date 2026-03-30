@@ -28,7 +28,7 @@ La direccion actual del proyecto es simple de entender y practica de ejecutar: l
 
 ## Empieza Aqui
 
-Si eres nuevo en el proyecto, empieza por [START-HERE.es.md](START-HERE.es.md).
+Si eres nuevo en el proyecto, empieza por [START-HERE.es.md](docs/es/START-HERE.es.md).
 
 Primeros pasos recomendados:
 
@@ -38,9 +38,9 @@ Primeros pasos recomendados:
 
 Ficheros de entorno listos para copiar:
 
-- [`.env.web.example`](/C:/dev/workspace/personal/pepenium/.env.web.example)
-- [`.env.android.host-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.host-emulator.example)
-- [`.env.android.docker-emulator.example`](/C:/dev/workspace/personal/pepenium/.env.android.docker-emulator.example)
+- [`.env.web.example`](.env.web.example)
+- [`.env.android.host-emulator.example`](.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](.env.android.docker-emulator.example)
 
 ## Por Que Pepenium
 
@@ -51,8 +51,8 @@ Ficheros de entorno listos para copiar:
 - Capturas pensadas para flujos rapidos sin screenshots borrosos
 - Logs mas limpios con contexto automatico y evidencia de fallo
 
-Consulta [START-HERE.es.md](START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
-Usa [ENVIRONMENT.md](ENVIRONMENT.md) como referencia central de variables de entorno y properties de runtime.
+Consulta [START-HERE.es.md](docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
+Usa [ENVIRONMENT.md](docs/ENVIRONMENT.md) como referencia central de variables de entorno y properties de runtime.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 
 ## Que Aporta v0.8.0
@@ -168,11 +168,11 @@ El catalogo de perfiles incluido se define en:
 
 ## Tests de Ejemplo
 
-- Android nativo: [ExampleAndroidNativeTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidNativeTest.java)
-- Android web: [ExampleAndroidWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidWebTest.java)
-- iOS nativo: [ExampleIOSNativeTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSNativeTest.java)
-- iOS web: [ExampleIOSWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
-- Web desktop: [ExampleDesktopWebTest.java](/C:/dev/workspace/personal/pepenium/pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
+- Android nativo: [ExampleAndroidNativeTest.java](pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidNativeTest.java)
+- Android web: [ExampleAndroidWebTest.java](pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/android/ExampleAndroidWebTest.java)
+- iOS nativo: [ExampleIOSNativeTest.java](pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSNativeTest.java)
+- iOS web: [ExampleIOSWebTest.java](pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
+- Web desktop: [ExampleDesktopWebTest.java](pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
 
 ### Showcase Web Funcional
 
@@ -371,8 +371,8 @@ Pepenium ya es util para trabajo real de automatizacion. Se ha ejercitado contra
 
 ## Documentacion
 
-- Quick start en ingles: [QUICK-START.md](QUICK-START.md)
-- Quick start en espanol: [QUICK-START.es.md](QUICK-START.es.md)
+- Quick start en ingles: [QUICK-START.md](docs/QUICK-START.md)
+- Quick start en espanol: [QUICK-START.es.md](docs/es/QUICK-START.es.md)
 - README en ingles: [README.md](README.md)
-- Referencia de entorno: [ENVIRONMENT.md](ENVIRONMENT.md)
+- Referencia de entorno: [ENVIRONMENT.md](docs/ENVIRONMENT.md)
 
