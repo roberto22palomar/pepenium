@@ -120,6 +120,6 @@ mvn -q -U -f consumer-smoke/pom.xml clean test-compile
 ## 6. Donde Seguir
 
 - Usa [README.es.md](/C:/dev/workspace/personal/pepenium/README.es.md) para la vision general del proyecto.
-- Usa [QUICK-START.es.md](/C:/dev/workspace/personal/pepenium/QUICK-START.es.md) para la guia mas completa.
-- Usa [ENVIRONMENT.md](/C:/dev/workspace/personal/pepenium/ENVIRONMENT.md) para todas las variables soportadas.
-- Usa [API.md](/C:/dev/workspace/personal/pepenium/API.md) para entender que es publico y que es interno.
+- Usa [QUICK-START.es.md](/C:/dev/workspace/personal/pepenium/docs/es/QUICK-START.es.md) para la guia mas completa.
+- Usa [ENVIRONMENT.md](/C:/dev/workspace/personal/pepenium/docs/ENVIRONMENT.md) para todas las variables soportadas.
+- Usa [API.md](/C:/dev/workspace/personal/pepenium/docs/API.md) para entender que es publico y que es interno.

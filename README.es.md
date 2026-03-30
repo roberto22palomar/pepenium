@@ -28,7 +28,7 @@ La direccion actual del proyecto es simple de entender y practica de ejecutar: l
 
 ## Empieza Aqui
 
-Si eres nuevo en el proyecto, empieza por [START-HERE.es.md](START-HERE.es.md).
+Si eres nuevo en el proyecto, empieza por [START-HERE.es.md](/C:/dev/workspace/personal/pepenium/docs/es/START-HERE.es.md).
 
 Primeros pasos recomendados:
 
@@ -51,8 +51,8 @@ Ficheros de entorno listos para copiar:
 - Capturas pensadas para flujos rapidos sin screenshots borrosos
 - Logs mas limpios con contexto automatico y evidencia de fallo
 
-Consulta [START-HERE.es.md](START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
-Usa [ENVIRONMENT.md](ENVIRONMENT.md) como referencia central de variables de entorno y properties de runtime.
+Consulta [START-HERE.es.md](/C:/dev/workspace/personal/pepenium/docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](/C:/dev/workspace/personal/pepenium/docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
+Usa [ENVIRONMENT.md](/C:/dev/workspace/personal/pepenium/docs/ENVIRONMENT.md) como referencia central de variables de entorno y properties de runtime.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 
 ## Que Aporta v0.8.0
@@ -371,8 +371,8 @@ Pepenium ya es util para trabajo real de automatizacion. Se ha ejercitado contra
 
 ## Documentacion
 
-- Quick start en ingles: [QUICK-START.md](QUICK-START.md)
-- Quick start en espanol: [QUICK-START.es.md](QUICK-START.es.md)
+- Quick start en ingles: [QUICK-START.md](/C:/dev/workspace/personal/pepenium/docs/QUICK-START.md)
+- Quick start en espanol: [QUICK-START.es.md](/C:/dev/workspace/personal/pepenium/docs/es/QUICK-START.es.md)
 - README en ingles: [README.md](README.md)
-- Referencia de entorno: [ENVIRONMENT.md](ENVIRONMENT.md)
+- Referencia de entorno: [ENVIRONMENT.md](/C:/dev/workspace/personal/pepenium/docs/ENVIRONMENT.md)
 

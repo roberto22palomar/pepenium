@@ -2,7 +2,7 @@
 
 This guide shows the fastest path to understand and run Pepenium as it stands in `v0.8.0`.
 
-If this is your first contact with the project, use [START-HERE.md](START-HERE.md) first and come back here once you want the fuller walkthrough.
+If this is your first contact with the project, use [START-HERE.md](/C:/dev/workspace/personal/pepenium/docs/START-HERE.md) first and come back here once you want the fuller walkthrough.
 
 ## 1. Prerequisites
 
@@ -278,5 +278,5 @@ Core classes involved:
 3. Run `ExampleDesktopWebTest` locally.
 4. Explore `core/configs/...` to see how each provider builds a neutral `DriverRequest`.
 5. Explore `toolkit/actions/...` for reusable interaction helpers and `core/config/...` for provider configuration loading.
-6. Use [ENVIRONMENT.md](ENVIRONMENT.md) to see all supported environment variables and system properties in one place.
+6. Use [ENVIRONMENT.md](/C:/dev/workspace/personal/pepenium/docs/ENVIRONMENT.md) to see all supported environment variables and system properties in one place.
 

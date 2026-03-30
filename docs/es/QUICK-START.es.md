@@ -2,7 +2,7 @@
 
 Esta guia muestra la forma mas rapida de entender y ejecutar Pepenium tal y como esta en `v0.8.0`.
 
-Si este es tu primer contacto con el proyecto, usa primero [START-HERE.es.md](START-HERE.es.md) y vuelve aqui cuando quieras la guia mas completa.
+Si este es tu primer contacto con el proyecto, usa primero [START-HERE.es.md](/C:/dev/workspace/personal/pepenium/docs/es/START-HERE.es.md) y vuelve aqui cuando quieras la guia mas completa.
 
 ## 1. Requisitos
 
@@ -278,5 +278,5 @@ Clases principales:
 3. Ejecuta `ExampleDesktopWebTest` en local.
 4. Revisa `core/configs/...` para ver como cada proveedor construye una `DriverRequest` neutral.
 5. Explora `toolkit/actions/...` para helpers reutilizables de interaccion y `core/config/...` para la carga de configuracion de providers.
-6. Usa [ENVIRONMENT.md](ENVIRONMENT.md) para ver todas las variables de entorno y system properties soportadas en un unico sitio.
+6. Usa [ENVIRONMENT.md](/C:/dev/workspace/personal/pepenium/docs/ENVIRONMENT.md) para ver todas las variables de entorno y system properties soportadas en un unico sitio.
 

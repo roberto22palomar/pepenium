@@ -28,7 +28,7 @@ Its current direction is simple to understand and practical to run: tests declar
 
 ## Start Here
 
-If you are new to the project, start with [START-HERE.md](START-HERE.md).
+If you are new to the project, start with [START-HERE.md](/C:/dev/workspace/personal/pepenium/docs/START-HERE.md).
 
 Recommended first steps:
 
@@ -51,9 +51,9 @@ Ready-to-copy environment examples:
 - Screenshot helpers designed for fast flows without blurred captures
 - Cleaner logs with automatic runtime context and failure evidence
 
-See [START-HERE.md](START-HERE.md) for the fastest first-run path, [QUICK-START.md](QUICK-START.md) for the fuller walkthrough and [CHANGELOG.md](CHANGELOG.md) for release history.
-Use [ENVIRONMENT.md](ENVIRONMENT.md) as the central reference for environment variables and runtime properties.
-Use [API.md](API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
+See [START-HERE.md](/C:/dev/workspace/personal/pepenium/docs/START-HERE.md) for the fastest first-run path, [QUICK-START.md](/C:/dev/workspace/personal/pepenium/docs/QUICK-START.md) for the fuller walkthrough and [CHANGELOG.md](CHANGELOG.md) for release history.
+Use [ENVIRONMENT.md](/C:/dev/workspace/personal/pepenium/docs/ENVIRONMENT.md) as the central reference for environment variables and runtime properties.
+Use [API.md](/C:/dev/workspace/personal/pepenium/docs/API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
 Use the root `docker-compose.yaml` if you want to run the local Appium server in Docker while keeping the Android emulator on the host.
 Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone public-API consumer smoke validation flow.
 
@@ -375,8 +375,8 @@ Pepenium is already useful for real automation work. It has been exercised again
 
 ## Documentation
 
-- English quick start: [QUICK-START.md](QUICK-START.md)
-- Spanish quick start: [QUICK-START.es.md](QUICK-START.es.md)
+- English quick start: [QUICK-START.md](/C:/dev/workspace/personal/pepenium/docs/QUICK-START.md)
+- Spanish quick start: [QUICK-START.es.md](/C:/dev/workspace/personal/pepenium/docs/es/QUICK-START.es.md)
 - Spanish README: [README.es.md](README.es.md)
-- Environment reference: [ENVIRONMENT.md](ENVIRONMENT.md)
+- Environment reference: [ENVIRONMENT.md](/C:/dev/workspace/personal/pepenium/docs/ENVIRONMENT.md)
 
