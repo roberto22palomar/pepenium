@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.observability;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 
 public final class FailureContextReporter {
@@ -68,6 +70,10 @@ public final class FailureContextReporter {
         }
     }
 
+    @SuppressFBWarnings(
+            value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE",
+            justification = "The screenshot directory falls back to a non-null local path before resolution."
+    )
     private static void logScreenshot(WebDriver driver) {
         try {
             if (!(driver instanceof TakesScreenshot)) {
@@ -76,7 +82,13 @@ public final class FailureContextReporter {
             }
 
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            Path filePath = resolveScreenshotBaseDir().resolve("failure_" + Instant.now().toEpochMilli() + ".png");
+            Path screenshotBaseDir = resolveScreenshotBaseDir();
+            if (screenshotBaseDir == null) {
+                log.error("Screenshot: failed to resolve output directory");
+                return;
+            }
+
+            Path filePath = screenshotBaseDir.resolve("failure_" + Instant.now().toEpochMilli() + ".png");
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, screenshot);
 
@@ -175,9 +187,9 @@ public final class FailureContextReporter {
     private static Path resolveScreenshotBaseDir() {
         String baseDir = System.getenv("DEVICEFARM_SCREENSHOT_PATH");
         if (baseDir == null || baseDir.isBlank()) {
-            baseDir = System.getProperty("java.io.tmpdir");
+            baseDir = System.getProperty("java.io.tmpdir", ".");
         }
-        return Path.of(baseDir);
+        return baseDir == null || baseDir.isBlank() ? Paths.get(".") : Path.of(baseDir);
     }
 
     private static String rootType(Throwable cause) {

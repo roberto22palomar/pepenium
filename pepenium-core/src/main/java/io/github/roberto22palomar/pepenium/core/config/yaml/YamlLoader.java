@@ -29,7 +29,8 @@ public final class YamlLoader {
 
     static Path resolvePath(String yamlPath) {
         Path directPath = Paths.get(yamlPath);
-        String fileName = directPath.getFileName().toString();
+        Path fileNamePath = directPath.getFileName();
+        String fileName = fileNamePath == null ? yamlPath : fileNamePath.toString();
 
         List<Path> candidates = List.of(
                 directPath,

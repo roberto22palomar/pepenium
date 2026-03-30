@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public final class StepTracker {
         }
 
         public List<String> getSteps() {
-            return steps;
+            return Collections.unmodifiableList(steps);
         }
 
         public int getTotalRecorded() {

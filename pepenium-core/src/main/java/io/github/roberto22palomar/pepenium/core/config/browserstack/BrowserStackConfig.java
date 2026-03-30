@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.config.browserstack;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressFBWarnings(
+        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
+        justification = "YAML-mapped configuration DTO intentionally exposes mutable list state."
+)
 public class BrowserStackConfig {
 
     private String userName;

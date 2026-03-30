@@ -1,38 +1,61 @@
 package io.github.roberto22palomar.pepenium.toolkit.support;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.*;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebElement;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2",
+        justification = "The Appium driver is a shared mutable runtime handle intentionally owned elsewhere."
+)
 public class ScrollUtils {
 
     private final AppiumDriver driver;
 
-    public ScrollUtils(AppiumDriver driver) { this.driver = driver; }
+    public ScrollUtils(AppiumDriver driver) {
+        this.driver = driver;
+    }
 
     public WebElement scrollToElement(By locator, int maxSwipes) {
         Objects.requireNonNull(locator, "locator no puede ser null");
-        if (maxSwipes < 1) maxSwipes = 8; // valor razonable por defecto
+        if (maxSwipes < 1) {
+            maxSwipes = 8; // valor razonable por defecto
+        }
 
         String platform = String.valueOf(driver.getCapabilities().getCapability("platformName")).toLowerCase(Locale.ROOT);
         boolean isAndroid = platform.contains("android");
-        boolean isIOS = platform.contains("ios");
 
         // Implicit breve dentro del bucle
         Duration originalImplicit = Duration.ZERO;
-        try { originalImplicit = driver.manage().timeouts().getImplicitWaitTimeout(); } catch (Throwable ignored) {}
+        try {
+            originalImplicit = driver.manage().timeouts().getImplicitWaitTimeout();
+        } catch (Throwable ignored) {
+        }
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(200));
 
         try {
             // Intento inmediato
             List<WebElement> now = driver.findElements(locator);
-            for (WebElement el : now) if (el.isDisplayed()) return el;
+            for (WebElement el : now) {
+                if (el.isDisplayed()) {
+                    return el;
+                }
+            }
 
             if (isAndroid) {
                 // ===== ANDROID: intentamos UiScrollable (ultra-fiable y NO toca bordes del SO) =====
@@ -58,7 +81,12 @@ public class ScrollUtils {
                 // Buscar tras cada swipe
                 List<WebElement> list = driver.findElements(locator);
                 for (WebElement el : list) {
-                    try { if (el.isDisplayed()) return el; } catch (StaleElementReferenceException ignored) {}
+                    try {
+                        if (el.isDisplayed()) {
+                            return el;
+                        }
+                    } catch (StaleElementReferenceException ignored) {
+                    }
                 }
 
                 boolean moved = swipeUpSafe(); // “dedo sube” → contenido baja (ver abajo)
@@ -67,20 +95,29 @@ public class ScrollUtils {
                 lastHash = hash;
 
                 // Si “no se mueve” en 2 iteraciones seguidas, asumimos fin de lista
-                if (!moved || stagnant >= 2) break;
+                if (!moved || stagnant >= 2) {
+                    break;
+                }
 
                 attempts++;
             }
 
             // Última búsqueda
             List<WebElement> last = driver.findElements(locator);
-            for (WebElement el : last) if (el.isDisplayed()) return el;
+            for (WebElement el : last) {
+                if (el.isDisplayed()) {
+                    return el;
+                }
+            }
 
             throw new NoSuchElementException("No se encontró el elemento tras " + Math.max(1, maxSwipes)
                     + " swipes (o fin de lista): " + locator);
 
         } finally {
-            try { driver.manage().timeouts().implicitlyWait(originalImplicit); } catch (Throwable ignored) {}
+            try {
+                driver.manage().timeouts().implicitlyWait(originalImplicit);
+            } catch (Throwable ignored) {
+            }
         }
     }
 
@@ -139,6 +176,10 @@ public class ScrollUtils {
     }
 
     private int safePageHash() {
-        try { return driver.getPageSource().hashCode(); } catch (Throwable t) { return new Random().nextInt(); }
+        try {
+            return driver.getPageSource().hashCode();
+        } catch (Throwable t) {
+            return ThreadLocalRandom.current().nextInt();
+        }
     }
 }

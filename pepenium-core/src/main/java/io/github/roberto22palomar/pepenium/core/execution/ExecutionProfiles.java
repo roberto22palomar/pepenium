@@ -1,7 +1,5 @@
 package io.github.roberto22palomar.pepenium.core.execution;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -159,18 +157,54 @@ public final class ExecutionProfiles {
         return value == null || value.isBlank();
     }
 
-    @Getter
-    @Setter
     public static class ProfilesFile {
         private List<ProfileDefinition> profiles;
+
+        public List<ProfileDefinition> getProfiles() {
+            return profiles == null ? null : Collections.unmodifiableList(profiles);
+        }
+
+        public void setProfiles(List<ProfileDefinition> profiles) {
+            this.profiles = profiles == null ? null : new ArrayList<>(profiles);
+        }
     }
 
-    @Getter
-    @Setter
     public static class ProfileDefinition {
         private String id;
         private String target;
         private String description;
         private String configClass;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getTarget() {
+            return target;
+        }
+
+        public void setTarget(String target) {
+            this.target = target;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getConfigClass() {
+            return configClass;
+        }
+
+        public void setConfigClass(String configClass) {
+            this.configClass = configClass;
+        }
     }
 }

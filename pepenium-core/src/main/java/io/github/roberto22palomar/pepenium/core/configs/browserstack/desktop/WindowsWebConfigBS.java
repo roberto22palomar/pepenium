@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.desktop;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
@@ -20,14 +21,26 @@ public class WindowsWebConfigBS implements DriverConfig {
     private final BrowserStackConfigDesktop config;
     private final BrowserStackConfigDesktop.Platform platform;
 
+    @SuppressFBWarnings(
+            value = "CT_CONSTRUCTOR_THROW",
+            justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
+    )
     public WindowsWebConfigBS() {
         this(loadConfig(), null);
     }
 
+    @SuppressFBWarnings(
+            value = "CT_CONSTRUCTOR_THROW",
+            justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
+    )
     public WindowsWebConfigBS(BrowserStackConfigDesktop.Platform platform) {
         this(loadConfig(), platform);
     }
 
+    @SuppressFBWarnings(
+            value = "CT_CONSTRUCTOR_THROW",
+            justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
+    )
     private WindowsWebConfigBS(BrowserStackConfigDesktop config, BrowserStackConfigDesktop.Platform platform) {
         this.config = config;
         this.platform = platform != null ? platform : getDefaultPlatform(config);

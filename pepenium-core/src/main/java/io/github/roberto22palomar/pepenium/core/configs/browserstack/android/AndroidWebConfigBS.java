@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.android;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
@@ -20,14 +21,26 @@ public class AndroidWebConfigBS implements DriverConfig {
     private final BrowserStackConfigMobile config;
     private final BrowserStackConfigMobile.Platform platform;
 
+    @SuppressFBWarnings(
+            value = "CT_CONSTRUCTOR_THROW",
+            justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
+    )
     public AndroidWebConfigBS() {
         this(loadConfig(), null);
     }
 
+    @SuppressFBWarnings(
+            value = "CT_CONSTRUCTOR_THROW",
+            justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
+    )
     public AndroidWebConfigBS(BrowserStackConfigMobile.Platform platform) {
         this(loadConfig(), platform);
     }
 
+    @SuppressFBWarnings(
+            value = "CT_CONSTRUCTOR_THROW",
+            justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
+    )
     private AndroidWebConfigBS(BrowserStackConfigMobile config, BrowserStackConfigMobile.Platform platform) {
         this.config = config;
         this.platform = platform != null ? platform : getDefaultPlatform(config);
