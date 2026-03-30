@@ -29,11 +29,13 @@ final class PepeniumLifecycleExtension implements BeforeAllCallback, BeforeEachC
     @Override
     public void beforeEach(ExtensionContext context) {
         runtime.clearPerTestState();
+        runtime.beginTestObservability();
         owner.syncRuntimeState();
     }
 
     @Override
     public void afterEach(ExtensionContext context) {
+        runtime.writeTestReport(context.getDisplayName(), context.getExecutionException().orElse(null));
         runtime.clearPerTestState();
     }
 

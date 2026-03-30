@@ -81,14 +81,17 @@ public class ActionsAppIOS {
     }
 
     public WebElement waitToBeVisible(By locator) {
+        ActionLoggingSupport.recordWait("Wait for visible " + locator);
         return untilLong(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
     public WebElement waitToBePresent(By locator) {
+        ActionLoggingSupport.recordWait("Wait for present " + locator);
         return untilLong(ExpectedConditions.presenceOfElementLocated(locator));
     }
 
     public WebElement waitToBeClickable(By locator) {
+        ActionLoggingSupport.recordWait("Wait for clickable " + locator);
         return untilLong(ExpectedConditions.elementToBeClickable(locator));
     }
 
@@ -133,6 +136,7 @@ public class ActionsAppIOS {
     @SneakyThrows
     public void click(By locator) {
         StepTracker.record("Tap " + locator);
+        ActionLoggingSupport.recordAction("Tap " + locator);
         try {
             WebElement el = waitToBeClickable(locator);
             el.click();
@@ -162,6 +166,7 @@ public class ActionsAppIOS {
 
     public void type(By locator, String text) {
         StepTracker.record("Type into " + locator);
+        ActionLoggingSupport.recordAction("Type into " + locator);
         try {
             waitStableScreen();
             WebElement el = waitToBeVisible(locator);
@@ -175,6 +180,7 @@ public class ActionsAppIOS {
 
     public void waitUntilHidden(By loadingLocator) {
         StepTracker.record("Wait until hidden " + loadingLocator);
+        ActionLoggingSupport.recordWait("Wait until hidden " + loadingLocator);
         try {
             untilLong(ExpectedConditions.visibilityOfElementLocated(loadingLocator));
         } catch (TimeoutException e) {
@@ -235,6 +241,7 @@ public class ActionsAppIOS {
 
     public void swipeUp() {
         StepTracker.record("Swipe up");
+        ActionLoggingSupport.recordAction("Swipe up");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
@@ -245,6 +252,7 @@ public class ActionsAppIOS {
 
     public void swipeDown() {
         StepTracker.record("Swipe down");
+        ActionLoggingSupport.recordAction("Swipe down");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
@@ -256,6 +264,7 @@ public class ActionsAppIOS {
 
     public void swipeLeft() {
         StepTracker.record("Swipe left");
+        ActionLoggingSupport.recordAction("Swipe left");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
@@ -266,6 +275,7 @@ public class ActionsAppIOS {
 
     public void swipeRight() {
         StepTracker.record("Swipe right");
+        ActionLoggingSupport.recordAction("Swipe right");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
@@ -277,6 +287,7 @@ public class ActionsAppIOS {
 
     public WebElement scrollToElement(By locator, int maxSwipes) {
         StepTracker.record("Scroll to " + locator);
+        ActionLoggingSupport.recordAction("Scroll to " + locator);
         int attempts = 0;
         while (attempts < maxSwipes) {
             try {
@@ -318,6 +329,7 @@ public class ActionsAppIOS {
             Files.write(filePath, screenshot);
             String fullPath = filePath.toAbsolutePath().toString();
             log.info("Screenshot saved at: {}", fullPath);
+            ActionLoggingSupport.recordSavedScreenshot(fullPath);
             return fullPath;
         } catch (IOException e) {
             ActionLoggingSupport.logFailure(log, "save screenshot", "driver capture", e);
@@ -330,6 +342,7 @@ public class ActionsAppIOS {
 
     public void tapCenter() {
         StepTracker.record("Tap screen center");
+        ActionLoggingSupport.recordAction("Tap screen center");
         Dimension size = driver.manage().window().getSize();
         tapPoint(size.width / 2, size.height / 2, 80);
     }
@@ -350,6 +363,7 @@ public class ActionsAppIOS {
                                double percent,
                                int durationMs) {
         StepTracker.record("Swipe " + direction + " on " + locator + " x" + times);
+        ActionLoggingSupport.recordAction("Swipe " + direction + " on " + locator + " x" + times);
         waitStableScreen();
         WebElement el = waitToBeVisible(locator);
         Rectangle r = el.getRect();

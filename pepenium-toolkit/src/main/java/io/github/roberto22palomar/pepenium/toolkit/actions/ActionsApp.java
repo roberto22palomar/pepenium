@@ -46,11 +46,13 @@ public class ActionsApp {
     private static final Duration SCREENSHOT_SETTLE_BUFFER = Duration.ofMillis(80);
 
     public WebElement waitToBePresent(By locator) {
+        ActionLoggingSupport.recordWait("Wait for present " + locator);
         WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
         return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
     }
 
     public WebElement waitToBeVisible(By locator) {
+        ActionLoggingSupport.recordWait("Wait for visible " + locator);
         WebDriverWait wait = new WebDriverWait(driver, DEFAULT_TIMEOUT);
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
@@ -97,6 +99,7 @@ public class ActionsApp {
 
     public void click(By locator) {
         StepTracker.record("Tap " + locator);
+        ActionLoggingSupport.recordAction("Tap " + locator);
         try {
             WebElement element = new WebDriverWait(driver, DEFAULT_TIMEOUT)
                     .until(ExpectedConditions.elementToBeClickable(locator));
@@ -158,6 +161,7 @@ public class ActionsApp {
 
     public void type(By locator, String text) {
         StepTracker.record("Type into " + locator);
+        ActionLoggingSupport.recordAction("Type into " + locator);
         try {
             waitStableScreen();
             WebElement element = waitToBeVisible(locator);
@@ -171,6 +175,7 @@ public class ActionsApp {
 
     public void waitUntilHidden(By locator) {
         StepTracker.record("Wait until hidden " + locator);
+        ActionLoggingSupport.recordWait("Wait until hidden " + locator);
         try {
             WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
             wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
@@ -183,6 +188,7 @@ public class ActionsApp {
 
     public void swipeUp() {
         StepTracker.record("Swipe up");
+        ActionLoggingSupport.recordAction("Swipe up");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
@@ -203,6 +209,7 @@ public class ActionsApp {
 
     public void swipeDown() {
         StepTracker.record("Swipe down");
+        ActionLoggingSupport.recordAction("Swipe down");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int x = size.getWidth() / 2;
@@ -224,6 +231,7 @@ public class ActionsApp {
 
     public void swipeLeft() {
         StepTracker.record("Swipe left");
+        ActionLoggingSupport.recordAction("Swipe left");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
@@ -244,6 +252,7 @@ public class ActionsApp {
 
     public void swipeRight() {
         StepTracker.record("Swipe right");
+        ActionLoggingSupport.recordAction("Swipe right");
         waitStableScreen();
         Dimension size = driver.manage().window().getSize();
         int y = size.getHeight() / 2;
@@ -265,6 +274,7 @@ public class ActionsApp {
 
     public WebElement scrollToElement(By locator, int maxSwipes) {
         StepTracker.record("Scroll to " + locator);
+        ActionLoggingSupport.recordAction("Scroll to " + locator);
         int attempts = 0;
         while (attempts < maxSwipes) {
             try {
@@ -288,6 +298,7 @@ public class ActionsApp {
                                double percent,
                                int durationMs) {
         StepTracker.record("Swipe " + direction + " on " + locator + " x" + times);
+        ActionLoggingSupport.recordAction("Swipe " + direction + " on " + locator + " x" + times);
 
         waitStableScreen();
         WebElement el = waitToBePresent(locator);
@@ -380,6 +391,7 @@ public class ActionsApp {
 
             String fullPath = filePath.toAbsolutePath().toString();
             log.info("Screenshot saved at: {}", fullPath);
+            ActionLoggingSupport.recordSavedScreenshot(fullPath);
             return fullPath;
 
         } catch (IOException e) {

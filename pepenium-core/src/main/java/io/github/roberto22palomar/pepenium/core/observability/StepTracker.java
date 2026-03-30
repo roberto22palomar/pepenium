@@ -43,10 +43,13 @@ public final class StepTracker {
     public static void clear() {
         RECENT_STEPS.remove();
         TOTAL_RECORDED.remove();
+        PepeniumTimeline.clear();
     }
 
     private static String formatStep(String stepDescription) {
-        return LocalTime.now().format(TIME_FORMAT) + " | " + stepDescription.trim();
+        String formatted = LocalTime.now().format(TIME_FORMAT) + " | " + stepDescription.trim();
+        PepeniumTimeline.recordStep(stepDescription.trim());
+        return formatted;
     }
 
     private static int stepLimit() {
