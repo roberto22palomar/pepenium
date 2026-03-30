@@ -6,7 +6,7 @@
 
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-parent</artifactId>
-    <version>0.7.0</version>
+    <version>0.8.0</version>
     <packaging>pom</packaging>
     <name>Pepenium</name>
     <description>Java automation framework for Android, iOS and Web built on Appium, Selenium and JUnit 5.</description>

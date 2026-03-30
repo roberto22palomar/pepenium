@@ -16,6 +16,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Dependencies
 
 
+## [0.8.0] - 2026-03-30
+
+### Added
+
+- Added Maven quality gates for reusable-library readiness with `maven-enforcer-plugin`, `jacoco-maven-plugin`, `maven-checkstyle-plugin` and `spotbugs-maven-plugin`.
+- Added release-oriented project metadata in the parent `pom.xml` for licensing, SCM, developers and Maven Central publication readiness.
+- Added a root `checkstyle.xml` so style validation now runs consistently across modules.
+- Added a release profile that attaches source JARs and Javadoc JARs and prepares signed publication through the Sonatype Central publishing flow.
+- Added a dedicated GitHub Actions workflow to publish tagged releases through the release profile.
+
+### Changed
+
+- Updated the main CI workflow to run `verify` so dependency rules, coverage, style checks and static analysis execute continuously instead of living only in local builds.
+- Hardened `core` and `toolkit` code paths exposed by the new quality gates, including null-safety fixes, immutable view handling in profile/step snapshots and clearer runtime/session handling.
+- Documented intentional SpotBugs suppressions in driver-handle and configuration classes so the static-analysis baseline stays actionable instead of noisy.
+- Cleaned `ScrollUtils` and related toolkit helpers to satisfy style and static-analysis checks without changing their intended behavior.
+
+### Dependencies
+
+- Added `com.github.spotbugs:spotbugs-annotations` as a provided dependency in `pepenium-core` and `pepenium-toolkit` to support documented static-analysis suppressions.
+
+
 ## [0.7.0] - 2026-03-27
 
 ### Added

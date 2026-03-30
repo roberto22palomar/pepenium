@@ -59,15 +59,13 @@ Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone publ
 
 The main CI workflow now validates that standalone consumer smoke before the packaging job, so public API consumption is checked continuously and not only by local convention.
 
-## What v0.7.0 Adds
+## What v0.8.0 Adds
 
-- Split the repository into `pepenium-core`, `pepenium-toolkit` and `pepenium-examples`
-- Moved framework runtime code into real `src/main` production sources
-- Moved BrowserStack config models and YAML loading into `core`
-- Kept `toolkit` focused on reusable authoring helpers such as actions and support utilities
-- Kept example tests and page objects isolated in `pepenium-examples`
-- Preserved root-level build, test and example packaging workflows across the modular structure
-- Updated CI so GitHub Actions runs framework tests before packaging
+- Real Maven quality gates through Enforcer, JaCoCo, Checkstyle and SpotBugs
+- A stronger `verify` path in CI so library hygiene is checked continuously
+- Release-oriented metadata and packaging for sources and Javadocs
+- A dedicated GitHub Actions workflow for tagged release publication
+- Hardening passes in `core` and `toolkit` to keep the new static-analysis baseline useful and green
 
 ## Current Architecture
 

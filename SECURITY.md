@@ -6,9 +6,9 @@ Pepenium is currently maintained on the latest released version and the default 
 
 | Version | Supported |
 | --- | --- |
-| `0.7.x` | Yes |
+| `0.8.x` | Yes |
 | `main` | Yes |
-| `< 0.7.0` | No |
+| `< 0.8.0` | No |
 
 ## Reporting a Vulnerability
 
