@@ -53,11 +53,12 @@ public final class PepeniumHtmlReportWriter {
 
             ReportContext report = collect(testName, session, cause, reportDir);
             String baseFileName = buildBaseFileName(report);
-            Path htmlFile = reportDir.resolve(baseFileName + ".html");
+            String htmlFileName = baseFileName + ".html";
+            Path htmlFile = reportDir.resolve(htmlFileName);
             Path jsonFile = reportDir.resolve(baseFileName + ".json");
 
             Files.writeString(htmlFile, renderReport(report), StandardCharsets.UTF_8);
-            Files.writeString(jsonFile, renderReportJson(report, htmlFile.getFileName().toString()), StandardCharsets.UTF_8);
+            Files.writeString(jsonFile, renderReportJson(report, htmlFileName), StandardCharsets.UTF_8);
 
             Path indexFile = writeIndex(reportDir);
 
@@ -1164,7 +1165,7 @@ public final class PepeniumHtmlReportWriter {
         try {
             Object context = driver.getClass().getMethod("getContext").invoke(driver);
             return context == null ? null : String.valueOf(context);
-        } catch (Exception ignored) {
+        } catch (ReflectiveOperationException | SecurityException ignored) {
             return null;
         }
     }
