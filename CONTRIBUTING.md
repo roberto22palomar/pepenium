@@ -131,6 +131,8 @@ For documented public API, prefer this order whenever practical:
 - document the migration path
 - remove it only in a later released version unless a correctness or security reason forces a direct break
 
+Before creating a release tag, run the `Release Preflight` GitHub Actions workflow, or the equivalent local validation, so version alignment, `CHANGELOG.md`, `verify`, release-profile packaging and `consumer-smoke` are all checked before publication.
+
 ---
 
 ## Code of Conduct

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added local desktop execution profiles for Firefox and Edge, plus runtime support for `LOCAL_FIREFOX` and `LOCAL_EDGE`.
 - Added focused execution-profile and driver-session tests for the typed built-in profile registry and the new local desktop browsers.
 - Added contract-focused tests for `BaseTest`, `TestTarget` and the built-in execution profile catalog so the intended `1.0.0` authoring contract is guarded explicitly.
+- Added a reusable `Release Preflight` workflow plus release-metadata validation so version, `CHANGELOG.md`, `verify`, release-profile packaging and `consumer-smoke` are checked before publication.
 
 ### Changed
 - Updated the main CI workflow to run `verify` so dependency rules, coverage, style checks and static analysis execute continuously instead of living only in local builds.
@@ -23,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Replaced reflection-based execution-profile config instantiation with a typed built-in registry and clarified that execution-profile ids are part of the supported launch contract while internal config wiring remains evolving.
 - Explicitly fixed the pre-`1.0.0` public contract around `BaseTest`, lifecycle semantics, `TestTarget`, built-in execution profile ids and the current non-versioned status of reporting JSON.
 - Finalized `pepenium-examples` as a repository-only showcase module: examples stay opt-in, the module is not installed or published as a consumer artifact, and its legacy packaging profile was removed.
+- Updated the release workflow so publication cannot start until the new preflight checks have passed.
 
 ## [0.9.2] - 2026-03-31
 

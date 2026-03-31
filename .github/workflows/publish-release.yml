@@ -5,12 +5,57 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release version or tag to publish (for example 0.9.3 or v0.9.3)"
+        required: true
+        type: string
+      release_ref:
+        description: "Branch, tag or commit SHA to publish"
+        required: true
+        default: "main"
+        type: string
 
 permissions:
   contents: read
 
 jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+
+    outputs:
+      release_version: ${{ steps.meta.outputs.release_version }}
+      release_ref: ${{ steps.meta.outputs.release_ref }}
+
+    steps:
+      - name: Resolve release metadata
+        id: meta
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "push") {
+            $rawVersion = "${{ github.ref_name }}"
+            $releaseRef = "${{ github.ref }}"
+          } else {
+            $rawVersion = "${{ github.event.inputs.release_version }}"
+            $releaseRef = "${{ github.event.inputs.release_ref }}"
+          }
+
+          $normalizedVersion = $rawVersion -replace '^v', ''
+
+          Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value "release_version=$normalizedVersion"
+          Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value "release_ref=$releaseRef"
+
+  preflight:
+    needs: prepare-release
+    uses: ./.github/workflows/release-preflight.yml
+    with:
+      release_version: ${{ needs.prepare-release.outputs.release_version }}
+      release_ref: ${{ needs.prepare-release.outputs.release_ref }}
+
   publish:
+    needs:
+      - prepare-release
+      - preflight
     runs-on: ubuntu-latest
 
     env:
@@ -21,6 +66,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare-release.outputs.release_ref }}
 
       - name: Set up Java
         uses: actions/setup-java@v5

@@ -1,0 +1,60 @@
+name: Release Preflight
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release version or tag to validate (for example 0.9.3 or v0.9.3)"
+        required: true
+        type: string
+      release_ref:
+        description: "Branch, tag or commit SHA to validate before creating the final release tag"
+        required: true
+        default: "main"
+        type: string
+  workflow_call:
+    inputs:
+      release_version:
+        required: true
+        type: string
+      release_ref:
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.release_ref != '' && inputs.release_ref || github.ref }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "11"
+          cache: maven
+
+      - name: Validate release version and changelog
+        id: metadata
+        shell: pwsh
+        run: ./.github/scripts/Test-ReleasePreflight.ps1 -ReleaseVersion '${{ inputs.release_version }}'
+
+      - name: Run full framework verify
+        run: mvn -B -ntp verify
+
+      - name: Validate release profile packaging without publishing
+        run: mvn -B -ntp -Prelease verify -DskipTests "-Dgpg.skip=true" "-Dcentral.skipPublishing=true" "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true" "-Djapicmp.skip=true"
+
+      - name: Install framework artifacts for smoke consumer
+        run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit -am install -DskipTests "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true" "-Djapicmp.skip=true"
+
+      - name: Validate standalone public API consumer
+        run: mvn -B -ntp -U -f consumer-smoke/pom.xml clean test-compile "-Dpepenium.version=${{ steps.metadata.outputs.normalized_version }}"
