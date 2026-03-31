@@ -1,6 +1,6 @@
 # Public API Guide
 
-This document defines the intended public API surface of Pepenium as of the `0.8.0` line planning stage.
+This document defines the intended public API surface of Pepenium in its current pre-`1.0.0` line.
 
 Its goal is simple:
 
@@ -109,6 +109,28 @@ Until `1.0.0`, Pepenium may still make structural improvements. Even so, the pro
 - removing or renaming public `Assertions*` methods that user tests are expected to call
 - changing the default execution-profile resolution model in a way that breaks existing test launch setups
 
+For `BaseTest`, the protected authoring hooks used by test subclasses should also be treated as part of the compatibility contract, not only its public type declaration.
+
+## Automated Compatibility Gate
+
+Pepenium now runs an automatic `japicmp` comparison during `verify` for the released `pepenium` and `pepenium-toolkit` artifacts.
+
+That build-time compatibility gate is intentionally scoped to the documented public API surface:
+
+- `pepenium-core`: `BaseTest` and `TestTarget`
+- `pepenium-toolkit`: the documented `Actions*` and `Assertions*` authoring types
+
+This keeps the compatibility check focused on what normal external users are expected to import directly, while advanced/evolving and internal areas can still change until they are explicitly promoted into the stable contract.
+
+## Deprecation Policy
+
+Before `1.0.0`, Pepenium should still prefer a deprecation-first policy for documented public API changes whenever that is practical:
+
+- add `@Deprecated` and document the preferred replacement before removing or renaming a public API member
+- keep deprecated public API available for at least one released version when the design allows it
+- record notable deprecations and planned removals in `CHANGELOG.md`
+- only skip the deprecation step for correctness, security or impossible-to-preserve designs, and call that out explicitly as a breaking change
+
 ## Practical Rule For Contributors
 
 If a class is not needed for a normal Pepenium user to:
@@ -125,6 +147,7 @@ then it should usually be assumed internal unless Pepenium documentation explici
 Before `1.0.0`, Pepenium should tighten this guide further by:
 
 - validating the public API from an external consumer project
+- keeping the automatic binary/source compatibility gate aligned with the documented public API list
 - deciding whether execution/configuration types should become stable public API
 - deciding whether `BaseTest` remains the main public entry point or evolves into a more annotation/extension-driven JUnit model
 - documenting compatibility expectations between minor releases

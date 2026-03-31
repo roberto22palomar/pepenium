@@ -58,13 +58,12 @@ Basic requirements:
 Typical commands:
 
 ```bash
-mvn test
-mvn package
+mvn verify
 ```
 
 Some features require specific execution profiles or provider credentials, especially BrowserStack and AWS Device Farm flows.
 
-When validating public API compatibility, also run:
+When validating public API compatibility, `mvn verify` now runs the automatic binary/source compatibility check for the documented public API. Also run:
 
 ```bash
 mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
@@ -82,6 +81,7 @@ Before submitting a pull request:
 - update documentation if behavior changes
 - update `CHANGELOG.md` when the change is notable
 - run the standalone consumer smoke when changing documented public API
+- prefer a deprecation-first path for documented public API instead of removing or renaming it immediately
 - avoid breaking changes unless clearly justified
 
 Pull requests should:
@@ -118,6 +118,13 @@ This project follows **Semantic Versioning**.
 Notable changes should be documented in `CHANGELOG.md` under the **[Unreleased]** section.
 
 Until `1.0.0`, structural refactors are still possible, but changes to documented public API should already be treated carefully.
+
+For documented public API, prefer this order whenever practical:
+
+- add a replacement first
+- mark the old API with `@Deprecated`
+- document the migration path
+- remove it only in a later released version unless a correctness or security reason forces a direct break
 
 ---
 

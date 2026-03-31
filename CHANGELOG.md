@@ -15,13 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added per-test JSON report exports plus a suite-level `summary.json` so report data can be consumed programmatically as well as through HTML.
 - Added richer timeline semantics for actions, waits and errors, not only generic steps, assertions and screenshots.
 - Added dedicated reporting documentation plus a report preview asset so the new reporting bundle is easier to discover from the repository docs.
+- Added an automatic `japicmp` compatibility gate in `verify` for the documented public API of `pepenium` and `pepenium-toolkit`.
 
 ### Changed
 - Expanded the HTML report index with pass/fail summary cards, target/profile/provider breakdowns, total duration and quick filtering.
 - Added duration, last-step/last-assertion highlights, remote-session context and a richer failure summary to the per-test HTML reports.
 - Reworked the visual layout of the per-test and suite HTML reports so they are easier to share and scan outside the console.
 - Clarified the main README and onboarding docs so external consumers are guided toward `pepenium-toolkit` and away from using `pepenium-parent` as a normal dependency.
-
+- Documented an explicit deprecation-first policy for the public API on the road to `1.0.0`.
 ### Dependencies
 
 
