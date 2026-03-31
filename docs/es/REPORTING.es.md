@@ -16,6 +16,12 @@ Los artefactos generados incluyen:
 - `report-*.json`: payload estructurado por test
 - `screenshots/`: capturas enlazadas desde el reporte cuando hay evidencia disponible
 
+Estado del contrato:
+
+- los reportes HTML son salidas diagnosticas soportadas y orientadas al usuario
+- los ficheros JSON estan disponibles para integraciones y automatizaciones, pero su esquema sigue evolucionando y todavia no debe tratarse como un contrato publico versionado
+- si Pepenium quiere estabilizar ese JSON mas adelante, primero deberia introducir versionado explicito de esquema
+
 Los reportes HTML por test incluyen:
 
 - execution story y failure story

@@ -1,5 +1,8 @@
 package io.github.roberto22palomar.pepenium.core.execution;
 
+/**
+ * Stable functional targets that test classes can declare through {@code BaseTest}.
+ */
 public enum TestTarget {
     ANDROID_NATIVE("local-android"),
     ANDROID_WEB("local-android-web"),
