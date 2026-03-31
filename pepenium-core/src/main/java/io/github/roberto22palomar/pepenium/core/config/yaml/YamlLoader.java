@@ -63,12 +63,21 @@ public final class YamlLoader {
         Path nestedPackagedRuntimePath = Paths.get("..", "pepenium-core", "src", "main", "resources", "browserstack.yml")
                 .normalize();
 
-        if (normalized.equals(packagedRuntimePath) || normalized.equals(nestedPackagedRuntimePath)) {
+        if (endsWithPath(normalized, packagedRuntimePath) || endsWithPath(normalized, nestedPackagedRuntimePath)) {
             throw ConfigValidationSupport.invalid(
                     "Refusing to load BrowserStack YAML from '" + resolvedPath
                             + "'. Real BrowserStack credentials must live outside 'src/main/resources'. "
                             + "Use '.pepenium/browserstack/' or pass an explicit external path instead."
             );
         }
+    }
+
+    private static boolean endsWithPath(Path candidate, Path suffix) {
+        int candidateCount = candidate.getNameCount();
+        int suffixCount = suffix.getNameCount();
+        if (suffixCount > candidateCount) {
+            return false;
+        }
+        return candidate.subpath(candidateCount - suffixCount, candidateCount).equals(suffix);
     }
 }
