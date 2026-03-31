@@ -56,7 +56,7 @@ Usa [ENVIRONMENT.md](docs/ENVIRONMENT.md) como referencia central de variables d
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 Usa [consumer-smoke/README.md](consumer-smoke/README.md) si quieres validar el consumo de la API publica desde un proyecto Maven separado.
 
-El workflow principal de CI valida ese consumer smoke antes del packaging, de modo que el consumo externo no dependa solo de una convencion local.
+El workflow principal de CI ejecuta `verify` sobre el framework y despues valida ese consumer smoke, de modo que los quality gates y el consumo externo queden comprobados de forma continua.
 
 ## Usar Pepenium Desde Otro Proyecto
 
