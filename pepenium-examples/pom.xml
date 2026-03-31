@@ -13,6 +13,11 @@
     <artifactId>pepenium-examples</artifactId>
     <name>Pepenium Examples</name>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <central.skipPublishing>true</central.skipPublishing>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.github.roberto22palomar</groupId>
