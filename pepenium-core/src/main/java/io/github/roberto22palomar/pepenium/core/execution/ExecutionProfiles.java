@@ -90,19 +90,7 @@ public final class ExecutionProfiles {
             }
 
             ProfilesFile yamlFile = new Yaml().loadAs(input, ProfilesFile.class);
-            if (yamlFile == null || yamlFile.getProfiles() == null || yamlFile.getProfiles().isEmpty()) {
-                throw new IllegalStateException("No execution profiles found in " + PROFILES_RESOURCE);
-            }
-
-            Map<String, ExecutionProfile> profiles = new LinkedHashMap<>();
-            for (ProfileDefinition definition : yamlFile.getProfiles()) {
-                ExecutionProfile profile = toExecutionProfile(definition);
-                if (profiles.putIfAbsent(profile.getId(), profile) != null) {
-                    throw new IllegalStateException("Duplicate execution profile id '" + profile.getId()
-                            + "' in " + PROFILES_RESOURCE);
-                }
-            }
-            return profiles;
+            return loadProfiles(yamlFile);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
@@ -110,61 +98,49 @@ public final class ExecutionProfiles {
         }
     }
 
-    private static ExecutionProfile toExecutionProfile(ProfileDefinition definition) {
+    static Map<String, ExecutionProfile> loadProfiles(ProfilesFile yamlFile) {
+        if (yamlFile == null || yamlFile.getProfiles() == null || yamlFile.getProfiles().isEmpty()) {
+            throw new IllegalStateException("No execution profiles found in " + PROFILES_RESOURCE);
+        }
+
+        Map<String, ExecutionProfile> profiles = new LinkedHashMap<>();
+        for (ProfileDefinition definition : yamlFile.getProfiles()) {
+            ExecutionProfile profile = toExecutionProfile(definition);
+            if (profiles.putIfAbsent(profile.getId(), profile) != null) {
+                throw new IllegalStateException("Duplicate execution profile id '" + profile.getId()
+                        + "' in " + PROFILES_RESOURCE);
+            }
+        }
+        return profiles;
+    }
+
+    static ExecutionProfile toExecutionProfile(ProfileDefinition definition) {
         if (definition == null) {
             throw new IllegalStateException("Found null execution profile definition in " + PROFILES_RESOURCE);
         }
         if (isBlank(definition.getId())) {
             throw new IllegalStateException("Execution profile id is required in " + PROFILES_RESOURCE);
         }
-        if (isBlank(definition.getTarget())) {
+        if (definition.getTarget() == null) {
             throw new IllegalStateException("Execution profile target is required for '" + definition.getId() + "'");
         }
         if (isBlank(definition.getDescription())) {
             throw new IllegalStateException("Execution profile description is required for '" + definition.getId() + "'");
         }
-        if (isBlank(definition.getConfigClass())) {
-            throw new IllegalStateException("Execution profile configClass is required for '" + definition.getId() + "'");
-        }
-
-        TestTarget target;
-        try {
-            target = TestTarget.valueOf(definition.getTarget().trim());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalStateException("Unknown target '" + definition.getTarget()
-                    + "' for execution profile '" + definition.getId() + "'", e);
+        if (definition.getConfigKey() == null) {
+            throw new IllegalStateException("Execution profile configKey is required for '" + definition.getId() + "'");
         }
 
         return new ExecutionProfile(
                 definition.getId().trim(),
-                target,
+                definition.getTarget(),
                 definition.getDescription().trim(),
-                buildConfigSupplier(definition.getConfigClass().trim(), definition.getId().trim())
+                buildConfigSupplier(definition.getConfigKey())
         );
     }
 
-    @SuppressWarnings("unchecked")
-    private static Supplier<DriverConfig> buildConfigSupplier(String configClassName, String profileId) {
-        try {
-            Class<?> rawClass = Class.forName(configClassName);
-            if (!DriverConfig.class.isAssignableFrom(rawClass)) {
-                throw new IllegalStateException("Config class '" + configClassName
-                        + "' for execution profile '" + profileId + "' does not extend DriverConfig");
-            }
-
-            Class<? extends DriverConfig> configClass = (Class<? extends DriverConfig>) rawClass;
-            return () -> {
-                try {
-                    return configClass.getDeclaredConstructor().newInstance();
-                } catch (Exception e) {
-                    throw new IllegalStateException("Failed to instantiate config class '" + configClassName
-                            + "' for execution profile '" + profileId + "'", e);
-                }
-            };
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Config class '" + configClassName
-                    + "' for execution profile '" + profileId + "' was not found", e);
-        }
+    private static Supplier<DriverConfig> buildConfigSupplier(BuiltInDriverConfigKey configKey) {
+        return configKey.supplier();
     }
 
     private static boolean isBlank(String value) {
@@ -185,9 +161,9 @@ public final class ExecutionProfiles {
 
     public static class ProfileDefinition {
         private String id;
-        private String target;
+        private TestTarget target;
         private String description;
-        private String configClass;
+        private BuiltInDriverConfigKey configKey;
 
         public String getId() {
             return id;
@@ -197,11 +173,11 @@ public final class ExecutionProfiles {
             this.id = id;
         }
 
-        public String getTarget() {
+        public TestTarget getTarget() {
             return target;
         }
 
-        public void setTarget(String target) {
+        public void setTarget(TestTarget target) {
             this.target = target;
         }
 
@@ -213,12 +189,12 @@ public final class ExecutionProfiles {
             this.description = description;
         }
 
-        public String getConfigClass() {
-            return configClass;
+        public BuiltInDriverConfigKey getConfigKey() {
+            return configKey;
         }
 
-        public void setConfigClass(String configClass) {
-            this.configClass = configClass;
+        public void setConfigKey(BuiltInDriverConfigKey configKey) {
+            this.configKey = configKey;
         }
     }
 }

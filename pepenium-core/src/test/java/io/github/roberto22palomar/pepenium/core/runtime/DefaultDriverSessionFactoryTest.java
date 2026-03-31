@@ -13,6 +13,10 @@ import org.mockito.MockedConstruction;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.SessionId;
 
@@ -58,6 +62,59 @@ class DefaultDriverSessionFactoryTest {
             assertEquals("chrome", constructedOptions.get().getBrowserName());
             assertEquals("chrome-session-123456", ThreadContext.get("sessionId"));
             assertEquals("chrome-s", ThreadContext.get("sessionShort"));
+        }
+    }
+
+    @Test
+    void createLocalFirefoxBuildsDriverSessionWithMergedOptions() throws Exception {
+        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory();
+        MutableCapabilities capabilities = new MutableCapabilities();
+        capabilities.setCapability("acceptInsecureCerts", true);
+        DriverRequest request = DriverRequest.builder()
+                .driverType(DriverType.LOCAL_FIREFOX)
+                .description("local firefox")
+                .target(TestTarget.WEB_DESKTOP)
+                .capabilities(capabilities)
+                .build();
+        AtomicReference<FirefoxOptions> constructedOptions = new AtomicReference<>();
+
+        try (MockedConstruction<FirefoxDriver> ignored = mockConstruction(FirefoxDriver.class, (mock, context) -> {
+            constructedOptions.set((FirefoxOptions) context.arguments().get(0));
+            when(mock.getSessionId()).thenReturn(new SessionId("firefox-session-123456"));
+        })) {
+            DriverSession session = factory.create(request);
+
+            assertSame(request, session.getRequest());
+            assertNotNull(constructedOptions.get());
+            assertEquals(Boolean.TRUE, constructedOptions.get().getCapability("acceptInsecureCerts"));
+            assertEquals("firefox-session-123456", ThreadContext.get("sessionId"));
+            assertEquals("firefox-", ThreadContext.get("sessionShort"));
+        }
+    }
+
+    @Test
+    void createLocalEdgeBuildsDriverSessionWithMergedOptions() throws Exception {
+        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory();
+        EdgeOptions capabilities = new EdgeOptions();
+        capabilities.setCapability("acceptInsecureCerts", true);
+        DriverRequest request = DriverRequest.builder()
+                .driverType(DriverType.LOCAL_EDGE)
+                .description("local edge")
+                .target(TestTarget.WEB_DESKTOP)
+                .capabilities(capabilities)
+                .build();
+        AtomicReference<EdgeOptions> constructedOptions = new AtomicReference<>();
+
+        try (MockedConstruction<EdgeDriver> ignored = mockConstruction(EdgeDriver.class, (mock, context) -> {
+            constructedOptions.set((EdgeOptions) context.arguments().get(0));
+            when(mock.getSessionId()).thenReturn(new SessionId("edge-session-123456"));
+        })) {
+            DriverSession session = factory.create(request);
+
+            assertSame(request, session.getRequest());
+            assertSame(capabilities, constructedOptions.get());
+            assertEquals("edge-session-123456", ThreadContext.get("sessionId"));
+            assertEquals("edge-ses", ThreadContext.get("sessionShort"));
         }
     }
 
