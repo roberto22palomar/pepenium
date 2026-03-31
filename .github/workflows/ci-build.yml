@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 
 jobs:
-  toolkit-test:
+  framework-verify:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,30 +21,12 @@ jobs:
           java-version: "11"
           cache: maven
 
-      - name: Run toolkit tests
-        run: mvn -B -ntp -pl pepenium-toolkit -am test
-
-  core-test:
-    runs-on: ubuntu-latest
-    needs: toolkit-test
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: "11"
-          cache: maven
-
-      - name: Run full framework tests
-        run: mvn -B -ntp test
+      - name: Run full framework verify
+        run: mvn -B -ntp verify
 
   consumer-smoke:
     runs-on: ubuntu-latest
-    needs: core-test
+    needs: framework-verify
 
     steps:
       - name: Checkout
@@ -58,25 +40,7 @@ jobs:
           cache: maven
 
       - name: Install framework artifacts for smoke consumer
-        run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit -am install -DskipTests
+        run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit -am install -DskipTests "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true"
 
       - name: Validate standalone public API consumer
         run: mvn -B -ntp -U -f consumer-smoke/pom.xml clean test-compile
-
-  package:
-    runs-on: ubuntu-latest
-    needs: consumer-smoke
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: "11"
-          cache: maven
-
-      - name: Validate packaging
-        run: mvn -B -ntp package -DskipTests

@@ -57,7 +57,7 @@ Use [API.md](docs/API.md) for the current public-vs-internal API guidance on the
 Use the root `docker-compose.yaml` if you want to run the local Appium server in Docker while keeping the Android emulator on the host.
 Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone public-API consumer smoke validation flow.
 
-The main CI workflow now validates that standalone consumer smoke before the packaging job, so public API consumption is checked continuously and not only by local convention.
+The main CI workflow now runs framework `verify` and then validates that standalone consumer smoke, so quality gates and public API consumption are both checked continuously.
 
 ## Using Pepenium From Another Project
 
