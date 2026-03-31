@@ -83,6 +83,7 @@ Before submitting a pull request:
 - run the standalone consumer smoke when changing documented public API
 - prefer a deprecation-first path for documented public API instead of removing or renaming it immediately
 - avoid breaking changes unless clearly justified
+- if you change `BaseTest`, `TestTarget`, built-in execution profile ids or reporting-contract expectations, update `docs/API.md` and the contract-focused tests together
 
 Pull requests should:
 
@@ -118,6 +119,8 @@ This project follows **Semantic Versioning**.
 Notable changes should be documented in `CHANGELOG.md` under the **[Unreleased]** section.
 
 Until `1.0.0`, structural refactors are still possible, but changes to documented public API should already be treated carefully.
+
+That now includes the documented `BaseTest` lifecycle model, `TestTarget` defaults, built-in execution profile ids and the current decision that reporting JSON is still evolving rather than versioned public API.
 
 For documented public API, prefer this order whenever practical:
 
