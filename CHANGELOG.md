@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-03-31
+
 ### Added
 - Added an automatic `japicmp` compatibility gate in `verify` for the documented public API of `pepenium` and `pepenium-toolkit`.
 - Added local desktop execution profiles for Firefox and Edge, plus runtime support for `LOCAL_FIREFOX` and `LOCAL_EDGE`.
