@@ -19,11 +19,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -119,6 +121,34 @@ class ActionsWebTest {
     }
 
     @Test
+    void waitToBePresentReturnsLocatedElement() {
+        when(driver.findElement(LOCATOR)).thenReturn(element);
+
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        assertSame(element, actions.waitToBePresent(LOCATOR));
+    }
+
+    @Test
+    void isElementPresentReturnsTrueWhenLocatorExists() {
+        when(driver.findElement(LOCATOR)).thenReturn(element);
+
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        assertTrue(actions.isElementPresent(LOCATOR));
+    }
+
+    @Test
+    void isElementVisibleReturnsTrueWhenElementBecomesVisible() {
+        when(driver.findElement(LOCATOR)).thenReturn(element);
+        when(element.isDisplayed()).thenReturn(true);
+
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        assertTrue(actions.isElementVisible(LOCATOR));
+    }
+
+    @Test
     void typeClearsAndSendsKeys() {
         when(driver.findElement(LOCATOR)).thenReturn(element);
         when(element.isDisplayed()).thenReturn(true);
@@ -161,6 +191,18 @@ class ActionsWebTest {
     }
 
     @Test
+    void getElementTextReturnsNullWhenVisibleLookupFails() {
+        ActionsWeb actions = new ActionsWeb(driver) {
+            @Override
+            public WebElement waitToBeVisible(By locator) {
+                throw new IllegalStateException("boom");
+            }
+        };
+
+        assertNull(actions.getElementText(LOCATOR));
+    }
+
+    @Test
     void clickIfVisibleReturnsFalseWithoutClickingWhenElementIsHidden() {
         ActionsWeb actions = new ActionsWeb(driver) {
             @Override
@@ -171,6 +213,25 @@ class ActionsWebTest {
 
         assertFalse(actions.clickIfVisible(LOCATOR));
         verifyNoInteractions(driver);
+    }
+
+    @Test
+    void clickIfVisibleReturnsTrueAndDelegatesToClick() {
+        AtomicBoolean clicked = new AtomicBoolean(false);
+        ActionsWeb actions = new ActionsWeb(driver) {
+            @Override
+            public boolean isElementVisible(By locator) {
+                return true;
+            }
+
+            @Override
+            public void click(By locator) {
+                clicked.set(true);
+            }
+        };
+
+        assertTrue(actions.clickIfVisible(LOCATOR));
+        assertTrue(clicked.get());
     }
 
     @Test
