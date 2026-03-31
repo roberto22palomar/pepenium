@@ -211,6 +211,8 @@ This keeps the same test portable across environments without changing its code.
 - `local-android`
 - `local-android-web`
 - `local-web`
+- `local-web-firefox`
+- `local-web-edge`
 - `aws-android`
 - `aws-android-web`
 - `aws-ios`
@@ -224,6 +226,8 @@ This keeps the same test portable across environments without changing its code.
 The built-in profile catalog is defined in:
 
 - `pepenium-core/src/main/resources/execution-profiles.yml`
+
+Profile ids are part of the supported launch contract. The internal `configKey` values behind that catalog are framework wiring details and may still evolve before `1.0.0`.
 
 ## Example Tests
 

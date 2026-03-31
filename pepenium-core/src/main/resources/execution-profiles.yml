@@ -2,59 +2,69 @@ profiles:
   - id: local-android
     target: ANDROID_NATIVE
     description: Local Android native app
-    configClass: io.github.roberto22palomar.pepenium.core.configs.local.android.AndroidConfigLocal
+    configKey: LOCAL_ANDROID
 
   - id: local-android-web
     target: ANDROID_WEB
     description: Local Android mobile web
-    configClass: io.github.roberto22palomar.pepenium.core.configs.local.android.AndroidWebConfigLocal
+    configKey: LOCAL_ANDROID_WEB
 
   - id: local-web
     target: WEB_DESKTOP
     description: Local Chrome desktop web
-    configClass: io.github.roberto22palomar.pepenium.core.configs.local.desktop.ChromeWebConfigLocal
+    configKey: LOCAL_DESKTOP_CHROME
+
+  - id: local-web-firefox
+    target: WEB_DESKTOP
+    description: Local Firefox desktop web
+    configKey: LOCAL_DESKTOP_FIREFOX
+
+  - id: local-web-edge
+    target: WEB_DESKTOP
+    description: Local Edge desktop web
+    configKey: LOCAL_DESKTOP_EDGE
 
   - id: aws-android
     target: ANDROID_NATIVE
     description: AWS Android native app
-    configClass: io.github.roberto22palomar.pepenium.core.configs.aws.android.AndroidConfigAWS
+    configKey: AWS_ANDROID
 
   - id: aws-android-web
     target: ANDROID_WEB
     description: AWS Android mobile web
-    configClass: io.github.roberto22palomar.pepenium.core.configs.aws.android.AndroidWebConfigAWS
+    configKey: AWS_ANDROID_WEB
 
   - id: aws-ios
     target: IOS_NATIVE
     description: AWS iOS native app
-    configClass: io.github.roberto22palomar.pepenium.core.configs.aws.ios.IOSConfigAWS
+    configKey: AWS_IOS
 
   - id: browserstack-android
     target: ANDROID_NATIVE
     description: BrowserStack Android native app
-    configClass: io.github.roberto22palomar.pepenium.core.configs.browserstack.android.AndroidConfigBS
+    configKey: BROWSERSTACK_ANDROID
 
   - id: browserstack-android-web
     target: ANDROID_WEB
     description: BrowserStack Android mobile web
-    configClass: io.github.roberto22palomar.pepenium.core.configs.browserstack.android.AndroidWebConfigBS
+    configKey: BROWSERSTACK_ANDROID_WEB
 
   - id: browserstack-ios
     target: IOS_NATIVE
     description: BrowserStack iOS native app
-    configClass: io.github.roberto22palomar.pepenium.core.configs.browserstack.ios.IOSConfigBS
+    configKey: BROWSERSTACK_IOS
 
   - id: browserstack-ios-web
     target: IOS_WEB
     description: BrowserStack iOS mobile web
-    configClass: io.github.roberto22palomar.pepenium.core.configs.browserstack.ios.IOSWebConfigBS
+    configKey: BROWSERSTACK_IOS_WEB
 
   - id: browserstack-windows-web
     target: WEB_DESKTOP
     description: BrowserStack Windows desktop web
-    configClass: io.github.roberto22palomar.pepenium.core.configs.browserstack.desktop.WindowsWebConfigBS
+    configKey: BROWSERSTACK_WINDOWS_WEB
 
   - id: browserstack-mac-web
     target: WEB_DESKTOP
     description: BrowserStack Mac desktop web
-    configClass: io.github.roberto22palomar.pepenium.core.configs.browserstack.desktop.MacWebConfigBS
+    configKey: BROWSERSTACK_MAC_WEB
