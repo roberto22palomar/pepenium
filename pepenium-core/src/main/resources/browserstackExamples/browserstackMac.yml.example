@@ -1,0 +1,12 @@
+userName: user
+accessKey: 1234
+framework: junit5
+platforms:
+  - os: OS X
+    osVersion: Sonoma
+    browserName: Chrome
+    browserVersion: latest
+parallelsPerPlatform: 1
+browserstackLocal: false
+buildName: browserstack-mac-build-1
+projectName: BrowserStack Mac Sample

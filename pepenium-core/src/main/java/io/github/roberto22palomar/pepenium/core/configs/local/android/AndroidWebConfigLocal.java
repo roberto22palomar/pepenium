@@ -7,8 +7,19 @@ import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 
 import java.time.Duration;
+import java.util.function.Function;
 
 public class AndroidWebConfigLocal implements DriverConfig {
+
+    private final Function<String, String> env;
+
+    public AndroidWebConfigLocal() {
+        this(System::getenv);
+    }
+
+    AndroidWebConfigLocal(Function<String, String> env) {
+        this.env = env;
+    }
 
     @Override
     public DriverRequest createRequest() throws Exception {
@@ -37,8 +48,8 @@ public class AndroidWebConfigLocal implements DriverConfig {
                 .build();
     }
 
-    private static String envOrDefault(String key, String defaultValue) {
-        String value = System.getenv(key);
+    private String envOrDefault(String key, String defaultValue) {
+        String value = env.apply(key);
         return (value == null || value.isBlank()) ? defaultValue : value.trim();
     }
 }
