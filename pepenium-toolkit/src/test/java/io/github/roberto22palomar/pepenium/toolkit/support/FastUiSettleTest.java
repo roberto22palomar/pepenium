@@ -15,7 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,19 +78,16 @@ class FastUiSettleTest {
 
     @Test
     void waitBrieflyReturnsFalseWhenUiKeepsChangingUntilTimeout() {
-        when(driver.findElements(By.className("android.widget.ProgressBar"))).thenReturn(List.of());
-        when(driver.findElements(By.className("XCUIElementTypeActivityIndicator"))).thenReturn(List.of());
-        when(driver.findElements(By.className("XCUIElementTypeProgressIndicator"))).thenReturn(List.of());
-        when(driver.findElements(argThat(by -> by.toString().contains("screen-ready")))).thenReturn(List.of());
         AtomicInteger counter = new AtomicInteger();
         when(driver.getPageSource()).thenAnswer(invocation -> "<page>" + counter.incrementAndGet() + "</page>");
 
         FastUiSettle settle = new FastUiSettle(driver,
-                Duration.ofMillis(5),
+                Duration.ofMillis(80),
                 Duration.ofMillis(1),
                 Duration.ofMillis(1));
 
         assertFalse(settle.waitBriefly());
+        verify(driver, atLeast(2)).getPageSource();
     }
 
     @Test
