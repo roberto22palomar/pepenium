@@ -51,7 +51,7 @@ jobs:
         run: mvn -B -ntp verify
 
       - name: Validate release profile packaging without publishing
-        run: mvn -B -ntp -Prelease verify -DskipTests "-Dgpg.skip=true" "-Dcentral.skipPublishing=true" "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true" "-Djapicmp.skip=true"
+        run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit -am -Prelease verify -DskipTests "-Dgpg.skip=true" "-Dcentral.skipPublishing=true" "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true" "-Djapicmp.skip=true"
 
       - name: Install framework artifacts for smoke consumer
         run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit -am install -DskipTests "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true" "-Djapicmp.skip=true"
