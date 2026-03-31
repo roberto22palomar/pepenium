@@ -12,9 +12,11 @@
 
     <artifactId>pepenium-examples</artifactId>
     <name>Pepenium Examples</name>
+    <description>Repository-only runnable examples and showcase templates built on top of Pepenium core and toolkit.</description>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.install.skip>true</maven.install.skip>
         <central.skipPublishing>true</central.skipPublishing>
     </properties>
 
@@ -60,90 +62,15 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>my-app-android</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <source>1.8</source>
-                            <target>1.8</target>
-                            <compilerArgs>
-                                <arg>-parameters</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>tests-jar</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <configuration>
-                                    <classesDirectory>${project.build.testOutputDirectory}</classesDirectory>
-                                    <classifier>tests</classifier>
-                                    <includes>
-                                        <include>io/github/roberto22palomar/pepenium/tests/myProjectExample/**/*.class</include>
-                                        <include>io/github/roberto22palomar/pepenium/toolkit/examples/**/*.class</include>
-                                    </includes>
-                                    <archive>
-                                        <manifest>
-                                            <mainClass>org.junit.platform.console.ConsoleLauncher</mainClass>
-                                            <addClasspath>true</addClasspath>
-                                            <classpathPrefix>dependency-jars/</classpathPrefix>
-                                        </manifest>
-                                    </archive>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-runtime-deps</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/dependency-jars</outputDirectory>
-                                    <includeScope>runtime</includeScope>
-                                    <includeTypes>jar</includeTypes>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>copy-test-deps</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/dependency-jars</outputDirectory>
-                                    <includeScope>test</includeScope>
-                                    <includeTypes>jar</includeTypes>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <skipIfEmpty>true</skipIfEmpty>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

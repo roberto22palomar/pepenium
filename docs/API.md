@@ -130,6 +130,12 @@ The shared assertion surface should likewise stay aligned around `assertVisible(
 
 These classes are visible and may be useful to advanced adopters, but should be considered less stable than the main authoring contract.
 
+### Repository examples are not public API
+
+The `pepenium-examples` module is repository-only showcase material built on top of the stable authoring surface.
+
+Its tests, flows and page objects are useful learning material, but they are not published consumer artifacts and they are not protected by the public API compatibility contract.
+
 ### Execution and configuration types
 
 - [DriverConfig](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverConfig.java)

@@ -36,6 +36,8 @@ mvn -pl pepenium-examples -am "-Dpepenium.examples.skip.tests=false" "-Dpepenium
 
 Esto ejecuta un flujo real publico contra `https://the-internet.herokuapp.com/login`.
 
+`pepenium-examples` es un modulo showcase solo para este repositorio. Sus tests de ejemplo son intencionadamente opt-in, se saltan por defecto en los builds normales y no se tratan como un artefacto de consumo publicado.
+
 Usa primero este camino si:
 
 - eres nuevo en Pepenium

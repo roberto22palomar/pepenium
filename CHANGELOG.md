@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Refactored `PepeniumHtmlReportWriter` into smaller collector, renderer, index and support components while preserving the public report-writer entry point.
 - Replaced reflection-based execution-profile config instantiation with a typed built-in registry and clarified that execution-profile ids are part of the supported launch contract while internal config wiring remains evolving.
 - Explicitly fixed the pre-`1.0.0` public contract around `BaseTest`, lifecycle semantics, `TestTarget`, built-in execution profile ids and the current non-versioned status of reporting JSON.
+- Finalized `pepenium-examples` as a repository-only showcase module: examples stay opt-in, the module is not installed or published as a consumer artifact, and its legacy packaging profile was removed.
 
 ## [0.9.2] - 2026-03-31
 

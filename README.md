@@ -130,7 +130,7 @@ Repository modules:
 
 - `pepenium-core`: framework engine, runtime, execution and provider configuration
 - `pepenium-toolkit`: reusable test-author helpers such as actions and support utilities
-- `pepenium-examples`: example tests, flows and page objects
+- `pepenium-examples`: repository-only example tests, flows and page objects built on top of `pepenium` and `pepenium-toolkit`
 
 ### `core`
 
@@ -176,6 +176,7 @@ Example tests showing the intended usage pattern:
 - `pepenium-examples/src/test/java/.../tests/myProjectExample/web`
 
 Examples are grouped by functional target instead of by environment.
+This module is intentionally repository-only: it is not a published consumer artifact and it is not part of the public API compatibility contract.
 
 ## Execution Model
 
@@ -242,6 +243,8 @@ Profile ids are part of the supported launch contract. The internal `configKey` 
 ### Web Showcase Example
 
 The web examples are now functional live examples against [The Internet](https://the-internet.herokuapp.com/), not only structural templates.
+
+The `pepenium-examples` module is meant for runnable showcase code inside this repository. Its tests stay opt-in and skipped by default in normal reactor builds.
 
 The desktop/mobile-web showcase currently demonstrates:
 
@@ -387,7 +390,7 @@ BrowserStack profiles are backed by the YAML example files under:
 - `pepenium-core/src/main/resources/browserstackExamples/browserstackIOSWEB.yml.example`
 - `pepenium-core/src/main/resources/browserstackExamples/browserstack.yml.example`
 
-AWS Device Farm profiles follow the same `TestTarget` model, but are still geared toward packaged execution flows defined in `pom.xml`.
+AWS Device Farm profiles follow the same `TestTarget` model as the rest of the framework, while the repository examples remain local showcase material rather than a packaged consumer artifact.
 
 The execution profile catalog itself is now externalized in `pepenium-core/src/main/resources/execution-profiles.yml`, so available profile ids and descriptions are visible without reading Java code.
 

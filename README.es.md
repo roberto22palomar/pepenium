@@ -129,7 +129,7 @@ Modulos del repositorio:
 
 - `pepenium-core`: motor del framework, runtime, ejecucion y configuracion de providers
 - `pepenium-toolkit`: helpers reutilizables para quien escribe tests, como acciones y utilidades de soporte
-- `pepenium-examples`: tests, flows y page objects de ejemplo
+- `pepenium-examples`: tests, flows y page objects de ejemplo de uso interno del repositorio, construidos sobre `pepenium` y `pepenium-toolkit`
 
 ### `core`
 
@@ -175,6 +175,7 @@ Tests de ejemplo que muestran el patron de uso previsto:
 - `pepenium-examples/src/test/java/.../tests/myProjectExample/web`
 
 Ahora los examples estan agrupados por target funcional y no por entorno.
+Este modulo es intencionadamente solo para el repositorio: no es un artefacto de consumo publicado ni forma parte del contrato de compatibilidad de la API publica.
 
 ## Modelo de Ejecucion
 
@@ -241,6 +242,8 @@ Los ids de perfil forman parte del contrato soportado de lanzamiento. Los valore
 ### Showcase Web Funcional
 
 Los ejemplos web ahora son examples funcionales reales sobre [The Internet](https://the-internet.herokuapp.com/), no solo plantillas de estructura.
+
+El modulo `pepenium-examples` esta pensado como showcase ejecutable dentro de este repositorio. Sus tests son opt-in y permanecen desactivados por defecto en los builds normales del reactor.
 
 El showcase actual de desktop/mobile-web demuestra:
 
@@ -386,7 +389,7 @@ Los perfiles de BrowserStack se apoyan en los YAML de ejemplo de:
 - `pepenium-core/src/main/resources/browserstackExamples/browserstackIOSWEB.yml.example`
 - `pepenium-core/src/main/resources/browserstackExamples/browserstack.yml.example`
 
-Los perfiles de AWS Device Farm siguen el mismo modelo de `TestTarget`, aunque continuan orientados a flujos de ejecucion empaquetados definidos en `pom.xml`.
+Los perfiles de AWS Device Farm siguen el mismo modelo de `TestTarget` que el resto del framework, mientras que los examples del repositorio se mantienen como material showcase local y no como artefacto de consumo empaquetado.
 
 El catalogo de execution profiles ahora esta externalizado en `pepenium-core/src/main/resources/execution-profiles.yml`, asi que los ids y descripciones disponibles se pueden consultar sin entrar al codigo Java.
 

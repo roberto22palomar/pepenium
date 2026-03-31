@@ -98,7 +98,7 @@ High-level structure:
 
 - `pepenium-core/` - framework runtime, execution model and provider/config infrastructure
 - `pepenium-toolkit/` - reusable test-author helpers such as actions and assertions
-- `pepenium-examples/` - showcase tests, flows and page objects
+- `pepenium-examples/` - repository-only showcase tests, flows and page objects
 
 Please respect the existing module boundaries and avoid adding project-specific logic to `pepenium-core` unless it benefits all users of the framework.
 
@@ -107,6 +107,8 @@ When deciding where to place a change:
 - prefer `pepenium-core` for framework lifecycle, execution and provider/config infrastructure
 - prefer `pepenium-toolkit` for reusable authoring helpers
 - prefer `pepenium-examples` for showcase code and templates
+
+`pepenium-examples` should stay focused on runnable examples that consume the framework from inside this repository. It is not a published artifact surface and should not become a second home for reusable framework features.
 
 For public-vs-internal API expectations, see [API.md](docs/API.md).
 
