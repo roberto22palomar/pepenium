@@ -29,6 +29,7 @@ public final class YamlLoader {
 
     static Path resolvePath(String yamlPath) {
         Path directPath = Paths.get(yamlPath);
+        rejectPackagedRuntimeIntent(directPath);
         Path fileNamePath = directPath.getFileName();
         String fileName = fileNamePath == null ? yamlPath : fileNamePath.toString();
         Path localConfigDir = Paths.get(".pepenium", "browserstack");
@@ -55,6 +56,21 @@ public final class YamlLoader {
 
         rejectPackagedRuntimePath(resolved);
         return resolved;
+    }
+
+    private static void rejectPackagedRuntimeIntent(Path requestedPath) {
+        Path normalized = requestedPath.normalize();
+        Path packagedRuntimePath = Paths.get("src", "main", "resources", "browserstack.yml").normalize();
+        Path nestedPackagedRuntimePath = Paths.get("..", "pepenium-core", "src", "main", "resources", "browserstack.yml")
+                .normalize();
+
+        if (endsWithPath(normalized, packagedRuntimePath) || endsWithPath(normalized, nestedPackagedRuntimePath)) {
+            throw ConfigValidationSupport.invalid(
+                    "Refusing to load BrowserStack YAML from '" + requestedPath
+                            + "'. Real BrowserStack credentials must live outside 'src/main/resources'. "
+                            + "Use '.pepenium/browserstack/' or pass an explicit external path instead."
+            );
+        }
     }
 
     private static void rejectPackagedRuntimePath(Path resolvedPath) {
