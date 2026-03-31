@@ -7,9 +7,20 @@ import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.Arrays;
+import java.util.function.Function;
 
 public class AndroidConfigLocal implements DriverConfig {
+
+    private final Function<String, String> env;
+
+    public AndroidConfigLocal() {
+        this(System::getenv);
+    }
+
+    AndroidConfigLocal(Function<String, String> env) {
+        this.env = env;
+    }
 
     @Override
     public DriverRequest createRequest() throws Exception {
@@ -32,7 +43,7 @@ public class AndroidConfigLocal implements DriverConfig {
                 .setNoReset(false)
                 .setFullReset(false);
 
-        String appPath = System.getenv("APP_PATH");
+        String appPath = env.apply("APP_PATH");
         if (notBlank(appPath)) {
             opts.setApp(ConfigValidationSupport.requireExistingFile(
                     stripQuotes(appPath),
@@ -41,8 +52,8 @@ public class AndroidConfigLocal implements DriverConfig {
             ));
         }
 
-        String appPackage = System.getenv("APP_PACKAGE");
-        String appActivity = System.getenv("APP_ACTIVITY");
+        String appPackage = env.apply("APP_PACKAGE");
+        String appActivity = env.apply("APP_ACTIVITY");
         if (notBlank(appPackage) && notBlank(appActivity)) {
             opts.setAppPackage(appPackage);
             opts.setAppActivity(appActivity);
@@ -50,13 +61,13 @@ public class AndroidConfigLocal implements DriverConfig {
 
         ConfigValidationSupport.requireAtLeastOneFilled(
                 "Local Android native app configuration",
-                List.of(appPath, appPackage),
+                Arrays.asList(appPath, appPackage),
                 "Provide APP_PATH, or provide both APP_PACKAGE and APP_ACTIVITY."
         );
         if (notBlank(appPackage) || notBlank(appActivity)) {
             ConfigValidationSupport.requireAllFilled(
                     "Local Android native package/activity configuration",
-                    List.of(appPackage, appActivity),
+                    Arrays.asList(appPackage, appActivity),
                     "APP_PACKAGE and APP_ACTIVITY must be provided together."
             );
         }
@@ -69,8 +80,8 @@ public class AndroidConfigLocal implements DriverConfig {
                 .build();
     }
 
-    private static String envOrDefault(String key, String defaultValue) {
-        String value = System.getenv(key);
+    private String envOrDefault(String key, String defaultValue) {
+        String value = env.apply(key);
         return (value == null || value.isBlank()) ? defaultValue : value.trim();
     }
 
