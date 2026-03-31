@@ -15,7 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,11 +86,12 @@ class FastUiSettleTest {
         when(driver.getPageSource()).thenAnswer(invocation -> "<page>" + counter.incrementAndGet() + "</page>");
 
         FastUiSettle settle = new FastUiSettle(driver,
-                Duration.ofMillis(5),
+                Duration.ofMillis(40),
                 Duration.ofMillis(1),
                 Duration.ofMillis(1));
 
         assertFalse(settle.waitBriefly());
+        verify(driver, atLeast(2)).getPageSource();
     }
 
     @Test
