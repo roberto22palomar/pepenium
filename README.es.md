@@ -390,6 +390,10 @@ Los perfiles de BrowserStack se apoyan en los YAML de ejemplo de:
 - `pepenium-core/src/main/resources/browserstackExamples/browserstackIOSWEB.yml.example`
 - `pepenium-core/src/main/resources/browserstackExamples/browserstack.yml.example`
 
+Las credenciales reales de BrowserStack no deben vivir en `src/main/resources`.
+Usa `.pepenium/browserstack/` para los YAML reales locales, o pasa una ruta externa explicita.
+Los ficheros de `browserstackExamples` son solo templates seguros y fallback de ejemplo.
+
 Los perfiles de AWS Device Farm siguen el mismo modelo de `TestTarget` que el resto del framework, mientras que los examples del repositorio se mantienen como material showcase local y no como artefacto de consumo empaquetado.
 
 El catalogo de execution profiles ahora esta externalizado en `pepenium-core/src/main/resources/execution-profiles.yml`, asi que los ids y descripciones disponibles se pueden consultar sin entrar al codigo Java.
