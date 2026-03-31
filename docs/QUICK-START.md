@@ -1,6 +1,6 @@
 # Quick Start
 
-This guide shows the fastest path to understand and run Pepenium as it stands in `v0.8.0`.
+This guide shows the fastest path to understand and run Pepenium as it stands in the current `0.9.x` line.
 
 If this is your first contact with the project, use [START-HERE.md](START-HERE.md) first and come back here once you want the fuller walkthrough.
 
