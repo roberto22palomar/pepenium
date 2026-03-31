@@ -16,6 +16,7 @@ import org.openqa.selenium.Capabilities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class BrowserStackConfigCoverageTest {
 
@@ -29,10 +30,7 @@ class BrowserStackConfigCoverageTest {
         DriverRequest request = new AndroidConfigBS().createRequest();
 
         assertEquals(DriverType.ANDROID_APPIUM, request.getDriverType());
-        assertEquals(
-                "https://YOUR_BROWSERSTACK_USERNAME:YOUR_BROWSERSTACK_ACCESS_KEY@hub-cloud.browserstack.com/wd/hub",
-                request.getServerUrl().toString()
-        );
+        assertBrowserStackRemoteUrl(request, "YOUR_BROWSERSTACK_USERNAME", "YOUR_BROWSERSTACK_ACCESS_KEY");
         assertEquals("BrowserStack Android native app - android / Motorola Moto G9 Play / 10.0", request.getDescription());
         assertEquals("android", lowerCaseCapability(request, "platformName"));
         assertEquals("UiAutomator2", request.getCapabilities().getCapability("appium:automationName"));
@@ -71,10 +69,7 @@ class BrowserStackConfigCoverageTest {
         DriverRequest request = new IOSConfigBS().createRequest();
 
         assertEquals(DriverType.IOS_APPIUM, request.getDriverType());
-        assertEquals(
-                "https://YOUR_BROWSERSTACK_USERNAME:YOUR_BROWSERSTACK_ACCESS_KEY@hub-cloud.browserstack.com/wd/hub",
-                request.getServerUrl().toString()
-        );
+        assertBrowserStackRemoteUrl(request, "YOUR_BROWSERSTACK_USERNAME", "YOUR_BROWSERSTACK_ACCESS_KEY");
         assertEquals("BrowserStack iOS native app - ios / iPhone 14 Pro Max / 16", request.getDescription());
         assertEquals("ios", lowerCaseCapability(request, "platformName"));
         assertEquals("iPhone 14 Pro Max", request.getCapabilities().getCapability("appium:deviceName"));
@@ -90,10 +85,7 @@ class BrowserStackConfigCoverageTest {
 
         assertEquals(1L, AndroidWebConfigBS.platforms().count());
         assertEquals(DriverType.ANDROID_APPIUM, request.getDriverType());
-        assertEquals(
-                "https://YOUR_BROWSERSTACK_USERNAME:YOUR_BROWSERSTACK_ACCESS_KEY@hub-cloud.browserstack.com/wd/hub",
-                request.getServerUrl().toString()
-        );
+        assertBrowserStackRemoteUrl(request, "YOUR_BROWSERSTACK_USERNAME", "YOUR_BROWSERSTACK_ACCESS_KEY");
         assertEquals("BrowserStack Android web - Oppo A96 / 11.0 / chrome", request.getDescription());
         assertEquals("android", lowerCaseCapability(request, "platformName"));
         assertEquals("chrome", request.getCapabilities().getCapability("browserName"));
@@ -129,7 +121,7 @@ class BrowserStackConfigCoverageTest {
 
         assertEquals(1L, WindowsWebConfigBS.platforms().count());
         assertEquals(DriverType.REMOTE_WEB, request.getDriverType());
-        assertEquals("https://user:1234@hub-cloud.browserstack.com/wd/hub", request.getServerUrl().toString());
+        assertBrowserStackRemoteUrl(request, "user", "1234");
         assertEquals("BrowserStack Windows desktop web - Windows / 11 / Chrome latest", request.getDescription());
         assertEquals("Chrome", request.getCapabilities().getCapability("browserName"));
         assertEquals("latest", request.getCapabilities().getCapability("browserVersion"));
@@ -145,7 +137,7 @@ class BrowserStackConfigCoverageTest {
 
         assertEquals(1L, MacWebConfigBS.platforms().count());
         assertEquals(DriverType.REMOTE_WEB, request.getDriverType());
-        assertEquals("https://user:1234@hub-cloud.browserstack.com/wd/hub", request.getServerUrl().toString());
+        assertBrowserStackRemoteUrl(request, "user", "1234");
         assertEquals("BrowserStack Mac desktop web - OS X / Sonoma / Chrome latest", request.getDescription());
         assertEquals("Chrome", request.getCapabilities().getCapability("browserName"));
         assertEquals("latest", request.getCapabilities().getCapability("browserVersion"));
@@ -157,6 +149,20 @@ class BrowserStackConfigCoverageTest {
 
     private static Capabilities bstackOptions(DriverRequest request) {
         return assertInstanceOf(Capabilities.class, request.getCapabilities().getCapability("bstack:options"));
+    }
+
+    private static void assertBrowserStackRemoteUrl(DriverRequest request, String expectedUser, String expectedKey) {
+        assertEquals("https", request.getServerUrl().getProtocol());
+        assertEquals("hub-cloud.browserstack.com", request.getServerUrl().getHost());
+        assertEquals("/wd/hub", request.getServerUrl().getPath());
+
+        String userInfo = request.getServerUrl().getUserInfo();
+        assertNotNull(userInfo);
+
+        String[] userInfoParts = userInfo.split(":", 2);
+        assertEquals(2, userInfoParts.length);
+        assertEquals(expectedUser, userInfoParts[0]);
+        assertEquals(expectedKey, userInfoParts[1]);
     }
 
     private static String lowerCaseCapability(DriverRequest request, String capabilityName) {
