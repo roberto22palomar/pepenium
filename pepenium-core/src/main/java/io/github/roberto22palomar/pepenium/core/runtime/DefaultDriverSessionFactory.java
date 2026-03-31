@@ -7,9 +7,14 @@ import io.github.roberto22palomar.pepenium.core.observability.CapabilitiesSummar
 import io.github.roberto22palomar.pepenium.core.observability.LoggingContext;
 import io.github.roberto22palomar.pepenium.core.observability.PepeniumBanner;
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +46,12 @@ public class DefaultDriverSessionFactory implements DriverSessionFactory {
             case LOCAL_CHROME:
                 driver = new ChromeDriver(resolveChromeOptions(request.getCapabilities()));
                 break;
+            case LOCAL_FIREFOX:
+                driver = new FirefoxDriver(resolveFirefoxOptions(request.getCapabilities()));
+                break;
+            case LOCAL_EDGE:
+                driver = new EdgeDriver(resolveEdgeOptions(request.getCapabilities()));
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported driver type: " + request.getDriverType());
         }
@@ -71,9 +82,30 @@ public class DefaultDriverSessionFactory implements DriverSessionFactory {
             return (ChromeOptions) capabilities;
         }
 
-        ChromeOptions options = new ChromeOptions();
+        return mergeCapabilities(capabilities, new ChromeOptions());
+    }
+
+    private FirefoxOptions resolveFirefoxOptions(Capabilities capabilities) {
+        if (capabilities instanceof FirefoxOptions) {
+            return (FirefoxOptions) capabilities;
+        }
+
+        return mergeCapabilities(capabilities, new FirefoxOptions());
+    }
+
+    private EdgeOptions resolveEdgeOptions(Capabilities capabilities) {
+        if (capabilities instanceof EdgeOptions) {
+            return (EdgeOptions) capabilities;
+        }
+
+        return mergeCapabilities(capabilities, new EdgeOptions());
+    }
+
+    private <T extends MutableCapabilities> T mergeCapabilities(Capabilities capabilities, T options) {
         if (capabilities != null) {
-            options.merge(capabilities);
+            @SuppressWarnings("unchecked")
+            T mergedOptions = (T) options.merge(capabilities);
+            return mergedOptions;
         }
         return options;
     }

@@ -210,6 +210,8 @@ Eso permite ejecutar el mismo test en varios entornos sin tocar su codigo.
 - `local-android`
 - `local-android-web`
 - `local-web`
+- `local-web-firefox`
+- `local-web-edge`
 - `aws-android`
 - `aws-android-web`
 - `aws-ios`
@@ -223,6 +225,8 @@ Eso permite ejecutar el mismo test en varios entornos sin tocar su codigo.
 El catalogo de perfiles incluido se define en:
 
 - `pepenium-core/src/main/resources/execution-profiles.yml`
+
+Los ids de perfil forman parte del contrato soportado de lanzamiento. Los valores internos de `configKey` que hay detras de ese catalogo siguen siendo detalles internos del framework y pueden evolucionar antes de `1.0.0`.
 
 ## Tests de Ejemplo
 

@@ -4,5 +4,7 @@ public enum DriverType {
     ANDROID_APPIUM,
     IOS_APPIUM,
     REMOTE_WEB,
-    LOCAL_CHROME
+    LOCAL_CHROME,
+    LOCAL_FIREFOX,
+    LOCAL_EDGE
 }

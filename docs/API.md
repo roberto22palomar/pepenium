@@ -71,6 +71,8 @@ These classes are visible and may be useful to advanced adopters, but should be 
 
 These areas are important, but they are still part of the framework evolution space. Pepenium may refactor them further before promising long-term API stability.
 
+Built-in execution profile ids are part of the external launch model, but the internal wiring behind them is still evolving. In particular, the `configKey` values inside `execution-profiles.yml` and the concrete `DriverConfig` implementations should still be treated as internal framework details until Pepenium explicitly promotes them.
+
 ## Internal API
 
 These classes support framework lifecycle, observability and driver wiring, but should not be treated as external extension points.

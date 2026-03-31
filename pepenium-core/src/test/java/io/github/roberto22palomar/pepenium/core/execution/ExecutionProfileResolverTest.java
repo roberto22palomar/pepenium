@@ -26,11 +26,11 @@ class ExecutionProfileResolverTest {
 
     @Test
     void systemPropertyOverrideWinsOverTargetDefault() {
-        System.setProperty("pepenium.profile", "browserstack-mac-web");
+        System.setProperty("pepenium.profile", "local-web-firefox");
 
         ExecutionProfile profile = resolver.resolve(TestTarget.WEB_DESKTOP, "local-web");
 
-        assertEquals("browserstack-mac-web", profile.getId());
+        assertEquals("local-web-firefox", profile.getId());
     }
 
     @Test
@@ -72,6 +72,8 @@ class ExecutionProfileResolverTest {
         assertTrue(error.getMessage().contains("-Dpepenium.profile"));
         assertTrue(error.getMessage().contains("Compatible profiles for WEB_DESKTOP:"));
         assertTrue(error.getMessage().contains("- local-web"));
+        assertTrue(error.getMessage().contains("- local-web-firefox"));
+        assertTrue(error.getMessage().contains("- local-web-edge"));
         assertTrue(error.getMessage().contains("- browserstack-windows-web"));
         assertTrue(error.getMessage().contains("- browserstack-mac-web"));
         assertTrue(error.getMessage().contains("All available profiles:"));
