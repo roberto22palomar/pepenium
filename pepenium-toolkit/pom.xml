@@ -93,8 +93,15 @@
                             <goal>cmp</goal>
                         </goals>
                         <configuration>
+                            <oldVersion>
+                                <dependency>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <version>${public.api.compatibility.baseline.version}</version>
+                                    <type>${project.packaging}</type>
+                                </dependency>
+                            </oldVersion>
                             <parameter>
-                                <oldVersionPattern>\d+\.\d+\.\d+</oldVersionPattern>
                                 <includes>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp</include>
