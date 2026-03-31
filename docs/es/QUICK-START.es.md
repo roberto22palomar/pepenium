@@ -38,6 +38,8 @@ El entorno se selecciona mediante un execution profile.
 - iOS web: [ExampleIOSWebTest.java](../../pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/ios/ExampleIOSWebTest.java)
 - Web desktop: [ExampleDesktopWebTest.java](../../pepenium-examples/src/test/java/io/github/roberto22palomar/pepenium/tests/myProjectExample/web/ExampleDesktopWebTest.java)
 
+Estos examples viven en el modulo `pepenium-examples`, que es solo para este repositorio. Estan pensados como showcases ejecutables y plantillas, no como artefactos de consumo publicados.
+
 El example web actual es un showcase funcional real sobre `https://the-internet.herokuapp.com/login` y demuestra:
 
 - login real
