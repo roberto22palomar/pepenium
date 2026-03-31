@@ -31,22 +31,44 @@ public final class YamlLoader {
         Path directPath = Paths.get(yamlPath);
         Path fileNamePath = directPath.getFileName();
         String fileName = fileNamePath == null ? yamlPath : fileNamePath.toString();
+        Path localConfigDir = Paths.get(".pepenium", "browserstack");
 
         List<Path> candidates = List.of(
                 directPath,
+                localConfigDir.resolve(fileName),
                 Paths.get("src", "main", "resources", "browserstackExamples", fileName),
                 Paths.get("..", "pepenium-core", "src", "main", "resources", "browserstackExamples", fileName),
                 directPath.resolveSibling(fileName + ".example"),
+                localConfigDir.resolve(fileName + ".example"),
                 Paths.get("src", "main", "resources", "browserstackExamples", fileName + ".example"),
                 Paths.get("..", "pepenium-core", "src", "main", "resources", "browserstackExamples", fileName + ".example")
         );
 
-        return candidates.stream()
+        Path resolved = candidates.stream()
                 .filter(Files::exists)
                 .findFirst()
                 .orElseThrow(() -> ConfigValidationSupport.invalid(
                         "Could not find BrowserStack YAML. Looked for: "
                                 + candidates.stream().map(Path::toString).collect(Collectors.joining(", "))
+                                + ". Put real BrowserStack YAML under '.pepenium/browserstack/' or pass an explicit path."
                 ));
+
+        rejectPackagedRuntimePath(resolved);
+        return resolved;
+    }
+
+    private static void rejectPackagedRuntimePath(Path resolvedPath) {
+        Path normalized = resolvedPath.normalize();
+        Path packagedRuntimePath = Paths.get("src", "main", "resources", "browserstack.yml").normalize();
+        Path nestedPackagedRuntimePath = Paths.get("..", "pepenium-core", "src", "main", "resources", "browserstack.yml")
+                .normalize();
+
+        if (normalized.equals(packagedRuntimePath) || normalized.equals(nestedPackagedRuntimePath)) {
+            throw ConfigValidationSupport.invalid(
+                    "Refusing to load BrowserStack YAML from '" + resolvedPath
+                            + "'. Real BrowserStack credentials must live outside 'src/main/resources'. "
+                            + "Use '.pepenium/browserstack/' or pass an explicit external path instead."
+            );
+        }
     }
 }
