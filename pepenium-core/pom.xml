@@ -95,4 +95,38 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.siom79.japicmp</groupId>
+                <artifactId>japicmp-maven-plugin</artifactId>
+                <version>${japicmp.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>check-public-api-compatibility</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>cmp</goal>
+                        </goals>
+                        <configuration>
+                            <parameter>
+                                <oldVersionPattern>\d+\.\d+\.\d+</oldVersionPattern>
+                                <includes>
+                                    <include>io.github.roberto22palomar.pepenium.core.runtime.BaseTest</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.runtime.BaseTest.ThrowingRunnable</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.execution.TestTarget</include>
+                                </includes>
+                                <accessModifier>protected</accessModifier>
+                                <onlyModified>true</onlyModified>
+                                <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
+                                <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
+                                <ignoreMissingClasses>false</ignoreMissingClasses>
+                            </parameter>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

@@ -40,7 +40,7 @@ jobs:
           cache: maven
 
       - name: Install framework artifacts for smoke consumer
-        run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit -am install -DskipTests "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true"
+        run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit -am install -DskipTests "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true" "-Djapicmp.skip=true"
 
       - name: Validate standalone public API consumer
         run: mvn -B -ntp -U -f consumer-smoke/pom.xml clean test-compile
