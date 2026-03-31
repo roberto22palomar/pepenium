@@ -2,6 +2,9 @@
   <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
     <img alt="Build" src="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml/badge.svg" />
   </a>
+  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
+    <img alt="Coverage" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/roberto22palomar/pepenium/coverage-badge/.github/badges/coverage.json" />
+  </a>
 </p>
 
 <p align="center">
@@ -57,6 +60,13 @@ Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium l
 Usa [consumer-smoke/README.md](consumer-smoke/README.md) si quieres validar el consumo de la API publica desde un proyecto Maven separado.
 
 El workflow principal de CI ejecuta `verify` sobre el framework y despues valida ese consumer smoke, de modo que los quality gates y el consumo externo queden comprobados de forma continua.
+
+## Calidad
+
+- El CI ejecuta `mvn verify` en cada push y pull request sobre `main`
+- La cobertura se agrega a partir de los reportes JaCoCo generados por `pepenium-core` y `pepenium-toolkit`
+- Checkstyle, SpotBugs y `japicmp` forman parte del camino normal de verificacion
+- El proyecto independiente `consumer-smoke` valida el consumo de la API publica fuera del reactor principal
 
 ## Usar Pepenium Desde Otro Proyecto
 
