@@ -57,6 +57,28 @@ class AssertionsWebTest {
     }
 
     @Test
+    void assertUrlContainsPassesAndRecordsStep() {
+        when(driver.getCurrentUrl()).thenReturn("https://pepenium.dev/dashboard");
+
+        AssertionsWeb assertions = new AssertionsWeb(driver);
+        assertions.assertUrlContains("dashboard");
+
+        assertTrue(StepTracker.snapshot().getSteps().stream()
+                .anyMatch(step -> step.contains("Assert URL contains dashboard")));
+    }
+
+    @Test
+    void assertTitleContainsPassesAndRecordsStep() {
+        when(driver.getTitle()).thenReturn("Pepenium Dashboard");
+
+        AssertionsWeb assertions = new AssertionsWeb(driver);
+        assertions.assertTitleContains("Dashboard");
+
+        assertTrue(StepTracker.snapshot().getSteps().stream()
+                .anyMatch(step -> step.contains("Assert title contains Dashboard")));
+    }
+
+    @Test
     void assertInputValueEqualsUsesReadableMessage() {
         when(driver.findElement(LOCATOR)).thenReturn(element);
         when(element.getAttribute("value")).thenReturn("actual");
@@ -67,5 +89,17 @@ class AssertionsWebTest {
                 () -> assertions.assertInputValueEquals(LOCATOR, "expected"));
 
         assertTrue(error.getMessage().contains("Expected input value 'expected'"));
+    }
+
+    @Test
+    void assertInputValueEqualsPassesWhenValueMatches() {
+        when(driver.findElement(LOCATOR)).thenReturn(element);
+        when(element.getAttribute("value")).thenReturn("expected");
+
+        AssertionsWeb assertions = new AssertionsWeb(driver);
+        assertions.assertInputValueEquals(LOCATOR, "expected");
+
+        assertTrue(StepTracker.snapshot().getSteps().stream()
+                .anyMatch(step -> step.contains("Assert input value on " + LOCATOR)));
     }
 }
