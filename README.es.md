@@ -98,6 +98,8 @@ Que genera:
 - un JSON por test
 - screenshots enlazadas como evidencia cuando estan disponibles
 
+Los reportes HTML se tratan como diagnostico soportado y orientado al usuario. Los ficheros JSON estan disponibles y son utiles, pero su esquema sigue evolucionando y todavia no se promete como contrato publico versionado.
+
 Donde lo escribe por defecto:
 
 ```text

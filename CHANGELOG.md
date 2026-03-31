@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added an automatic `japicmp` compatibility gate in `verify` for the documented public API of `pepenium` and `pepenium-toolkit`.
 - Added local desktop execution profiles for Firefox and Edge, plus runtime support for `LOCAL_FIREFOX` and `LOCAL_EDGE`.
 - Added focused execution-profile and driver-session tests for the typed built-in profile registry and the new local desktop browsers.
+- Added contract-focused tests for `BaseTest`, `TestTarget` and the built-in execution profile catalog so the intended `1.0.0` authoring contract is guarded explicitly.
 
 ### Changed
 - Updated the main CI workflow to run `verify` so dependency rules, coverage, style checks and static analysis execute continuously instead of living only in local builds.
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Expanded focused coverage around public authoring/runtime surfaces, including `Actions*`, `FailureContextReporter` and `DefaultDriverSessionFactory`.
 - Refactored `PepeniumHtmlReportWriter` into smaller collector, renderer, index and support components while preserving the public report-writer entry point.
 - Replaced reflection-based execution-profile config instantiation with a typed built-in registry and clarified that execution-profile ids are part of the supported launch contract while internal config wiring remains evolving.
+- Explicitly fixed the pre-`1.0.0` public contract around `BaseTest`, lifecycle semantics, `TestTarget`, built-in execution profile ids and the current non-versioned status of reporting JSON.
 
 ## [0.9.2] - 2026-03-31
 

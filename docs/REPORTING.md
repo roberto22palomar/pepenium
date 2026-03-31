@@ -16,6 +16,12 @@ Generated artifacts include:
 - `report-*.json`: per-test machine-readable report payloads
 - `screenshots/`: report-linked screenshots when evidence is available
 
+Contract status:
+
+- the HTML reports are supported user-facing diagnostics outputs
+- the JSON files are available for integrations and automation, but their schema is still evolving and should not yet be treated as a versioned public API contract
+- if Pepenium wants to stabilize reporting JSON later, it should first introduce explicit schema versioning
+
 Per-test HTML reports include:
 
 - execution story and failure story

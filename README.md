@@ -99,6 +99,8 @@ What it generates:
 - one per-test JSON report
 - linked screenshots for evidence when they are available
 
+The HTML reports are treated as supported user-facing diagnostics. The JSON files are available and useful, but their schema is still evolving and is not yet promised as a versioned public contract.
+
 Where it writes by default:
 
 ```text
