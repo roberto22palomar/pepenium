@@ -72,7 +72,7 @@ Dependencia tipica de consumo:
 <dependency>
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-toolkit</artifactId>
-    <version>0.8.0</version>
+    <version>0.9.2</version>
 </dependency>
 ```
 
@@ -115,13 +115,14 @@ Por que aporta valor:
 
 Usa [REPORTING.es.md](docs/es/REPORTING.es.md) para la guia especifica de reporting y sus opciones de configuracion.
 
-## Que Aporta v0.8.0
+## Que Aporta La Linea Actual 0.9.x
 
 - Quality gates reales de Maven con Enforcer, JaCoCo, Checkstyle y SpotBugs
 - Un camino de `verify` mas fuerte en CI para comprobar higiene de libreria de forma continua
 - Metadata y packaging orientados a release con sources y Javadocs
-- Un workflow dedicado de GitHub Actions para publicar releases etiquetadas
-- Endurecimiento de `core` y `toolkit` para mantener util y en verde la nueva linea base de analisis estatico
+- Workflows dedicados de preflight y publicacion por tag para release
+- Comprobacion de compatibilidad de API publica y validacion mas fuerte de consumer smoke
+- Endurecimiento de `core`, `toolkit`, execution profiles y reporting
 
 ## Arquitectura Actual
 

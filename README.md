@@ -73,7 +73,7 @@ Typical consumer dependency:
 <dependency>
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-toolkit</artifactId>
-    <version>0.8.0</version>
+    <version>0.9.2</version>
 </dependency>
 ```
 
@@ -116,13 +116,14 @@ Why it is useful:
 
 Use [REPORTING.md](docs/REPORTING.md) for the reporting-specific details and configuration knobs.
 
-## What v0.8.0 Adds
+## What The Current 0.9.x Line Adds
 
 - Real Maven quality gates through Enforcer, JaCoCo, Checkstyle and SpotBugs
 - A stronger `verify` path in CI so library hygiene is checked continuously
 - Release-oriented metadata and packaging for sources and Javadocs
-- A dedicated GitHub Actions workflow for tagged release publication
-- Hardening passes in `core` and `toolkit` to keep the new static-analysis baseline useful and green
+- Dedicated release preflight and tagged publication workflows
+- Public API compatibility checks and stronger consumer-smoke validation
+- Hardening passes in `core`, `toolkit`, execution profiles and reporting
 
 ## Current Architecture
 
