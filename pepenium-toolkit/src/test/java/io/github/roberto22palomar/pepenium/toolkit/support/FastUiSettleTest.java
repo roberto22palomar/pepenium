@@ -78,15 +78,11 @@ class FastUiSettleTest {
 
     @Test
     void waitBrieflyReturnsFalseWhenUiKeepsChangingUntilTimeout() {
-        when(driver.findElements(By.className("android.widget.ProgressBar"))).thenReturn(List.of());
-        when(driver.findElements(By.className("XCUIElementTypeActivityIndicator"))).thenReturn(List.of());
-        when(driver.findElements(By.className("XCUIElementTypeProgressIndicator"))).thenReturn(List.of());
-        when(driver.findElements(argThat(by -> by.toString().contains("screen-ready")))).thenReturn(List.of());
         AtomicInteger counter = new AtomicInteger();
         when(driver.getPageSource()).thenAnswer(invocation -> "<page>" + counter.incrementAndGet() + "</page>");
 
         FastUiSettle settle = new FastUiSettle(driver,
-                Duration.ofMillis(40),
+                Duration.ofMillis(80),
                 Duration.ofMillis(1),
                 Duration.ofMillis(1));
 
