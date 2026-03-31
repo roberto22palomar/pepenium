@@ -10,20 +10,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added an automatic `japicmp` compatibility gate in `verify` for the documented public API of `pepenium` and `pepenium-toolkit`.
+- Added local desktop execution profiles for Firefox and Edge, plus runtime support for `LOCAL_FIREFOX` and `LOCAL_EDGE`.
+- Added focused execution-profile and driver-session tests for the typed built-in profile registry and the new local desktop browsers.
+
+### Changed
+- Updated the main CI workflow to run `verify` so dependency rules, coverage, style checks and static analysis execute continuously instead of living only in local builds.
+- Documented an explicit deprecation-first policy for the public API on the road to `1.0.0`.
+- Expanded focused coverage around public authoring/runtime surfaces, including `Actions*`, `FailureContextReporter` and `DefaultDriverSessionFactory`.
+- Refactored `PepeniumHtmlReportWriter` into smaller collector, renderer, index and support components while preserving the public report-writer entry point.
+- Replaced reflection-based execution-profile config instantiation with a typed built-in registry and clarified that execution-profile ids are part of the supported launch contract while internal config wiring remains evolving.
+
+## [0.9.2] - 2026-03-31
+
+### Changed
+
+- Stopped publishing `pepenium-examples` as a release artifact so the Maven Central release flow no longer fails on the examples module.
+- Aligned module versions and release metadata for the `0.9.2` release line.
+
+### Dependencies
+
+- No third-party dependency version changes in this release.
+
+
+## [0.9.1] - 2026-03-31
+
+### Changed
+
+- Fixed SpotBugs issues in the new reporting code so the reporting-enabled release line passes static-analysis quality gates cleanly.
+
+### Dependencies
+
+- No third-party dependency version changes in this release.
+
+
+## [0.9.0] - 2026-03-31
+
+### Added
+
 - Added a native Pepenium HTML reporting flow that writes per-test reports plus an index under `target/pepenium-reports/`.
 - Added timeline event badges, assertion pass/fail status, screenshot previews and richer report highlights so test reports are easier to scan without reading raw logs.
 - Added per-test JSON report exports plus a suite-level `summary.json` so report data can be consumed programmatically as well as through HTML.
 - Added richer timeline semantics for actions, waits and errors, not only generic steps, assertions and screenshots.
 - Added dedicated reporting documentation plus a report preview asset so the new reporting bundle is easier to discover from the repository docs.
-- Added an automatic `japicmp` compatibility gate in `verify` for the documented public API of `pepenium` and `pepenium-toolkit`.
 
 ### Changed
+
 - Expanded the HTML report index with pass/fail summary cards, target/profile/provider breakdowns, total duration and quick filtering.
-- Added duration, last-step/last-assertion highlights, remote-session context and a richer failure summary to the per-test HTML reports.
+- Added duration, last-step and last-assertion highlights, remote-session context and a richer failure summary to the per-test HTML reports.
 - Reworked the visual layout of the per-test and suite HTML reports so they are easier to share and scan outside the console.
+- Reorganized the root documentation layout and fixed repository links so the reporting and repository-consumption docs are easier to navigate.
+- Improved execution profile error messages so missing or invalid profile selections show compatible and available profile ids more clearly.
 - Clarified the main README and onboarding docs so external consumers are guided toward `pepenium-toolkit` and away from using `pepenium-parent` as a normal dependency.
-- Documented an explicit deprecation-first policy for the public API on the road to `1.0.0`.
+
 ### Dependencies
+
+- No third-party dependency version changes in this release.
+
+
+## [0.8.1] - 2026-03-30
+
+### Added
+
+- Added explicit module names for Maven Central publication so released artifacts present clearer names in repository metadata.
+
+### Dependencies
+
+- No third-party dependency version changes in this release.
 
 
 ## [0.8.0] - 2026-03-30
