@@ -3,6 +3,7 @@ package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.io
 import io.appium.java_client.AppiumBy;
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS;
+import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
@@ -20,6 +21,9 @@ public class BottomNavigationPageIOS {
     @PepeniumInject
     private ActionsAppIOS actionsApp;
 
+    @PepeniumInject
+    private AssertionsAppIOS assertionsApp;
+
     // ============================================================
     // Actions
     // ============================================================
@@ -30,6 +34,21 @@ public class BottomNavigationPageIOS {
         actionsApp.waitToBePresent(tabThree);
         actionsApp.waitToBePresent(tabHome);
         actionsApp.takeScreenshotFast();
+    }
+
+    public void assertNavigationVisible() {
+        assertionsApp.assertVisible(tabOne);
+        assertionsApp.assertVisible(tabTwo);
+        assertionsApp.assertVisible(tabThree);
+        assertionsApp.assertVisible(tabHome);
+    }
+
+    public void assertHomeVisible() {
+        assertionsApp.assertVisible(tabHome);
+    }
+
+    public void assertTabThreeVisible() {
+        assertionsApp.assertVisible(tabThree);
     }
 
     public void openTabOne() {

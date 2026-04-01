@@ -2,6 +2,7 @@ package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.we
 
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
+import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -20,6 +21,9 @@ public class DropdownPage {
     @PepeniumInject
     private ActionsWeb actionsWeb;
 
+    @PepeniumInject
+    private AssertionsWeb assertionsWeb;
+
     public void open(String baseUrl) {
         String dropdownUrl = baseUrl.replace("/login", "/dropdown");
         log.info("Opening dropdown example page");
@@ -31,9 +35,18 @@ public class DropdownPage {
         actionsWeb.waitToBeVisible(dropdown);
     }
 
+    public void assertLoaded() {
+        assertionsWeb.assertTextContains(pageTitle, "Dropdown List");
+        assertionsWeb.assertVisible(dropdown);
+    }
+
     public void selectByVisibleText(String visibleText) {
         WebElement dropdownElement = driver.findElement(dropdown);
         new Select(dropdownElement).selectByVisibleText(visibleText);
         actionsWeb.takeScreenshot();
+    }
+
+    public void assertSelectedOptionContains(String expectedText) {
+        assertionsWeb.assertTextContains(dropdown, expectedText);
     }
 }

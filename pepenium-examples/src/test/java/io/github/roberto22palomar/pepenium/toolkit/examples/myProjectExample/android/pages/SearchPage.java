@@ -2,6 +2,7 @@ package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.an
 
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp;
+import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
@@ -18,6 +19,9 @@ public class SearchPage {
     @PepeniumInject
     private ActionsApp actionsApp;
 
+    @PepeniumInject
+    private AssertionsApp assertionsApp;
+
     // ============================================================
     // Actions
     // ============================================================
@@ -26,6 +30,20 @@ public class SearchPage {
         actionsApp.waitToBePresent(tabQuickSearch);
         actionsApp.waitToBePresent(tabFilters);
         actionsApp.waitToBePresent(btnClose);
+    }
+
+    public void assertSearchSurfaceVisible() {
+        assertionsApp.assertVisible(tabQuickSearch);
+        assertionsApp.assertVisible(tabFilters);
+        assertionsApp.assertVisible(btnClose);
+    }
+
+    public void assertFiltersTabVisible() {
+        assertionsApp.assertVisible(tabFilters);
+    }
+
+    public void assertCloseButtonVisible() {
+        assertionsApp.assertVisible(btnClose);
     }
 
     public void close() {
