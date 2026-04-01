@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.roberto22palomar</groupId>
         <artifactId>pepenium-parent</artifactId>
-        <version>0.9.3</version>
+        <version>0.9.4</version>
     </parent>
 
     <artifactId>pepenium-toolkit</artifactId>

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-04-01
+
 ### Added
 - Added an annotation-first Pepenium authoring layer with `@PepeniumTest`, `@PepeniumInject`, `@PepeniumPage` and `PepeniumSteps` for lower-boilerplate test classes.
 - Added a plug-and-play desktop web example showing Pepenium usage without extending `BaseTest` and without manual page/flow/helper wiring.
@@ -20,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated the standalone consumer-smoke flow to validate locally installed Pepenium artifacts without forcing remote updates.
 - Promoted annotation-first authoring to the recommended Pepenium usage style while keeping `BaseTest` fully supported as the classic path.
 - Expanded the public API compatibility gate to cover the new annotation-first runtime types.
+- Aligned the examples and `consumer-smoke` architecture so locators stay in pages while assertions live in flows.
 
 ## [0.9.3] - 2026-03-31
 
