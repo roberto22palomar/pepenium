@@ -32,15 +32,15 @@ public class ScrollUtils {
     }
 
     public WebElement scrollToElement(By locator, int maxSwipes) {
-        Objects.requireNonNull(locator, "locator no puede ser null");
+        Objects.requireNonNull(locator, "locator must not be null");
         if (maxSwipes < 1) {
-            maxSwipes = 8; // valor razonable por defecto
+            maxSwipes = 8; // reasonable default
         }
 
         String platform = String.valueOf(driver.getCapabilities().getCapability("platformName")).toLowerCase(Locale.ROOT);
         boolean isAndroid = platform.contains("android");
 
-        // Implicit breve dentro del bucle
+        // Keep a short implicit wait inside the scroll loop.
         Duration originalImplicit = Duration.ZERO;
         try {
             originalImplicit = driver.manage().timeouts().getImplicitWaitTimeout();
@@ -49,7 +49,7 @@ public class ScrollUtils {
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(200));
 
         try {
-            // Intento inmediato
+            // Immediate attempt before any scrolling.
             List<WebElement> now = driver.findElements(locator);
             for (WebElement el : now) {
                 if (el.isDisplayed()) {
@@ -58,7 +58,7 @@ public class ScrollUtils {
             }
 
             if (isAndroid) {
-                // ===== ANDROID: intentamos UiScrollable (ultra-fiable y NO toca bordes del SO) =====
+                // ===== ANDROID: try UiScrollable first (reliable and avoids OS gesture edges) =====
                 Optional<String> uiSelectorTarget = toUiSelector(locator);
                 if (uiSelectorTarget.isPresent()) {
                     String script = "new UiScrollable(new UiSelector().scrollable(true))"
@@ -66,19 +66,19 @@ public class ScrollUtils {
                     try {
                         return driver.findElement(AppiumBy.androidUIAutomator(script));
                     } catch (NoSuchElementException ignored) {
-                        // Si no lo encuentra, caemos al fallback con swipes seguros
+                        // If not found, fall back to safe swipes.
                     } catch (Exception e) {
-                        // Algunos drivers antiguos pueden fallar; seguimos al fallback
+                        // Some older drivers may fail here; continue with the fallback.
                     }
                 }
             }
 
-            // ===== Fallback universal seguro (Android/iOS): swipes dentro de zona segura =====
+            // ===== Universal fallback (Android/iOS): swipe only inside a safe central zone =====
             int attempts = 0;
             int stagnant = 0;
             int lastHash = 0;
             while (attempts < maxSwipes) {
-                // Buscar tras cada swipe
+                // Retry after each swipe.
                 List<WebElement> list = driver.findElements(locator);
                 for (WebElement el : list) {
                     try {
@@ -89,12 +89,12 @@ public class ScrollUtils {
                     }
                 }
 
-                boolean moved = swipeUpSafe(); // “dedo sube” → contenido baja (ver abajo)
+                boolean moved = swipeUpSafe(); // Finger moves up -> content moves down.
                 int hash = safePageHash();
                 stagnant = (hash == lastHash) ? (stagnant + 1) : 0;
                 lastHash = hash;
 
-                // Si “no se mueve” en 2 iteraciones seguidas, asumimos fin de lista
+                // If the page does not move for two consecutive iterations, assume end of list.
                 if (!moved || stagnant >= 2) {
                     break;
                 }
@@ -102,7 +102,7 @@ public class ScrollUtils {
                 attempts++;
             }
 
-            // Última búsqueda
+            // Final lookup after the scroll attempts.
             List<WebElement> last = driver.findElements(locator);
             for (WebElement el : last) {
                 if (el.isDisplayed()) {
@@ -110,8 +110,8 @@ public class ScrollUtils {
                 }
             }
 
-            throw new NoSuchElementException("No se encontró el elemento tras " + Math.max(1, maxSwipes)
-                    + " swipes (o fin de lista): " + locator);
+            throw new NoSuchElementException("Element not found after " + Math.max(1, maxSwipes)
+                    + " swipes (or end of list): " + locator);
 
         } finally {
             try {
@@ -123,20 +123,20 @@ public class ScrollUtils {
 
     // ------------------ Helpers ------------------
 
-    /** Convierte By a UiSelector (resourceId / text / textContains). */
+    /** Converts a Selenium locator into a UiSelector when possible. */
     private Optional<String> toUiSelector(By locator) {
-        String s = locator.toString(); // p.ej. "By.id: com.foo:id/row" o "By.xpath: //*[@resource-id='com.foo:id/row']"
-        // By.id →
+        String s = locator.toString(); // e.g. "By.id: com.foo:id/row" or "By.xpath: //*[@resource-id='com.foo:id/row']"
+        // By.id ->
         if (s.startsWith("By.id: ")) {
             String id = s.substring("By.id: ".length()).trim();
             return Optional.of("new UiSelector().resourceId(\"" + id + "\")");
         }
-        // XPath con @resource-id →
+        // XPath with @resource-id ->
         Matcher mId = Pattern.compile("@resource-id\\s*=\\s*'([^']+)'").matcher(s);
         if (mId.find()) {
             return Optional.of("new UiSelector().resourceId(\"" + mId.group(1) + "\")");
         }
-        // XPath con text()/contains(text(), …) →
+        // XPath with text()/contains(text(), ...) ->
         Matcher mText = Pattern.compile("text\\(\\)\\s*=\\s*'([^']+)'").matcher(s);
         if (mText.find()) {
             return Optional.of("new UiSelector().text(\"" + mText.group(1) + "\")");
@@ -148,18 +148,18 @@ public class ScrollUtils {
         return Optional.empty();
     }
 
-    /** Swipe “seguro” dentro de una zona central del viewport (evita status/gesture bars del SO). */
+    /** Swipes inside a central safe zone to avoid OS status and gesture bars. */
     private boolean swipeUpSafe() {
         try {
             Dimension vp = driver.manage().window().getSize();
-            int left   = (int) (vp.width  * 0.08);
-            int right  = (int) (vp.width  * 0.92);
-            int top    = (int) (vp.height * 0.18);  // lejos de la barra de estado
+            int left = (int) (vp.width * 0.08);
+            int right = (int) (vp.width * 0.92);
+            int top = (int) (vp.height * 0.18); // far enough from the status bar
             int bottom = (int) (vp.height * 0.82);
 
             int startX = (left + right) / 2;
             int startY = (int) (bottom - (bottom - top) * 0.10);
-            int endY   = (int) (top + (bottom - top) * 0.10);
+            int endY = (int) (top + (bottom - top) * 0.10);
 
             org.openqa.selenium.interactions.PointerInput finger =
                     new org.openqa.selenium.interactions.PointerInput(org.openqa.selenium.interactions.PointerInput.Kind.TOUCH, "finger");
