@@ -29,6 +29,14 @@ abstract class BaseAssertions {
         }
     }
 
+    protected void assertVisible(WebElement element) {
+        try {
+            assertionWait().until(ExpectedConditions.visibilityOf(element));
+        } catch (TimeoutException e) {
+            throw assertion("Expected visible element but it was not visible", element);
+        }
+    }
+
     protected void assertNotVisible(By locator) {
         try {
             boolean hidden = assertionWait().until(ExpectedConditions.invisibilityOfElementLocated(locator));
@@ -40,11 +48,30 @@ abstract class BaseAssertions {
         }
     }
 
+    protected void assertNotVisible(WebElement element) {
+        try {
+            boolean hidden = assertionWait().until(ExpectedConditions.invisibilityOf(element));
+            if (!hidden) {
+                throw assertion("Expected element to be hidden", element);
+            }
+        } catch (TimeoutException e) {
+            throw assertion("Expected element to become hidden", element);
+        }
+    }
+
     protected void assertPresent(By locator) {
         try {
             assertionWait().until(ExpectedConditions.presenceOfElementLocated(locator));
         } catch (TimeoutException e) {
             throw assertion("Expected present element but it was not found", locator);
+        }
+    }
+
+    protected void assertPresent(WebElement element) {
+        try {
+            assertionWait().until(d -> element != null);
+        } catch (TimeoutException e) {
+            throw assertion("Expected present element but it was not found", element);
         }
     }
 
@@ -54,6 +81,16 @@ abstract class BaseAssertions {
             throw assertion(
                     "Expected text '" + expectedText + "' but found '" + actualText + "'",
                     locator
+            );
+        }
+    }
+
+    protected void assertTextEquals(WebElement element, String expectedText) {
+        String actualText = readText(element);
+        if (!expectedText.equals(actualText)) {
+            throw assertion(
+                    "Expected text '" + expectedText + "' but found '" + actualText + "'",
+                    element
             );
         }
     }
@@ -68,12 +105,31 @@ abstract class BaseAssertions {
         }
     }
 
+    protected void assertTextContains(WebElement element, String expectedFragment) {
+        String actualText = readText(element);
+        if (actualText == null || !actualText.contains(expectedFragment)) {
+            throw assertion(
+                    "Expected text containing '" + expectedFragment + "' but found '" + actualText + "'",
+                    element
+            );
+        }
+    }
+
     protected String readText(By locator) {
         try {
             WebElement element = assertionWait().until(ExpectedConditions.visibilityOfElementLocated(locator));
             return element.getText();
         } catch (TimeoutException e) {
             throw assertion("Expected visible element to read text from", locator);
+        }
+    }
+
+    protected String readText(WebElement element) {
+        try {
+            WebElement visibleElement = assertionWait().until(ExpectedConditions.visibilityOf(element));
+            return visibleElement.getText();
+        } catch (TimeoutException e) {
+            throw assertion("Expected visible element to read text from", element);
         }
     }
 

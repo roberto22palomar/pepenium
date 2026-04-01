@@ -15,13 +15,13 @@ mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
 Then compile the smoke consumer:
 
 ```bash
-mvn -q -U -f consumer-smoke/pom.xml clean test-compile
+mvn -q -f consumer-smoke/pom.xml clean test-compile
 ```
 
 If needed, the consumed version can be overridden:
 
 ```bash
-mvn -q -U -f consumer-smoke/pom.xml clean test-compile -Dpepenium.version=0.9.3
+mvn -q -f consumer-smoke/pom.xml clean test-compile -Dpepenium.version=0.9.3
 ```
 
 ## What It Covers
@@ -29,10 +29,11 @@ mvn -q -U -f consumer-smoke/pom.xml clean test-compile -Dpepenium.version=0.9.3
 The smoke sources intentionally model the expected user-facing workflow:
 
 - extending `BaseTest`
+- or using `@PepeniumTest` with `@PepeniumInject`
 - declaring a `TestTarget`
 - building page objects and flows with `Actions*`
 - using `Assertions*`
-- enriching steps with `step("...")`
+- enriching steps with `step("...")` or `PepeniumSteps`
 
 The tests are designed for compilation validation, not live execution.
 

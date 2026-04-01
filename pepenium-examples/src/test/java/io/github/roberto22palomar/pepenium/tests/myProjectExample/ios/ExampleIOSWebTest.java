@@ -1,59 +1,31 @@
 package io.github.roberto22palomar.pepenium.tests.myProjectExample.ios;
 
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
-import io.github.roberto22palomar.pepenium.core.runtime.BaseTest;
-import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
-import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumTest;
 import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.flows.ExampleAuthenticationFlow;
-import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.AddRemoveElementsPage;
-import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.CheckboxesPage;
-import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.DropdownPage;
-import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.LoginPage;
-import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.SecureAreaPage;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 
 @Slf4j
 @Tag("pepenium-example")
-public class ExampleIOSWebTest extends BaseTest {
+@PepeniumTest(target = TestTarget.IOS_WEB, profile = "browserstack-ios-web")
+public class ExampleIOSWebTest {
 
-    private static final By LOGIN_BUTTON = By.cssSelector("button[type='submit']");
+    @PepeniumInject
+    private WebDriver driver;
 
-    @Override
-    protected TestTarget getTarget() {
-        return TestTarget.IOS_WEB;
-    }
-
-    @Override
-    protected String getDefaultProfileId() {
-        return "browserstack-ios-web";
-    }
+    @PepeniumInject
+    private ExampleAuthenticationFlow flow;
 
     @Test
     void basicNavigationFlow_shouldRun() {
-        ActionsWeb actionsWeb = new ActionsWeb(driver);
-        AssertionsWeb assertionsWeb = new AssertionsWeb(driver);
-        LoginPage loginPage = new LoginPage(actionsWeb);
-        SecureAreaPage secureAreaPage = new SecureAreaPage(actionsWeb);
-        DropdownPage dropdownPage = new DropdownPage(driver, actionsWeb);
-        CheckboxesPage checkboxesPage = new CheckboxesPage(driver, actionsWeb);
-        AddRemoveElementsPage addRemoveElementsPage = new AddRemoveElementsPage(driver, actionsWeb);
-        ExampleAuthenticationFlow flow = new ExampleAuthenticationFlow(
-                loginPage,
-                secureAreaPage,
-                dropdownPage,
-                checkboxesPage,
-                addRemoveElementsPage,
-                assertionsWeb,
-                this::step
-        );
         String baseUrl = System.getenv().getOrDefault("PEPENIUM_BASE_URL", "https://the-internet.herokuapp.com/login");
         String username = System.getenv().getOrDefault("PEPENIUM_WEB_USERNAME", "tomsmith");
         String password = System.getenv().getOrDefault("PEPENIUM_WEB_PASSWORD", "SuperSecretPassword!");
         driver.get(baseUrl);
-        assertionsWeb.assertVisible(LOGIN_BUTTON);
         flow.runSuccessfulLoginAndDropdownSelection(baseUrl, username, password);
         log.info("Example iOS web flow finished");
     }

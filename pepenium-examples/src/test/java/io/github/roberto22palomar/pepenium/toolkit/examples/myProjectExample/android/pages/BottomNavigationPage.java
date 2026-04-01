@@ -1,12 +1,11 @@
 package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.android.pages;
 
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 @Slf4j
-@RequiredArgsConstructor
 public class BottomNavigationPage {
 
     // ============================================================
@@ -17,7 +16,8 @@ public class BottomNavigationPage {
     private final By tabThree = By.xpath("//*[@resource-id='click-bottom-tab-3']");
     private final By tabHome = By.xpath("//*[@resource-id='click_bottom_home']");
 
-    private final ActionsApp actionsApp;
+    @PepeniumInject
+    private ActionsApp actionsApp;
 
     // ============================================================
     // Actions

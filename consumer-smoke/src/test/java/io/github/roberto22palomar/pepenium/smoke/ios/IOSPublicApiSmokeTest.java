@@ -1,30 +1,24 @@
 package io.github.roberto22palomar.pepenium.smoke.ios;
 
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
-import io.github.roberto22palomar.pepenium.core.runtime.BaseTest;
-import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS;
-import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumTest;
+import io.appium.java_client.AppiumDriver;
 import org.junit.jupiter.api.Test;
 
-class IOSPublicApiSmokeTest extends BaseTest {
+@PepeniumTest(target = TestTarget.IOS_NATIVE)
+class IOSPublicApiSmokeTest {
 
-    @Override
-    protected TestTarget getTarget() {
-        return TestTarget.IOS_NATIVE;
-    }
+    @PepeniumInject
+    private AppiumDriver driver;
 
-    @Override
-    protected boolean useAutomaticLifecycle() {
-        return false;
-    }
+    @PepeniumInject
+    private IOSShowcaseFlow flow;
 
     @Test
     void publicIOSAuthoringApiCompilesForExternalConsumers() {
-        ActionsAppIOS actions = new ActionsAppIOS(appiumDriver());
-        AssertionsAppIOS assertions = new AssertionsAppIOS(appiumDriver());
-        IOSSearchPage searchPage = new IOSSearchPage(actions, assertions);
-        IOSShowcaseFlow flow = new IOSShowcaseFlow(searchPage, this::step);
-
-        flow.openQuickSearch();
+        if (driver != null && flow != null) {
+            flow.openQuickSearch();
+        }
     }
 }

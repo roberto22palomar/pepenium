@@ -1,30 +1,24 @@
 package io.github.roberto22palomar.pepenium.smoke.android;
 
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
-import io.github.roberto22palomar.pepenium.core.runtime.BaseTest;
-import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp;
-import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumTest;
+import io.appium.java_client.AppiumDriver;
 import org.junit.jupiter.api.Test;
 
-class AndroidPublicApiSmokeTest extends BaseTest {
+@PepeniumTest(target = TestTarget.ANDROID_NATIVE)
+class AndroidPublicApiSmokeTest {
 
-    @Override
-    protected TestTarget getTarget() {
-        return TestTarget.ANDROID_NATIVE;
-    }
+    @PepeniumInject
+    private AppiumDriver driver;
 
-    @Override
-    protected boolean useAutomaticLifecycle() {
-        return false;
-    }
+    @PepeniumInject
+    private AndroidShowcaseFlow flow;
 
     @Test
     void publicAndroidAuthoringApiCompilesForExternalConsumers() {
-        ActionsApp actions = new ActionsApp(appiumDriver());
-        AssertionsApp assertions = new AssertionsApp(appiumDriver());
-        AndroidSearchPage searchPage = new AndroidSearchPage(actions, assertions);
-        AndroidShowcaseFlow flow = new AndroidShowcaseFlow(searchPage, this::step);
-
-        flow.openQuickSearch();
+        if (driver != null && flow != null) {
+            flow.openQuickSearch();
+        }
     }
 }

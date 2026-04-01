@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Added an annotation-first Pepenium authoring layer with `@PepeniumTest`, `@PepeniumInject`, `@PepeniumPage` and `PepeniumSteps` for lower-boilerplate test classes.
+- Added a plug-and-play desktop web example showing Pepenium usage without extending `BaseTest` and without manual page/flow/helper wiring.
+- Added `WebElement` overloads to the web `Actions*` and `Assertions*` APIs so page objects can rely more naturally on `@FindBy` fields.
+- Added public API contract and injection tests for the new annotation-first runtime layer.
+
+### Changed
+- Updated the API guide and consumer-smoke docs to include the new annotation-first authoring path.
+- Updated the standalone consumer-smoke flow to validate locally installed Pepenium artifacts without forcing remote updates.
+- Promoted annotation-first authoring to the recommended Pepenium usage style while keeping `BaseTest` fully supported as the classic path.
+- Expanded the public API compatibility gate to cover the new annotation-first runtime types.
+
 ## [0.9.3] - 2026-03-31
 
 ### Added

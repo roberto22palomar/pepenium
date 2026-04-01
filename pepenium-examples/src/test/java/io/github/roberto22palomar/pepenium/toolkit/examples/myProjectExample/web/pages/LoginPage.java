@@ -1,12 +1,11 @@
 package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages;
 
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 @Slf4j
-@RequiredArgsConstructor
 public class LoginPage {
 
     private final By usernameInput = By.id("username");
@@ -14,7 +13,8 @@ public class LoginPage {
     private final By loginButton = By.cssSelector("button[type='submit']");
     private final By pageTitle = By.cssSelector("h2");
 
-    private final ActionsWeb actionsWeb;
+    @PepeniumInject
+    private ActionsWeb actionsWeb;
 
     public void waitUntilLoaded() {
         actionsWeb.waitToBeVisible(pageTitle);

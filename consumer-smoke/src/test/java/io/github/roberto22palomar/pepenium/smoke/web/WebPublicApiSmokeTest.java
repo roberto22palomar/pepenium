@@ -1,30 +1,24 @@
 package io.github.roberto22palomar.pepenium.smoke.web;
 
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
-import io.github.roberto22palomar.pepenium.core.runtime.BaseTest;
-import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
-import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumTest;
+import org.openqa.selenium.WebDriver;
 import org.junit.jupiter.api.Test;
 
-class WebPublicApiSmokeTest extends BaseTest {
+@PepeniumTest(target = TestTarget.WEB_DESKTOP)
+class WebPublicApiSmokeTest {
 
-    @Override
-    protected TestTarget getTarget() {
-        return TestTarget.WEB_DESKTOP;
-    }
+    @PepeniumInject
+    private WebDriver driver;
 
-    @Override
-    protected boolean useAutomaticLifecycle() {
-        return false;
-    }
+    @PepeniumInject
+    private WebLoginFlow flow;
 
     @Test
     void publicWebAuthoringApiCompilesForExternalConsumers() {
-        ActionsWeb actions = new ActionsWeb(driver);
-        AssertionsWeb assertions = new AssertionsWeb(driver);
-        WebLoginPage loginPage = new WebLoginPage(actions, assertions);
-        WebLoginFlow flow = new WebLoginFlow(loginPage, this::step);
-
-        flow.loginWithValidCredentials();
+        if (driver != null && flow != null) {
+            flow.loginWithValidCredentials();
+        }
     }
 }

@@ -1,12 +1,11 @@
 package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.android.pages;
 
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 @Slf4j
-@RequiredArgsConstructor
 public class SearchPage {
 
     // ============================================================
@@ -16,7 +15,8 @@ public class SearchPage {
     private final By tabQuickSearch = By.xpath("//*[@resource-id='btn-search-tab-search']");
     private final By tabFilters = By.xpath("//*[@resource-id='btn-search-tab-filter']");
 
-    private final ActionsApp actionsApp;
+    @PepeniumInject
+    private ActionsApp actionsApp;
 
     // ============================================================
     // Actions

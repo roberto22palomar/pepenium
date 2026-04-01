@@ -84,6 +84,39 @@ Por que `pepenium-toolkit` suele ser el punto de entrada correcto:
 
 Si quieres un ejemplo concreto de consumidor, mira [consumer-smoke/README.md](consumer-smoke/README.md).
 
+## Autoría Plug and Play
+
+Pepenium ofrece ahora también un estilo de autoría basado en anotaciones para reducir aún más el boilerplate frente a `BaseTest`.
+
+Forma típica:
+
+```java
+@PepeniumTest(target = TestTarget.WEB_DESKTOP)
+class LoginTest {
+
+    @PepeniumInject
+    private WebDriver driver;
+
+    @PepeniumInject
+    private LoginFlow flow;
+
+    @Test
+    void loginWorks() {
+        driver.get("https://the-internet.herokuapp.com/login");
+        flow.runSuccessfulLogin("tomsmith", "SuperSecretPassword!");
+    }
+}
+```
+
+Ese estilo soporta:
+
+- `@PepeniumTest` en lugar de extender `BaseTest`
+- `@PepeniumInject` para `WebDriver`, `DriverSession`, `Actions*`, `Assertions*`, pages y flows
+- `@PepeniumPage` junto con `@FindBy` de Selenium para page objects más ligeros
+- inyección de `PepeniumSteps` para registrar pasos sin depender de herencia
+
+`BaseTest` sigue totalmente soportado. La ruta basada en anotaciones existe para que el framework se sienta más plug and play de cara a `1.0.0`.
+
 ## Reportes Nativos
 
 Pepenium genera ahora un bundle nativo de reporting HTML y JSON listo para usar despues de cada ejecucion.

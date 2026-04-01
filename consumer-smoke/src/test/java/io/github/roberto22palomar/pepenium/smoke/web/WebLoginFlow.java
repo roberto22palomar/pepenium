@@ -1,25 +1,24 @@
 package io.github.roberto22palomar.pepenium.smoke.web;
 
-import java.util.function.Consumer;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumSteps;
 
 final class WebLoginFlow {
 
-    private final WebLoginPage loginPage;
-    private final Consumer<String> stepRecorder;
+    @PepeniumInject
+    private WebLoginPage loginPage;
 
-    WebLoginFlow(WebLoginPage loginPage, Consumer<String> stepRecorder) {
-        this.loginPage = loginPage;
-        this.stepRecorder = stepRecorder;
-    }
+    @PepeniumInject
+    private PepeniumSteps stepRecorder;
 
     void loginWithValidCredentials() {
-        stepRecorder.accept("Open login page");
+        stepRecorder.step("Open login page");
         loginPage.waitUntilLoaded();
 
-        stepRecorder.accept("Login with valid credentials");
+        stepRecorder.step("Login with valid credentials");
         loginPage.login("tomsmith", "SuperSecretPassword!");
 
-        stepRecorder.accept("Verify secure-area success message");
+        stepRecorder.step("Verify secure-area success message");
         loginPage.assertSuccessMessageVisible();
     }
 }

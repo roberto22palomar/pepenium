@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.smoke.web;
 
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
 import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb;
 import org.openqa.selenium.By;
@@ -11,13 +12,11 @@ final class WebLoginPage {
     private static final By SUBMIT = By.cssSelector("button[type='submit']");
     private static final By FLASH = By.id("flash");
 
-    private final ActionsWeb actions;
-    private final AssertionsWeb assertions;
+    @PepeniumInject
+    private ActionsWeb actions;
 
-    WebLoginPage(ActionsWeb actions, AssertionsWeb assertions) {
-        this.actions = actions;
-        this.assertions = assertions;
-    }
+    @PepeniumInject
+    private AssertionsWeb assertions;
 
     void waitUntilLoaded() {
         assertions.assertVisible(USERNAME);

@@ -1,22 +1,21 @@
 package io.github.roberto22palomar.pepenium.smoke.ios;
 
-import java.util.function.Consumer;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumSteps;
 
 final class IOSShowcaseFlow {
 
-    private final IOSSearchPage searchPage;
-    private final Consumer<String> stepRecorder;
+    @PepeniumInject
+    private IOSSearchPage searchPage;
 
-    IOSShowcaseFlow(IOSSearchPage searchPage, Consumer<String> stepRecorder) {
-        this.searchPage = searchPage;
-        this.stepRecorder = stepRecorder;
-    }
+    @PepeniumInject
+    private PepeniumSteps stepRecorder;
 
     void openQuickSearch() {
-        stepRecorder.accept("Validate iOS search surface");
+        stepRecorder.step("Validate iOS search surface");
         searchPage.waitUntilLoaded();
 
-        stepRecorder.accept("Open iOS quick search");
+        stepRecorder.step("Open iOS quick search");
         searchPage.openQuickSearch();
     }
 }

@@ -1,13 +1,12 @@
 package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.ios.pages;
 
-import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS;
 import io.appium.java_client.AppiumBy;
-import lombok.RequiredArgsConstructor;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
+import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 @Slf4j
-@RequiredArgsConstructor
 public class SearchPageIOS {
 
     // ============================================================
@@ -17,7 +16,8 @@ public class SearchPageIOS {
     private final By tabQuickSearch = AppiumBy.accessibilityId("btn-search-tab-search");
     private final By tabFilters = AppiumBy.accessibilityId("btn-search-tab-filter");
 
-    private final ActionsAppIOS actionsApp;
+    @PepeniumInject
+    private ActionsAppIOS actionsApp;
 
     // ============================================================
     // Actions

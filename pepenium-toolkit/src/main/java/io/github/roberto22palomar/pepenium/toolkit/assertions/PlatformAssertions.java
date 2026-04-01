@@ -4,6 +4,7 @@ import io.github.roberto22palomar.pepenium.core.observability.PepeniumTimeline;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 abstract class PlatformAssertions extends BaseAssertions {
 
@@ -15,20 +16,40 @@ abstract class PlatformAssertions extends BaseAssertions {
         runAssertion("Assert visible " + locator, () -> super.assertVisible(locator));
     }
 
+    public void assertVisible(WebElement element) {
+        runAssertion("Assert visible element", () -> super.assertVisible(element));
+    }
+
     public void assertNotVisible(By locator) {
         runAssertion("Assert hidden " + locator, () -> super.assertNotVisible(locator));
+    }
+
+    public void assertNotVisible(WebElement element) {
+        runAssertion("Assert hidden element", () -> super.assertNotVisible(element));
     }
 
     public void assertPresent(By locator) {
         runAssertion("Assert present " + locator, () -> super.assertPresent(locator));
     }
 
+    public void assertPresent(WebElement element) {
+        runAssertion("Assert present element", () -> super.assertPresent(element));
+    }
+
     public void assertTextEquals(By locator, String expectedText) {
         runAssertion("Assert exact text on " + locator, () -> super.assertTextEquals(locator, expectedText));
     }
 
+    public void assertTextEquals(WebElement element, String expectedText) {
+        runAssertion("Assert exact text on element", () -> super.assertTextEquals(element, expectedText));
+    }
+
     public void assertTextContains(By locator, String expectedFragment) {
         runAssertion("Assert partial text on " + locator, () -> super.assertTextContains(locator, expectedFragment));
+    }
+
+    public void assertTextContains(WebElement element, String expectedFragment) {
+        runAssertion("Assert partial text on element", () -> super.assertTextContains(element, expectedFragment));
     }
 
     protected void recordPassedAssertion(String description) {
