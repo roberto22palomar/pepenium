@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * Mapea la estructura de browserstack.yml para móviles.
+ * Maps the structure of browserstack.yml for mobile platforms.
  */
 @Data
 @Builder
@@ -31,7 +31,7 @@ public class BrowserStackConfigMobile {
     private String projectName;
 
     /**
-     * Sub-POJO para cada entrada bajo la clave 'platforms'.
+     * DTO for each entry under the {@code platforms} key.
      */
     @Data
     @Builder
