@@ -2,6 +2,9 @@
   <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
     <img alt="Build" src="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml/badge.svg" />
   </a>
+  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
+    <img alt="Coverage" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/roberto22palomar/pepenium/coverage-badge/.github/badges/coverage.json" />
+  </a>
 </p>
 
 <p align="center">
@@ -58,6 +61,13 @@ Use the root `docker-compose.yaml` if you want to run the local Appium server in
 Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone public-API consumer smoke validation flow.
 
 The main CI workflow now runs framework `verify` and then validates that standalone consumer smoke, so quality gates and public API consumption are both checked continuously.
+
+## Quality
+
+- CI runs `mvn verify` on every push and pull request to `main`
+- Coverage is aggregated from the JaCoCo reports produced by `pepenium-core` and `pepenium-toolkit`
+- Checkstyle, SpotBugs and `japicmp` are part of the normal verification path
+- The standalone `consumer-smoke` project validates public API consumption from outside the main reactor
 
 ## Using Pepenium From Another Project
 
@@ -123,7 +133,6 @@ That recommended style supports:
 Pepenium now generates a native HTML and JSON reporting bundle out of the box after test execution.
 
 ![Pepenium report preview](docs/assets/reporting-preview.svg)
-
 What it generates:
 
 - a suite-level `index.html`
@@ -204,7 +213,6 @@ Reusable building blocks:
 - `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
 - `toolkit/assertions`: `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS`
 - `toolkit/support`: reusable settle and scroll helpers
-
 ### `examples`
 
 Example tests showing the intended usage pattern:
@@ -247,7 +255,6 @@ This keeps the same test portable across environments without changing its code.
 - `IOS_NATIVE`
 - `IOS_WEB`
 - `WEB_DESKTOP`
-
 ## Built-In Execution Profiles
 
 - `local-android`

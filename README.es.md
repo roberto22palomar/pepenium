@@ -2,6 +2,9 @@
   <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
     <img alt="Build" src="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml/badge.svg" />
   </a>
+  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
+    <img alt="Coverage" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/roberto22palomar/pepenium/coverage-badge/.github/badges/coverage.json" />
+  </a>
 </p>
 
 <p align="center">
@@ -58,6 +61,13 @@ Usa [consumer-smoke/README.md](consumer-smoke/README.md) si quieres validar el c
 
 El workflow principal de CI ejecuta `verify` sobre el framework y despues valida ese consumer smoke, de modo que los quality gates y el consumo externo queden comprobados de forma continua.
 
+## Calidad
+
+- El CI ejecuta `mvn verify` en cada push y pull request sobre `main`
+- La cobertura se agrega a partir de los reportes JaCoCo generados por `pepenium-core` y `pepenium-toolkit`
+- Checkstyle, SpotBugs y `japicmp` forman parte del camino normal de verificacion
+- El proyecto independiente `consumer-smoke` valida el consumo de la API publica fuera del reactor principal
+
 ## Usar Pepenium Desde Otro Proyecto
 
 Si quieres consumir Pepenium desde otro proyecto Maven, la regla corta es:
@@ -84,11 +94,11 @@ Por que `pepenium-toolkit` suele ser el punto de entrada correcto:
 
 Si quieres un ejemplo concreto de consumidor, mira [consumer-smoke/README.md](consumer-smoke/README.md).
 
-## Autoría Plug and Play
+## Autoria Plug and Play
 
-Pepenium ofrece ahora también un estilo de autoría basado en anotaciones para reducir aún más el boilerplate frente a `BaseTest`.
+Pepenium recomienda ahora un estilo de autoria basado en anotaciones para que el framework se sienta lo mas plug and play posible.
 
-Forma típica:
+Forma tipica:
 
 ```java
 @PepeniumTest(target = TestTarget.WEB_DESKTOP)
@@ -108,14 +118,14 @@ class LoginTest {
 }
 ```
 
-Ese estilo soporta:
+Ese estilo recomendado soporta:
 
 - `@PepeniumTest` en lugar de extender `BaseTest`
 - `@PepeniumInject` para `WebDriver`, `DriverSession`, `Actions*`, `Assertions*`, pages y flows
-- `@PepeniumPage` junto con `@FindBy` de Selenium para page objects más ligeros
-- inyección de `PepeniumSteps` para registrar pasos sin depender de herencia
+- `@PepeniumPage` junto con `@FindBy` de Selenium para page objects mas ligeros
+- inyeccion de `PepeniumSteps` para registrar pasos sin depender de herencia
 
-`BaseTest` sigue totalmente soportado. La ruta basada en anotaciones existe para que el framework se sienta más plug and play de cara a `1.0.0`.
+`BaseTest` sigue totalmente soportado como ruta clasica. La via basada en anotaciones pasa a ser la forma recomendada de uso de cara a `1.0.0`.
 
 ## Reportes Nativos
 
@@ -169,6 +179,10 @@ Modulos del repositorio:
 
 Piezas de runtime y ejecucion del framework:
 
+- `PepeniumTest`
+- `PepeniumInject`
+- `PepeniumPage`
+- `PepeniumSteps`
 - `BaseTest`
 - `DriverConfig`
 - `DriverRequest`
@@ -213,17 +227,18 @@ Este modulo es intencionadamente solo para el repositorio: no es un artefacto de
 
 ## Modelo de Ejecucion
 
-Los tests declaran un `TestTarget`:
+La forma recomendada es declarar el `TestTarget` mediante `@PepeniumTest`:
 
 ```java
-public class ExampleAndroidNativeTest extends BaseTest {
+@PepeniumTest(target = TestTarget.ANDROID_NATIVE)
+public class ExampleAndroidNativeTest {
 
-    @Override
-    protected TestTarget getTarget() {
-        return TestTarget.ANDROID_NATIVE;
-    }
+    @PepeniumInject
+    private ExampleAndroidShowcaseFlow flow;
 }
 ```
+
+La forma clasica con `BaseTest` sigue estando soportada si un equipo prefiere autoria basada en herencia.
 
 En runtime, Pepenium resuelve un execution profile:
 
