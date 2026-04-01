@@ -80,6 +80,20 @@ public class ActionsWeb {
         }
     }
 
+    public WebElement waitToBeVisible(WebElement element) {
+        ActionLoggingSupport.recordWait("Wait for visible element");
+        try {
+            return new WebDriverWait(driver, DEFAULT_TIMEOUT)
+                    .until(ExpectedConditions.visibilityOf(element));
+        } catch (TimeoutException e) {
+            ActionLoggingSupport.logTimeout(log, "visibility wait", element, e);
+            throw e;
+        } catch (Exception e) {
+            ActionLoggingSupport.logFailure(log, "visibility wait", element, e);
+            throw e;
+        }
+    }
+
     public WebElement waitToBePresent(By locator) {
         ActionLoggingSupport.recordWait("Wait for present " + locator);
         try {
@@ -124,12 +138,32 @@ public class ActionsWeb {
         }
     }
 
+    public boolean isElementVisible(WebElement element) {
+        try {
+            new WebDriverWait(driver, DEFAULT_TIMEOUT)
+                    .until(ExpectedConditions.visibilityOf(element));
+            return true;
+        } catch (TimeoutException e) {
+            log.warn("Element not visible: {}", element);
+            return false;
+        }
+    }
+
     public String getElementText(By locator) {
         try {
             WebElement element = waitToBeVisible(locator);
             return element.getText();
         } catch (Exception e) {
             ActionLoggingSupport.logFailure(log, "read text", locator, e);
+            return null;
+        }
+    }
+
+    public String getElementText(WebElement element) {
+        try {
+            return waitToBeVisible(element).getText();
+        } catch (Exception e) {
+            ActionLoggingSupport.logFailure(log, "read text", element, e);
             return null;
         }
     }
@@ -152,9 +186,35 @@ public class ActionsWeb {
         }
     }
 
+    @SneakyThrows
+    public void click(WebElement element) {
+        StepTracker.record("Click element");
+        ActionLoggingSupport.recordAction("Click element");
+        try {
+            WebElement clickableElement = new WebDriverWait(driver, DEFAULT_TIMEOUT)
+                    .until(ExpectedConditions.elementToBeClickable(element));
+            clickableElement.click();
+            waitForPostActionSettle();
+        } catch (TimeoutException e) {
+            ActionLoggingSupport.logTimeout(log, "click", element, e);
+            throw e;
+        } catch (Exception e) {
+            ActionLoggingSupport.logFailure(log, "click", element, e);
+            throw e;
+        }
+    }
+
     public boolean clickIfVisible(By locator) {
         if (isElementVisible(locator)) {
             click(locator);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean clickIfVisible(WebElement element) {
+        if (isElementVisible(element)) {
+            click(element);
             return true;
         }
         return false;
@@ -169,6 +229,19 @@ public class ActionsWeb {
             element.sendKeys(text);
         } catch (Exception e) {
             ActionLoggingSupport.logFailure(log, "type", locator, e);
+            throw e;
+        }
+    }
+
+    public void type(WebElement element, String text) {
+        StepTracker.record("Type into element");
+        ActionLoggingSupport.recordAction("Type into element");
+        try {
+            WebElement visibleElement = waitToBeVisible(element);
+            visibleElement.clear();
+            visibleElement.sendKeys(text);
+        } catch (Exception e) {
+            ActionLoggingSupport.logFailure(log, "type", element, e);
             throw e;
         }
     }

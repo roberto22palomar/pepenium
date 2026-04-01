@@ -94,6 +94,39 @@ Por que `pepenium-toolkit` suele ser el punto de entrada correcto:
 
 Si quieres un ejemplo concreto de consumidor, mira [consumer-smoke/README.md](consumer-smoke/README.md).
 
+## Autoria Plug and Play
+
+Pepenium recomienda ahora un estilo de autoria basado en anotaciones para que el framework se sienta lo mas plug and play posible.
+
+Forma tipica:
+
+```java
+@PepeniumTest(target = TestTarget.WEB_DESKTOP)
+class LoginTest {
+
+    @PepeniumInject
+    private WebDriver driver;
+
+    @PepeniumInject
+    private LoginFlow flow;
+
+    @Test
+    void loginWorks() {
+        driver.get("https://the-internet.herokuapp.com/login");
+        flow.runSuccessfulLogin("tomsmith", "SuperSecretPassword!");
+    }
+}
+```
+
+Ese estilo recomendado soporta:
+
+- `@PepeniumTest` en lugar de extender `BaseTest`
+- `@PepeniumInject` para `WebDriver`, `DriverSession`, `Actions*`, `Assertions*`, pages y flows
+- `@PepeniumPage` junto con `@FindBy` de Selenium para page objects mas ligeros
+- inyeccion de `PepeniumSteps` para registrar pasos sin depender de herencia
+
+`BaseTest` sigue totalmente soportado como ruta clasica. La via basada en anotaciones pasa a ser la forma recomendada de uso de cara a `1.0.0`.
+
 ## Reportes Nativos
 
 Pepenium genera ahora un bundle nativo de reporting HTML y JSON listo para usar despues de cada ejecucion.
@@ -146,6 +179,10 @@ Modulos del repositorio:
 
 Piezas de runtime y ejecucion del framework:
 
+- `PepeniumTest`
+- `PepeniumInject`
+- `PepeniumPage`
+- `PepeniumSteps`
 - `BaseTest`
 - `DriverConfig`
 - `DriverRequest`
@@ -190,17 +227,18 @@ Este modulo es intencionadamente solo para el repositorio: no es un artefacto de
 
 ## Modelo de Ejecucion
 
-Los tests declaran un `TestTarget`:
+La forma recomendada es declarar el `TestTarget` mediante `@PepeniumTest`:
 
 ```java
-public class ExampleAndroidNativeTest extends BaseTest {
+@PepeniumTest(target = TestTarget.ANDROID_NATIVE)
+public class ExampleAndroidNativeTest {
 
-    @Override
-    protected TestTarget getTarget() {
-        return TestTarget.ANDROID_NATIVE;
-    }
+    @PepeniumInject
+    private ExampleAndroidShowcaseFlow flow;
 }
 ```
+
+La forma clasica con `BaseTest` sigue estando soportada si un equipo prefiere autoria basada en herencia.
 
 En runtime, Pepenium resuelve un execution profile:
 

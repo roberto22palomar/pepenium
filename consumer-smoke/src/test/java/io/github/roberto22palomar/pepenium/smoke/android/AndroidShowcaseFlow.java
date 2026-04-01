@@ -1,22 +1,21 @@
 package io.github.roberto22palomar.pepenium.smoke.android;
 
-import java.util.function.Consumer;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumSteps;
 
 final class AndroidShowcaseFlow {
 
-    private final AndroidSearchPage searchPage;
-    private final Consumer<String> stepRecorder;
+    @PepeniumInject
+    private AndroidSearchPage searchPage;
 
-    AndroidShowcaseFlow(AndroidSearchPage searchPage, Consumer<String> stepRecorder) {
-        this.searchPage = searchPage;
-        this.stepRecorder = stepRecorder;
-    }
+    @PepeniumInject
+    private PepeniumSteps stepRecorder;
 
     void openQuickSearch() {
-        stepRecorder.accept("Validate Android search surface");
+        stepRecorder.step("Validate Android search surface");
         searchPage.waitUntilLoaded();
 
-        stepRecorder.accept("Open Android quick search");
+        stepRecorder.step("Open Android quick search");
         searchPage.openQuickSearch();
     }
 }

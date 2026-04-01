@@ -1,13 +1,12 @@
 package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.ios.pages;
 
 import io.appium.java_client.AppiumBy;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 @Slf4j
-@RequiredArgsConstructor
 public class BottomNavigationPageIOS {
 
     // ============================================================
@@ -18,7 +17,8 @@ public class BottomNavigationPageIOS {
     private final By tabThree = AppiumBy.accessibilityId("click-bottom-tab-3");
     private final By tabHome = AppiumBy.accessibilityId("click_bottom_home");
 
-    private final ActionsAppIOS actionsApp;
+    @PepeniumInject
+    private ActionsAppIOS actionsApp;
 
     // ============================================================
     // Actions

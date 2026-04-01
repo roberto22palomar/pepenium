@@ -1,16 +1,14 @@
 package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.android.flows;
 
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumSteps;
 import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp;
 import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.android.pages.BottomNavigationPage;
 import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.android.pages.SearchPage;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import java.util.function.Consumer;
-
 @Slf4j
-@RequiredArgsConstructor
 public class ExampleAndroidShowcaseFlow {
 
     private static final By SEARCH_QUICK_TAB = By.xpath("//*[@resource-id='btn-search-tab-search']");
@@ -21,51 +19,58 @@ public class ExampleAndroidShowcaseFlow {
     private static final By TAB_THREE = By.xpath("//*[@resource-id='click-bottom-tab-3']");
     private static final By HOME_TAB = By.xpath("//*[@resource-id='click_bottom_home']");
 
-    private final BottomNavigationPage bottomNavigationPage;
-    private final SearchPage searchPage;
-    private final AssertionsApp assertionsApp;
-    private final Consumer<String> stepRecorder;
+    @PepeniumInject
+    private BottomNavigationPage bottomNavigationPage;
+
+    @PepeniumInject
+    private SearchPage searchPage;
+
+    @PepeniumInject
+    private AssertionsApp assertionsApp;
+
+    @PepeniumInject
+    private PepeniumSteps stepRecorder;
 
     public void runShowcaseFlow() {
         log.info("=== Starting ExampleAndroidShowcaseFlow ===");
 
-        stepRecorder.accept("Validate Android search surface");
+        stepRecorder.step("Validate Android search surface");
         searchPage.waitUntilLoaded();
         assertionsApp.assertVisible(SEARCH_QUICK_TAB);
         assertionsApp.assertVisible(SEARCH_FILTERS_TAB);
         assertionsApp.assertVisible(SEARCH_CLOSE_BUTTON);
 
-        stepRecorder.accept("Open quick search tab");
+        stepRecorder.step("Open quick search tab");
         searchPage.openQuickSearchTab();
         assertionsApp.assertVisible(SEARCH_FILTERS_TAB);
 
-        stepRecorder.accept("Open filters tab");
+        stepRecorder.step("Open filters tab");
         searchPage.openFiltersTab();
         assertionsApp.assertVisible(SEARCH_CLOSE_BUTTON);
 
-        stepRecorder.accept("Close search surface");
+        stepRecorder.step("Close search surface");
         searchPage.close();
 
-        stepRecorder.accept("Validate bottom navigation surface");
+        stepRecorder.step("Validate bottom navigation surface");
         bottomNavigationPage.waitUntilLoaded();
         assertionsApp.assertVisible(TAB_ONE);
         assertionsApp.assertVisible(TAB_TWO);
         assertionsApp.assertVisible(TAB_THREE);
         assertionsApp.assertVisible(HOME_TAB);
 
-        stepRecorder.accept("Navigate to tab one");
+        stepRecorder.step("Navigate to tab one");
         bottomNavigationPage.openTabOne();
         assertionsApp.assertVisible(HOME_TAB);
 
-        stepRecorder.accept("Navigate to tab two");
+        stepRecorder.step("Navigate to tab two");
         bottomNavigationPage.openTabTwo();
         assertionsApp.assertVisible(TAB_THREE);
 
-        stepRecorder.accept("Navigate to tab three");
+        stepRecorder.step("Navigate to tab three");
         bottomNavigationPage.openTabThree();
         assertionsApp.assertVisible(HOME_TAB);
 
-        stepRecorder.accept("Return to home tab");
+        stepRecorder.step("Return to home tab");
         bottomNavigationPage.openHome();
         assertionsApp.assertVisible(HOME_TAB);
 

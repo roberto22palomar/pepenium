@@ -95,12 +95,44 @@ Why `pepenium-toolkit` is usually the right entry point:
 
 If you want a concrete consumer example, see [consumer-smoke/README.md](consumer-smoke/README.md).
 
+## Plug-and-Play Authoring
+
+Pepenium now recommends an annotation-first authoring style for teams that want the framework to feel as plug-and-play as possible.
+
+Typical shape:
+
+```java
+@PepeniumTest(target = TestTarget.WEB_DESKTOP)
+class LoginTest {
+
+    @PepeniumInject
+    private WebDriver driver;
+
+    @PepeniumInject
+    private LoginFlow flow;
+
+    @Test
+    void loginWorks() {
+        driver.get("https://the-internet.herokuapp.com/login");
+        flow.runSuccessfulLogin("tomsmith", "SuperSecretPassword!");
+    }
+}
+```
+
+That recommended style supports:
+
+- `@PepeniumTest` instead of extending `BaseTest`
+- `@PepeniumInject` for `WebDriver`, `DriverSession`, `Actions*`, `Assertions*`, pages and flows
+- `@PepeniumPage` plus Selenium `@FindBy` fields for lighter page objects
+- `PepeniumSteps` injection for simple step recording without inheriting helper methods
+
+`BaseTest` remains fully supported as the classic authoring path. The annotation-first path is now the recommended shape as Pepenium approaches `1.0.0`.
+
 ## Native Reports
 
 Pepenium now generates a native HTML and JSON reporting bundle out of the box after test execution.
 
 ![Pepenium report preview](docs/assets/reporting-preview.svg)
-
 What it generates:
 
 - a suite-level `index.html`
@@ -147,6 +179,10 @@ Repository modules:
 
 Framework runtime and execution pieces:
 
+- `PepeniumTest`
+- `PepeniumInject`
+- `PepeniumPage`
+- `PepeniumSteps`
 - `BaseTest`
 - `DriverConfig`
 - `DriverRequest`
@@ -177,7 +213,6 @@ Reusable building blocks:
 - `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
 - `toolkit/assertions`: `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS`
 - `toolkit/support`: reusable settle and scroll helpers
-
 ### `examples`
 
 Example tests showing the intended usage pattern:
@@ -191,17 +226,18 @@ This module is intentionally repository-only: it is not a published consumer art
 
 ## Execution Model
 
-Tests declare a `TestTarget`:
+Recommended tests declare a `TestTarget` through `@PepeniumTest`:
 
 ```java
-public class ExampleAndroidNativeTest extends BaseTest {
+@PepeniumTest(target = TestTarget.ANDROID_NATIVE)
+public class ExampleAndroidNativeTest {
 
-    @Override
-    protected TestTarget getTarget() {
-        return TestTarget.ANDROID_NATIVE;
-    }
+    @PepeniumInject
+    private ExampleAndroidShowcaseFlow flow;
 }
 ```
+
+The classic `BaseTest` shape is still supported when a team prefers inheritance-based authoring.
 
 At runtime, Pepenium resolves an execution profile:
 
@@ -219,7 +255,6 @@ This keeps the same test portable across environments without changing its code.
 - `IOS_NATIVE`
 - `IOS_WEB`
 - `WEB_DESKTOP`
-
 ## Built-In Execution Profiles
 
 - `local-android`

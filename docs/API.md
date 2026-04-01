@@ -26,22 +26,39 @@ These are the main classes Pepenium users are expected to import and rely on dir
 
 - [BaseTest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)
 - [TestTarget](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/TestTarget.java)
+- [PepeniumTest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/PepeniumTest.java)
+- [PepeniumInject](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/PepeniumInject.java)
+- [PepeniumPage](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/PepeniumPage.java)
+- [PepeniumSteps](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/PepeniumSteps.java)
 
 These classes define the main authoring model:
 
 - one test per functional target
 - one execution profile per environment/provider choice
 - manual step enrichment through `step("...")`
+- or an annotation-first test shape with field and parameter injection
 
 ## Contract Decisions For 1.0.0
 
 Pepenium now treats the following decisions as explicit contract on the road to `1.0.0`.
 
-### `BaseTest` stays the main public entry point
+### Annotation-first authoring is now the recommended public entry point
 
-`BaseTest` remains the primary authoring entry point for normal Pepenium users in `1.0.0`.
+For `1.0.0`, Pepenium treats the annotation-first model as the recommended way to author new tests.
 
 That contract includes:
+
+- declaring the target through `@PepeniumTest`
+- optionally setting a default profile through `@PepeniumTest(profile = "...")`
+- using `@PepeniumInject` for driver, session, helper, page and flow wiring
+- using `@PepeniumPage` for `PageFactory`-backed page objects
+- using `PepeniumSteps` when a test or flow wants step recording without inheritance
+
+### `BaseTest` remains a supported classic entry point
+
+`BaseTest` remains fully supported in `1.0.0` as the classic inheritance-based authoring path.
+
+That compatibility contract includes:
 
 - declaring the target through `getTarget()`
 - optionally overriding `getDefaultProfileId()`
@@ -61,6 +78,24 @@ For `BaseTest`, Pepenium now treats this lifecycle model as intentional contract
 - per-test observability and reporting state still resets in `beforeEach` / `afterEach`
 
 If a user needs a different lifecycle, the supported opt-out is still `useAutomaticLifecycle() == false` plus the existing manual lifecycle hooks.
+
+### Annotation-first authoring is now an official supported path
+
+Pepenium now also supports a lighter annotation-first style alongside `BaseTest`.
+
+That path currently includes:
+
+- `@PepeniumTest` for target declaration without extending `BaseTest`
+- `@PepeniumInject` for driver, session, helper, page and flow wiring
+- `@PepeniumPage` for page objects initialized through Selenium `PageFactory`
+- `PepeniumSteps` for direct step recording without inheritance
+
+Current intent:
+
+- the annotation-first path is the recommended public API for new authoring
+- `BaseTest` remains a supported classic API for teams that prefer inheritance
+- both models should keep working side by side on the road to `1.0.0`
+- if Pepenium ever narrows its recommendations further, it should do so through deprecation and documentation rather than abrupt breakage
 
 ### `TestTarget` values and defaults are stable
 
@@ -188,6 +223,7 @@ Even when these classes are public in Java terms, they should currently be treat
 Until `1.0.0`, Pepenium may still make structural improvements. Even so, the project should already treat the following as breaking changes:
 
 - changing the expected usage model of [BaseTest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)
+- breaking the expected usage model of [PepeniumTest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/PepeniumTest.java), [PepeniumInject](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/PepeniumInject.java) or [PepeniumPage](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/PepeniumPage.java)
 - removing or renaming [TestTarget](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/TestTarget.java) values
 - removing or renaming public `Actions*` methods that user page objects and flows are expected to call
 - removing or renaming public `Assertions*` methods that user tests are expected to call
@@ -202,7 +238,7 @@ Pepenium now runs an automatic `japicmp` comparison during `verify` for the rele
 
 That build-time compatibility gate is intentionally scoped to the documented public API surface:
 
-- `pepenium-core`: `BaseTest` and `TestTarget`
+- `pepenium-core`: `PepeniumTest`, `PepeniumInject`, `PepeniumPage`, `PepeniumSteps`, `BaseTest` and `TestTarget`
 - `pepenium-toolkit`: the documented `Actions*` and `Assertions*` authoring types
 
 This keeps the compatibility check focused on what normal external users are expected to import directly, while semantic contract details such as lifecycle defaults, target defaults and built-in profile ids are protected by dedicated tests and docs.
@@ -247,5 +283,5 @@ Typical validation flow:
 
 ```bash
 mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -U -f consumer-smoke/pom.xml clean test-compile
+mvn -q -f consumer-smoke/pom.xml clean test-compile
 ```

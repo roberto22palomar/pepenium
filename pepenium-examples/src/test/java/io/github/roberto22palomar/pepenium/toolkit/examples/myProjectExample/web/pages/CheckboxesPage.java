@@ -1,21 +1,23 @@
 package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages;
 
+import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 @Slf4j
-@RequiredArgsConstructor
 public class CheckboxesPage {
 
     private final By pageTitle = By.cssSelector("h3");
     private final By firstCheckbox = By.xpath("(//*[@id='checkboxes']//input[@type='checkbox'])[1]");
     private final By secondCheckbox = By.xpath("(//*[@id='checkboxes']//input[@type='checkbox'])[2]");
 
-    private final WebDriver driver;
-    private final ActionsWeb actionsWeb;
+    @PepeniumInject
+    private WebDriver driver;
+
+    @PepeniumInject
+    private ActionsWeb actionsWeb;
 
     public void open(String baseUrl) {
         String targetUrl = baseUrl.replace("/login", "/checkboxes");

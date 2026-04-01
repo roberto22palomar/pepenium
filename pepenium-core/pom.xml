@@ -143,6 +143,10 @@
                                 <includes>
                                     <include>io.github.roberto22palomar.pepenium.core.runtime.BaseTest</include>
                                     <include>io.github.roberto22palomar.pepenium.core.runtime.BaseTest.ThrowingRunnable</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.runtime.PepeniumTest</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.runtime.PepeniumPage</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.runtime.PepeniumSteps</include>
                                     <include>io.github.roberto22palomar.pepenium.core.execution.TestTarget</include>
                                 </includes>
                                 <accessModifier>protected</accessModifier>
