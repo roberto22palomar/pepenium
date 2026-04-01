@@ -23,6 +23,22 @@ public class LoginPage {
         actionsWeb.waitToBeVisible(loginButton);
     }
 
+    public By pageTitle() {
+        return pageTitle;
+    }
+
+    public By usernameInput() {
+        return usernameInput;
+    }
+
+    public By passwordInput() {
+        return passwordInput;
+    }
+
+    public By loginButton() {
+        return loginButton;
+    }
+
     public void login(String username, String password) {
         log.info("Logging into The Internet example app");
         actionsWeb.type(usernameInput, username);

@@ -30,6 +30,18 @@ public class SearchPageIOS {
         actionsApp.takeScreenshotFast();
     }
 
+    public By quickSearchTab() {
+        return tabQuickSearch;
+    }
+
+    public By filtersTab() {
+        return tabFilters;
+    }
+
+    public By closeButton() {
+        return btnClose;
+    }
+
     public void close() {
         log.info("Closing Search page (iOS)");
         actionsApp.click(btnClose);

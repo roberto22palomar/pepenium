@@ -20,4 +20,12 @@ public class SecureAreaPage {
         actionsWeb.waitToBeVisible(flashMessage);
         actionsWeb.waitToBeVisible(logoutButton);
     }
+
+    public By flashMessage() {
+        return flashMessage;
+    }
+
+    public By logoutButton() {
+        return logoutButton;
+    }
 }

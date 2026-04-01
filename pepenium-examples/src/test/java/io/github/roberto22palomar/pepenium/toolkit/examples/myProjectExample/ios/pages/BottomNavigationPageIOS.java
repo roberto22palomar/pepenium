@@ -32,6 +32,22 @@ public class BottomNavigationPageIOS {
         actionsApp.takeScreenshotFast();
     }
 
+    public By tabOne() {
+        return tabOne;
+    }
+
+    public By tabTwo() {
+        return tabTwo;
+    }
+
+    public By tabThree() {
+        return tabThree;
+    }
+
+    public By homeTab() {
+        return tabHome;
+    }
+
     public void openTabOne() {
         log.info("Opening bottom navigation: Tab One");
         actionsApp.click(tabOne);

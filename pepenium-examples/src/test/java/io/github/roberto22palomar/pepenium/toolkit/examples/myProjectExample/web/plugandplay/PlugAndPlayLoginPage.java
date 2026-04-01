@@ -3,7 +3,6 @@ package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.we
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumPage;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
-import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -14,9 +13,6 @@ public class PlugAndPlayLoginPage {
 
     @PepeniumInject
     private ActionsWeb actionsWeb;
-
-    @PepeniumInject
-    private AssertionsWeb assertionsWeb;
 
     @FindBy(css = "h2")
     private WebElement pageTitle;
@@ -30,12 +26,20 @@ public class PlugAndPlayLoginPage {
     @FindBy(css = "button[type='submit']")
     private WebElement loginButton;
 
-    public void assertLoaded() {
-        assertionsWeb.assertVisible(pageTitle);
-        assertionsWeb.assertVisible(usernameInput);
-        assertionsWeb.assertVisible(passwordInput);
-        assertionsWeb.assertVisible(loginButton);
-        assertionsWeb.assertTextEquals(pageTitle, "Login Page");
+    public WebElement pageTitle() {
+        return pageTitle;
+    }
+
+    public WebElement usernameInput() {
+        return usernameInput;
+    }
+
+    public WebElement passwordInput() {
+        return passwordInput;
+    }
+
+    public WebElement loginButton() {
+        return loginButton;
     }
 
     public void login(String username, String password) {

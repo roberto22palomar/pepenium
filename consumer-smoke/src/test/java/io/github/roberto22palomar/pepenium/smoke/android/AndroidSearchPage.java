@@ -3,7 +3,6 @@ package io.github.roberto22palomar.pepenium.smoke.android;
 import io.appium.java_client.AppiumBy;
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp;
-import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp;
 import org.openqa.selenium.By;
 
 final class AndroidSearchPage {
@@ -13,14 +12,14 @@ final class AndroidSearchPage {
     @PepeniumInject
     private ActionsApp actions;
 
-    @PepeniumInject
-    private AssertionsApp assertions;
-
     void waitUntilLoaded() {
-        assertions.assertVisible(QUICK_SEARCH_TAB);
     }
 
     void openQuickSearch() {
         actions.click(QUICK_SEARCH_TAB);
+    }
+
+    By quickSearchTab() {
+        return QUICK_SEARCH_TAB;
     }
 }

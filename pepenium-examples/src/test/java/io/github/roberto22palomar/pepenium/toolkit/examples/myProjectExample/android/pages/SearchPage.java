@@ -28,6 +28,18 @@ public class SearchPage {
         actionsApp.waitToBePresent(btnClose);
     }
 
+    public By quickSearchTab() {
+        return tabQuickSearch;
+    }
+
+    public By filtersTab() {
+        return tabFilters;
+    }
+
+    public By closeButton() {
+        return btnClose;
+    }
+
     public void close() {
         log.info("Closing Search page (Android)");
         actionsApp.click(btnClose);

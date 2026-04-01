@@ -9,16 +9,9 @@ import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web
 import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.LoginPage;
 import io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.web.pages.SecureAreaPage;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 
 @Slf4j
 public class ExampleAuthenticationFlow {
-
-    private static final By LOGIN_TITLE = By.cssSelector("h2");
-    private static final By FLASH_MESSAGE = By.id("flash");
-    private static final By LOGOUT_BUTTON = By.cssSelector("a.button.secondary.radius");
-    private static final By DROPDOWN_TITLE = By.cssSelector("h3");
-    private static final By DROPDOWN = By.id("dropdown");
 
     @PepeniumInject
     private LoginPage loginPage;
@@ -46,28 +39,31 @@ public class ExampleAuthenticationFlow {
 
         stepRecorder.step("Open login page and validate credentials form");
         loginPage.waitUntilLoaded();
-        assertionsWeb.assertTextEquals(LOGIN_TITLE, "Login Page");
+        assertionsWeb.assertTextEquals(loginPage.pageTitle(), "Login Page");
+        assertionsWeb.assertVisible(loginPage.usernameInput());
+        assertionsWeb.assertVisible(loginPage.passwordInput());
+        assertionsWeb.assertVisible(loginPage.loginButton());
 
         stepRecorder.step("Login with valid credentials");
         loginPage.login(username, password);
 
         stepRecorder.step("Verify secure area after successful login");
         secureAreaPage.waitUntilLoaded();
-        assertionsWeb.assertTextContains(FLASH_MESSAGE, "You logged into a secure area!");
-        assertionsWeb.assertVisible(LOGOUT_BUTTON);
+        assertionsWeb.assertTextContains(secureAreaPage.flashMessage(), "You logged into a secure area!");
+        assertionsWeb.assertVisible(secureAreaPage.logoutButton());
         assertionsWeb.assertUrlContains("/secure");
 
         stepRecorder.step("Navigate to dropdown example");
         dropdownPage.open(baseUrl);
         dropdownPage.waitUntilLoaded();
-        assertionsWeb.assertTextContains(DROPDOWN_TITLE, "Dropdown List");
-        assertionsWeb.assertVisible(DROPDOWN);
+        assertionsWeb.assertTextContains(dropdownPage.pageTitle(), "Dropdown List");
+        assertionsWeb.assertVisible(dropdownPage.dropdown());
 
         stepRecorder.step("Select option 2 from dropdown");
         dropdownPage.selectByVisibleText("Option 2");
 
         stepRecorder.step("Verify selected dropdown option");
-        assertionsWeb.assertTextContains(DROPDOWN, "Option 2");
+        assertionsWeb.assertTextContains(dropdownPage.dropdown(), "Option 2");
 
         stepRecorder.step("Navigate to checkboxes example");
         checkboxesPage.open(baseUrl);

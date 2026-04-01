@@ -31,9 +31,18 @@ public class DropdownPage {
         actionsWeb.waitToBeVisible(dropdown);
     }
 
+    public By pageTitle() {
+        return pageTitle;
+    }
+
+    public By dropdown() {
+        return dropdown;
+    }
+
     public void selectByVisibleText(String visibleText) {
         WebElement dropdownElement = driver.findElement(dropdown);
         new Select(dropdownElement).selectByVisibleText(visibleText);
         actionsWeb.takeScreenshot();
     }
+
 }
