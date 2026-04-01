@@ -6,7 +6,7 @@
 
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-parent</artifactId>
-    <version>0.9.3</version>
+    <version>0.9.4</version>
     <packaging>pom</packaging>
     <name>Pepenium</name>
     <description>Java automation framework for Android, iOS and Web built on Appium, Selenium and JUnit 5.</description>
@@ -70,7 +70,7 @@
         <maven.gpg.plugin.version>3.2.7</maven.gpg.plugin.version>
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
         <japicmp.maven.plugin.version>0.25.4</japicmp.maven.plugin.version>
-        <public.api.compatibility.baseline.version>0.9.2</public.api.compatibility.baseline.version>
+        <public.api.compatibility.baseline.version>0.9.3</public.api.compatibility.baseline.version>
         <spotbugs.maven.plugin.version>4.8.6.6</spotbugs.maven.plugin.version>
         <checkstyle.version>10.18.2</checkstyle.version>
         <central.publishing.maven.plugin.version>0.9.0</central.publishing.maven.plugin.version>
