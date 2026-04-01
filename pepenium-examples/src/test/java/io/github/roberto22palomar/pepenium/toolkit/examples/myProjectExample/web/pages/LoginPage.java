@@ -2,7 +2,6 @@ package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.we
 
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
-import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
@@ -17,9 +16,6 @@ public class LoginPage {
     @PepeniumInject
     private ActionsWeb actionsWeb;
 
-    @PepeniumInject
-    private AssertionsWeb assertionsWeb;
-
     public void waitUntilLoaded() {
         actionsWeb.waitToBeVisible(pageTitle);
         actionsWeb.waitToBeVisible(usernameInput);
@@ -27,11 +23,20 @@ public class LoginPage {
         actionsWeb.waitToBeVisible(loginButton);
     }
 
-    public void assertLoaded() {
-        assertionsWeb.assertTextEquals(pageTitle, "Login Page");
-        assertionsWeb.assertVisible(usernameInput);
-        assertionsWeb.assertVisible(passwordInput);
-        assertionsWeb.assertVisible(loginButton);
+    public By pageTitle() {
+        return pageTitle;
+    }
+
+    public By usernameInput() {
+        return usernameInput;
+    }
+
+    public By passwordInput() {
+        return passwordInput;
+    }
+
+    public By loginButton() {
+        return loginButton;
     }
 
     public void login(String username, String password) {

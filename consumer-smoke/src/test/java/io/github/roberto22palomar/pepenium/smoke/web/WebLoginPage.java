@@ -2,7 +2,6 @@ package io.github.roberto22palomar.pepenium.smoke.web;
 
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb;
-import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb;
 import org.openqa.selenium.By;
 
 final class WebLoginPage {
@@ -15,23 +14,25 @@ final class WebLoginPage {
     @PepeniumInject
     private ActionsWeb actions;
 
-    @PepeniumInject
-    private AssertionsWeb assertions;
-
-    void waitUntilLoaded() {
-        assertions.assertVisible(USERNAME);
-        assertions.assertVisible(PASSWORD);
-        assertions.assertVisible(SUBMIT);
-    }
-
     void login(String username, String password) {
         actions.type(USERNAME, username);
         actions.type(PASSWORD, password);
         actions.click(SUBMIT);
     }
 
-    void assertSuccessMessageVisible() {
-        assertions.assertVisible(FLASH);
-        assertions.assertTextContains(FLASH, "You logged into a secure area!");
+    By username() {
+        return USERNAME;
+    }
+
+    By password() {
+        return PASSWORD;
+    }
+
+    By submit() {
+        return SUBMIT;
+    }
+
+    By flash() {
+        return FLASH;
     }
 }

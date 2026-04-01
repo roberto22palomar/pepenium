@@ -3,7 +3,6 @@ package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.io
 import io.appium.java_client.AppiumBy;
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS;
-import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
@@ -20,9 +19,6 @@ public class SearchPageIOS {
     @PepeniumInject
     private ActionsAppIOS actionsApp;
 
-    @PepeniumInject
-    private AssertionsAppIOS assertionsApp;
-
     // ============================================================
     // Actions
     // ============================================================
@@ -34,18 +30,16 @@ public class SearchPageIOS {
         actionsApp.takeScreenshotFast();
     }
 
-    public void assertSearchSurfaceVisible() {
-        assertionsApp.assertVisible(tabQuickSearch);
-        assertionsApp.assertVisible(tabFilters);
-        assertionsApp.assertVisible(btnClose);
+    public By quickSearchTab() {
+        return tabQuickSearch;
     }
 
-    public void assertFiltersTabVisible() {
-        assertionsApp.assertVisible(tabFilters);
+    public By filtersTab() {
+        return tabFilters;
     }
 
-    public void assertCloseButtonVisible() {
-        assertionsApp.assertVisible(btnClose);
+    public By closeButton() {
+        return btnClose;
     }
 
     public void close() {

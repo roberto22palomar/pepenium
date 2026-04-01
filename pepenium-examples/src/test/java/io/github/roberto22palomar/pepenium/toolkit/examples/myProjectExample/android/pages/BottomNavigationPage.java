@@ -2,7 +2,6 @@ package io.github.roberto22palomar.pepenium.toolkit.examples.myProjectExample.an
 
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp;
-import io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
@@ -20,9 +19,6 @@ public class BottomNavigationPage {
     @PepeniumInject
     private ActionsApp actionsApp;
 
-    @PepeniumInject
-    private AssertionsApp assertionsApp;
-
     // ============================================================
     // Actions
     // ============================================================
@@ -34,19 +30,20 @@ public class BottomNavigationPage {
         actionsApp.waitToBePresent(tabHome);
     }
 
-    public void assertNavigationVisible() {
-        assertionsApp.assertVisible(tabOne);
-        assertionsApp.assertVisible(tabTwo);
-        assertionsApp.assertVisible(tabThree);
-        assertionsApp.assertVisible(tabHome);
+    public By tabOne() {
+        return tabOne;
     }
 
-    public void assertHomeVisible() {
-        assertionsApp.assertVisible(tabHome);
+    public By tabTwo() {
+        return tabTwo;
     }
 
-    public void assertTabThreeVisible() {
-        assertionsApp.assertVisible(tabThree);
+    public By tabThree() {
+        return tabThree;
+    }
+
+    public By homeTab() {
+        return tabHome;
     }
 
     public void openTabOne() {
