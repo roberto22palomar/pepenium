@@ -49,6 +49,7 @@ class PepeniumAnnotationContractTest {
         assertNotNull(injectTarget);
         assertEquals(ElementType.FIELD, injectTarget.value()[0]);
         assertEquals(ElementType.PARAMETER, injectTarget.value()[1]);
+        assertEquals(ElementType.CONSTRUCTOR, injectTarget.value()[2]);
         assertNotNull(injectRetention);
         assertEquals(RetentionPolicy.RUNTIME, injectRetention.value());
 

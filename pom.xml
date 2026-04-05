@@ -334,7 +334,7 @@
                         <configuration>
                             <publishingServerId>central</publishingServerId>
                             <autoPublish>true</autoPublish>
-                            <waitUntil>published</waitUntil>
+                            <waitUntil>validated</waitUntil>
                             <skipPublishing>${central.skipPublishing}</skipPublishing>
                             <excludeArtifacts>pepenium-examples</excludeArtifacts>
                         </configuration>

@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -33,6 +34,9 @@ class PepeniumLifecycleExtensionTest {
 
     @Mock
     private ExtensionContext context;
+
+    @Mock
+    private ExtensionContext rootContext;
 
     @Mock
     private Throwable failure;
@@ -75,6 +79,23 @@ class PepeniumLifecycleExtensionTest {
 
         verify(runtime, never()).initializeDriverForProfile(TestTarget.WEB_DESKTOP, null);
         verify(runtime, never()).cleanupDriver();
+    }
+
+    @Test
+    void manualLifecycleDoesNotInjectDriverBoundFieldsBeforeTheUserCanOpenASession() {
+        ManualAnnotationFixture owner = new ManualAnnotationFixture();
+        PepeniumExtension extension = new PepeniumExtension();
+        ExtensionContext.Store store = new SimpleStore();
+        when(context.getTestInstance()).thenReturn(Optional.of(owner));
+        when(context.getRequiredTestClass()).thenReturn((Class) ManualAnnotationFixture.class);
+        when(context.getRoot()).thenReturn(rootContext);
+        when(rootContext.getStore(org.mockito.ArgumentMatchers.any(ExtensionContext.Namespace.class))).thenReturn(store);
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> extension.beforeAll(context));
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> extension.beforeEach(context));
+        IllegalStateException error = assertThrows(IllegalStateException.class, () -> extension.beforeTestExecution(context));
+
+        org.junit.jupiter.api.Assertions.assertTrue(error.getMessage().contains("no active Pepenium session exists"));
     }
 
     @Test
@@ -150,6 +171,51 @@ class PepeniumLifecycleExtensionTest {
         @Override
         protected boolean useAutomaticLifecycle() {
             return false;
+        }
+    }
+
+    @PepeniumTest(target = TestTarget.WEB_DESKTOP, automaticLifecycle = false)
+    private static final class ManualAnnotationFixture {
+        @PepeniumInject
+        private WebDriver driver;
+    }
+
+    private static final class SimpleStore implements ExtensionContext.Store {
+        private final java.util.Map<Object, Object> values = new java.util.HashMap<>();
+
+        @Override
+        public Object get(Object key) {
+            return values.get(key);
+        }
+
+        @Override
+        public <V> V get(Object key, Class<V> requiredType) {
+            return requiredType.cast(values.get(key));
+        }
+
+        @Override
+        public void put(Object key, Object value) {
+            values.put(key, value);
+        }
+
+        @Override
+        public Object remove(Object key) {
+            return values.remove(key);
+        }
+
+        @Override
+        public <V> V remove(Object key, Class<V> requiredType) {
+            return requiredType.cast(values.remove(key));
+        }
+
+        @Override
+        public <K, V> Object getOrComputeIfAbsent(K key, java.util.function.Function<K, V> defaultCreator) {
+            return values.computeIfAbsent(key, ignored -> defaultCreator.apply(key));
+        }
+
+        @Override
+        public <K, V> V getOrComputeIfAbsent(K key, java.util.function.Function<K, V> defaultCreator, Class<V> requiredType) {
+            return requiredType.cast(values.computeIfAbsent(key, ignored -> defaultCreator.apply(key)));
         }
     }
 }

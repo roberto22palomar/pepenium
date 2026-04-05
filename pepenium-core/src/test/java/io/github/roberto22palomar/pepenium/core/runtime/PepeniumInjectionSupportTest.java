@@ -8,9 +8,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import java.util.HashMap;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,7 +30,7 @@ class PepeniumInjectionSupportTest {
         PepeniumInjectionSupport injector = new PepeniumInjectionSupport(
                 runtime,
                 fixtureConfig(),
-                new HashMap<>()
+                new PepeniumInjectionSupport.CacheState()
         );
 
         PlugAndPlayFixture fixture = new PlugAndPlayFixture();
@@ -62,7 +61,7 @@ class PepeniumInjectionSupportTest {
         PepeniumInjectionSupport injector = new PepeniumInjectionSupport(
                 runtime,
                 fixtureConfig(),
-                new HashMap<>()
+                new PepeniumInjectionSupport.CacheState()
         );
 
         Object resolvedWebDriver = injector.resolve(WebDriver.class);
@@ -86,7 +85,7 @@ class PepeniumInjectionSupportTest {
         PepeniumInjectionSupport injector = new PepeniumInjectionSupport(
                 runtime,
                 fixtureConfig(),
-                new HashMap<>()
+                new PepeniumInjectionSupport.CacheState()
         );
 
         IllegalStateException error = assertThrows(
@@ -108,7 +107,7 @@ class PepeniumInjectionSupportTest {
         PepeniumInjectionSupport injector = new PepeniumInjectionSupport(
                 runtime,
                 fixtureConfig(),
-                new HashMap<>()
+                new PepeniumInjectionSupport.CacheState()
         );
 
         IllegalStateException error = assertThrows(
@@ -117,6 +116,70 @@ class PepeniumInjectionSupportTest {
         );
 
         assertTrue(error.getMessage().contains("Circular Pepenium injection dependency detected"));
+    }
+
+    @Test
+    void lenientInjectionLeavesDriverBoundFieldsNullUntilTheRuntimeIsReady() {
+        PepeniumRuntime runtime = mock(PepeniumRuntime.class);
+        when(runtime.getDriver()).thenReturn(null);
+        when(runtime.getSession()).thenReturn(null);
+
+        PepeniumInjectionSupport injector = new PepeniumInjectionSupport(
+                runtime,
+                fixtureConfig(),
+                new PepeniumInjectionSupport.CacheState()
+        );
+
+        PlugAndPlayFixture fixture = new PlugAndPlayFixture();
+        injector.injectInto(fixture, false);
+
+        assertNull(fixture.driver);
+        assertNull(fixture.session);
+        assertNull(fixture.page);
+        assertNull(fixture.flow);
+        assertNotNull(fixture.steps);
+    }
+
+    @Test
+    void multipleConstructorsRequireAnExplicitInjectedConstructor() {
+        PepeniumRuntime runtime = mock(PepeniumRuntime.class);
+        WebDriver driver = mock(WebDriver.class);
+        DriverSession session = mock(DriverSession.class);
+        when(runtime.getDriver()).thenReturn(driver);
+        when(runtime.getSession()).thenReturn(session);
+
+        PepeniumInjectionSupport injector = new PepeniumInjectionSupport(
+                runtime,
+                fixtureConfig(),
+                new PepeniumInjectionSupport.CacheState()
+        );
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> injector.resolve(AmbiguousConstructors.class)
+        );
+
+        assertTrue(error.getMessage().contains("multiple constructors"));
+        assertTrue(error.getMessage().contains("@PepeniumInject"));
+    }
+
+    @Test
+    void annotatedConstructorWinsWhenMultipleConstructorsExist() {
+        PepeniumRuntime runtime = mock(PepeniumRuntime.class);
+        WebDriver driver = mock(WebDriver.class);
+        DriverSession session = mock(DriverSession.class);
+        when(runtime.getDriver()).thenReturn(driver);
+        when(runtime.getSession()).thenReturn(session);
+
+        PepeniumInjectionSupport injector = new PepeniumInjectionSupport(
+                runtime,
+                fixtureConfig(),
+                new PepeniumInjectionSupport.CacheState()
+        );
+
+        ExplicitConstructorComponent component = (ExplicitConstructorComponent) injector.resolve(ExplicitConstructorComponent.class);
+
+        assertSame(driver, component.driver);
     }
 
     private PepeniumTest fixtureConfig() {
@@ -170,6 +233,27 @@ class PepeniumInjectionSupportTest {
 
     private static final class CircularB {
         private CircularB(CircularA a) {
+        }
+    }
+
+    private static final class AmbiguousConstructors {
+        private AmbiguousConstructors() {
+        }
+
+        private AmbiguousConstructors(WebDriver driver) {
+        }
+    }
+
+    private static final class ExplicitConstructorComponent {
+        private final WebDriver driver;
+
+        private ExplicitConstructorComponent() {
+            this.driver = null;
+        }
+
+        @PepeniumInject
+        private ExplicitConstructorComponent(WebDriver driver) {
+            this.driver = driver;
         }
     }
 }

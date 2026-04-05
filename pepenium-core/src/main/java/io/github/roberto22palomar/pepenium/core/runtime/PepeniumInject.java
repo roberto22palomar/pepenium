@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Marks a field or parameter for Pepenium-managed injection.
  */
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PepeniumInject {
 }

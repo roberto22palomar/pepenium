@@ -89,6 +89,8 @@ That path currently includes:
 - `@PepeniumInject` for driver, session, helper, page and flow wiring
 - `@PepeniumPage` for page objects initialized through Selenium `PageFactory`
 - `PepeniumSteps` for direct step recording without inheritance
+- when `automaticLifecycle = false`, driver-bound annotation injection is completed after user-managed setup has initialized the session
+- if a component declares multiple constructors, the intended injected constructor must be marked with `@PepeniumInject`
 
 Current intent:
 
