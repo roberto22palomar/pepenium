@@ -22,6 +22,7 @@ final class PepeniumRuntime {
 
     private DriverSession session;
     private WebDriver driver;
+    private long lifecycleVersion;
 
     PepeniumRuntime() {
         this(new DefaultDriverSessionFactory(), new ExecutionProfileResolver());
@@ -38,6 +39,10 @@ final class PepeniumRuntime {
 
     DriverSession getSession() {
         return session;
+    }
+
+    long getLifecycleVersion() {
+        return lifecycleVersion;
     }
 
     AppiumDriver getAppiumDriver() {
@@ -88,11 +93,15 @@ final class PepeniumRuntime {
     }
 
     void cleanupDriver() {
+        boolean hadSession = session != null || driver != null;
         if (session != null) {
             session.close();
             session = null;
         }
         driver = null;
+        if (hadSession) {
+            lifecycleVersion++;
+        }
         LoggingContext.clearAll();
         StepTracker.clear();
     }
@@ -102,6 +111,7 @@ final class PepeniumRuntime {
         try {
             session = sessionFactory.create(request);
             driver = session.getDriver();
+            lifecycleVersion++;
         } catch (Exception e) {
             LoggingContext.clearAll();
             throw e;

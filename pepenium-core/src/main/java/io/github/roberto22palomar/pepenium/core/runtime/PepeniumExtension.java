@@ -4,20 +4,18 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.api.extension.TestWatcher;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * JUnit 5 extension that powers the annotation-first Pepenium authoring model.
  */
 public class PepeniumExtension implements BeforeAllCallback, BeforeEachCallback,
-        AfterEachCallback, AfterAllCallback, TestWatcher, ParameterResolver {
+        BeforeTestExecutionCallback, AfterEachCallback, AfterAllCallback, TestWatcher, ParameterResolver {
 
     private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(PepeniumExtension.class);
 
@@ -28,15 +26,24 @@ public class PepeniumExtension implements BeforeAllCallback, BeforeEachCallback,
         if (config.automaticLifecycle()) {
             runtime.initializeDriverForProfile(config.target(), normalizeProfile(config.profile()));
         }
-        injectFields(context, runtime, config);
+        injectFields(context, runtime, config, config.automaticLifecycle());
     }
 
     @Override
     public void beforeEach(ExtensionContext context) {
+        PepeniumTest config = requireConfig(context);
         PepeniumRuntime runtime = getRuntime(context);
         runtime.clearPerTestState();
         runtime.beginTestObservability();
-        injectFields(context, runtime, requireConfig(context));
+        injectFields(context, runtime, config, config.automaticLifecycle());
+    }
+
+    @Override
+    public void beforeTestExecution(ExtensionContext context) {
+        PepeniumTest config = requireConfig(context);
+        if (!config.automaticLifecycle()) {
+            injectFields(context, getRuntime(context), config, true);
+        }
     }
 
     @Override
@@ -77,14 +84,14 @@ public class PepeniumExtension implements BeforeAllCallback, BeforeEachCallback,
         }
     }
 
-    private void injectFields(ExtensionContext context, PepeniumRuntime runtime, PepeniumTest config) {
+    private void injectFields(ExtensionContext context, PepeniumRuntime runtime, PepeniumTest config, boolean strictLifecycle) {
         Object testInstance = context.getTestInstance()
                 .orElseThrow(() -> new IllegalStateException(
                         "@PepeniumTest requires a PER_CLASS test instance. " +
                                 "If you are not using the default annotation metadata, add @TestInstance(PER_CLASS)."
                 ));
         PepeniumInjectionSupport injector = getInjector(context, runtime, config);
-        injector.injectInto(testInstance);
+        injector.injectInto(testInstance, strictLifecycle);
     }
 
     private PepeniumRuntime getRuntime(ExtensionContext context) {
@@ -97,7 +104,12 @@ public class PepeniumExtension implements BeforeAllCallback, BeforeEachCallback,
     private PepeniumInjectionSupport getInjector(ExtensionContext context, PepeniumRuntime runtime, PepeniumTest config) {
         ExtensionContext.Store store = context.getRoot().getStore(NAMESPACE);
         String key = context.getRequiredTestClass().getName() + ".components";
-        Map<Class<?>, Object> cache = store.getOrComputeIfAbsent(key, ignored -> new ConcurrentHashMap<>(), Map.class);
+        PepeniumInjectionSupport.CacheState cache = store.getOrComputeIfAbsent(
+                key,
+                ignored -> new PepeniumInjectionSupport.CacheState(),
+                PepeniumInjectionSupport.CacheState.class
+        );
+        cache.align(runtime.getLifecycleVersion());
         return new PepeniumInjectionSupport(runtime, config, cache);
     }
 

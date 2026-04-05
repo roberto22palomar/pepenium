@@ -8,6 +8,9 @@ import org.openqa.selenium.support.PageFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -21,11 +24,37 @@ final class PepeniumInjectionSupport {
     private static final String ACTIONS_APP_IOS = "io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS";
     private static final String ASSERTIONS_APP_IOS = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS";
 
+    static final class CacheState {
+        private final Map<Class<?>, Object> components = new HashMap<>();
+        private long lifecycleVersion = Long.MIN_VALUE;
+
+        void align(long version) {
+            if (lifecycleVersion != version) {
+                components.clear();
+                lifecycleVersion = version;
+            }
+        }
+
+        Object get(Class<?> type) {
+            return components.get(type);
+        }
+
+        void put(Class<?> type, Object instance) {
+            components.put(type, instance);
+        }
+    }
+
+    static final class MissingLifecycleDependencyException extends IllegalStateException {
+        MissingLifecycleDependencyException(String message) {
+            super(message);
+        }
+    }
+
     private final PepeniumRuntime runtime;
     private final PepeniumTest config;
-    private final Map<Class<?>, Object> cache;
+    private final CacheState cache;
 
-    PepeniumInjectionSupport(PepeniumRuntime runtime, PepeniumTest config, Map<Class<?>, Object> cache) {
+    PepeniumInjectionSupport(PepeniumRuntime runtime, PepeniumTest config, CacheState cache) {
         this.runtime = runtime;
         this.config = config;
         this.cache = cache;
@@ -49,6 +78,10 @@ final class PepeniumInjectionSupport {
     }
 
     void injectInto(Object target) {
+        injectInto(target, true);
+    }
+
+    void injectInto(Object target, boolean strictLifecycle) {
         for (Field field : allFieldsOf(target.getClass())) {
             if (!field.isAnnotationPresent(PepeniumInject.class)) {
                 continue;
@@ -56,7 +89,14 @@ final class PepeniumInjectionSupport {
             if (Modifier.isFinal(field.getModifiers())) {
                 throw new IllegalStateException("@PepeniumInject fields must not be final: " + field);
             }
-            setField(field, target, resolve(field.getType()));
+            try {
+                setField(field, target, resolve(field.getType()));
+            } catch (MissingLifecycleDependencyException e) {
+                if (strictLifecycle) {
+                    throw e;
+                }
+                setField(field, target, null);
+            }
         }
 
         if (target.getClass().isAnnotationPresent(PepeniumPage.class)) {
@@ -83,8 +123,8 @@ final class PepeniumInjectionSupport {
         }
         try {
             Object instance = instantiate(type, resolutionPath);
-            cache.put(type, instance);
             injectInto(instance);
+            cache.put(type, instance);
             return instance;
         } finally {
             resolutionPath.remove(type);
@@ -111,17 +151,26 @@ final class PepeniumInjectionSupport {
         if (constructors.length == 0) {
             throw new IllegalStateException("Type " + type.getName() + " does not expose a usable constructor");
         }
+
+        ArrayList<Constructor<?>> annotated = new ArrayList<>();
+        for (Constructor<?> constructor : constructors) {
+            if (constructor.isAnnotationPresent(PepeniumInject.class)) {
+                annotated.add(constructor);
+            }
+        }
+        if (annotated.size() > 1) {
+            throw new IllegalStateException("Type " + type.getName()
+                    + " declares multiple @PepeniumInject constructors. Keep only one.");
+        }
+        if (annotated.size() == 1) {
+            return annotated.get(0);
+        }
         if (constructors.length == 1) {
             return constructors[0];
         }
-
-        Constructor<?> best = null;
-        for (Constructor<?> constructor : constructors) {
-            if (best == null || constructor.getParameterCount() > best.getParameterCount()) {
-                best = constructor;
-            }
-        }
-        return best;
+        throw new IllegalStateException("Type " + type.getName()
+                + " declares multiple constructors. Annotate the intended one with @PepeniumInject."
+                + " Available constructors: " + Arrays.toString(constructors));
     }
 
     private Object resolveDirect(Class<?> type) {
@@ -182,9 +231,9 @@ final class PepeniumInjectionSupport {
         return runtime.getAppiumDriver();
     }
 
-    private IllegalStateException missingLifecycle(Object target, String dependencyName) {
+    private MissingLifecycleDependencyException missingLifecycle(Object target, String dependencyName) {
         String targetName = target instanceof Class ? ((Class<?>) target).getName() : target.getClass().getName();
-        return new IllegalStateException(
+        return new MissingLifecycleDependencyException(
                 "Cannot inject " + dependencyName + " into " + targetName
                         + " because no active Pepenium session exists. "
                         + "Use @PepeniumTest with automaticLifecycle=true or initialize the driver before requesting framework helpers."
