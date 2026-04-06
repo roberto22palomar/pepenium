@@ -83,7 +83,7 @@ Typical consumer dependency:
 <dependency>
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-toolkit</artifactId>
-    <version>0.9.4</version>
+    <version>0.9.5</version>
 </dependency>
 ```
 

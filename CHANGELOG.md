@@ -9,9 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-04-06
+
 ### Fixed
 - Made annotation-first injection compatible with manual lifecycle setups by deferring strict driver-bound wiring until after user-managed setup has had a chance to initialize the session.
 - Made annotation-first component creation deterministic when multiple constructors exist by requiring an explicit `@PepeniumInject` constructor.
+- Fixed toolkit helper injection for Selenium web runs so `ActionsWeb` and similar helpers resolve correctly when the active driver is a concrete `WebDriver` subclass such as `ChromeDriver`.
 - Reduced Maven Central release fragility by stopping the release profile from waiting for full `published` state before returning control to CI.
 
 ## [0.9.4] - 2026-04-01
