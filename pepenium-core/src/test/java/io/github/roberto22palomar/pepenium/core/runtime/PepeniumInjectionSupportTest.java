@@ -4,9 +4,16 @@ import io.appium.java_client.AppiumDriver;
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.support.FindBy;
+
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -182,6 +189,33 @@ class PepeniumInjectionSupportTest {
         assertSame(driver, component.driver);
     }
 
+    @Test
+    void toolkitHelpersResolveAgainstWebDriverConstructorsEvenWhenDriverIsASubclass() throws Exception {
+        PepeniumRuntime runtime = mock(PepeniumRuntime.class);
+        DriverSession session = mock(DriverSession.class);
+        StubWebDriver driver = new StubWebDriver();
+        when(runtime.getDriver()).thenReturn(driver);
+        when(runtime.getSession()).thenReturn(session);
+
+        PepeniumInjectionSupport injector = new PepeniumInjectionSupport(
+                runtime,
+                fixtureConfig(),
+                new PepeniumInjectionSupport.CacheState()
+        );
+
+        Method factoryMethod = PepeniumInjectionSupport.class.getDeclaredMethod(
+                "instantiateToolkitType",
+                Class.class,
+                Object.class
+        );
+        factoryMethod.setAccessible(true);
+        Object helper = factoryMethod.invoke(injector, WebDriverOnlyHelper.class, driver);
+
+        assertNotNull(helper);
+        assertTrue(helper instanceof WebDriverOnlyHelper);
+        assertSame(driver, ((WebDriverOnlyHelper) helper).driver);
+    }
+
     private PepeniumTest fixtureConfig() {
         return AnnotationDrivenFixture.class.getAnnotation(PepeniumTest.class);
     }
@@ -254,6 +288,119 @@ class PepeniumInjectionSupportTest {
         @PepeniumInject
         private ExplicitConstructorComponent(WebDriver driver) {
             this.driver = driver;
+        }
+    }
+
+    private static final class WebDriverOnlyHelper {
+        private final WebDriver driver;
+
+        private WebDriverOnlyHelper(WebDriver driver) {
+            this.driver = driver;
+        }
+    }
+
+    private static final class StubWebDriver implements WebDriver {
+        @Override
+        public void get(String url) {
+        }
+
+        @Override
+        public String getCurrentUrl() {
+            return "";
+        }
+
+        @Override
+        public String getTitle() {
+            return "";
+        }
+
+        @Override
+        public List<WebElement> findElements(By by) {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public WebElement findElement(By by) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getPageSource() {
+            return "";
+        }
+
+        @Override
+        public void close() {
+        }
+
+        @Override
+        public void quit() {
+        }
+
+        @Override
+        public Set<String> getWindowHandles() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public String getWindowHandle() {
+            return "";
+        }
+
+        @Override
+        public TargetLocator switchTo() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Navigation navigate() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Options manage() {
+            return new Options() {
+                @Override
+                public void addCookie(Cookie cookie) {
+                }
+
+                @Override
+                public void deleteCookieNamed(String name) {
+                }
+
+                @Override
+                public void deleteCookie(Cookie cookie) {
+                }
+
+                @Override
+                public void deleteAllCookies() {
+                }
+
+                @Override
+                public Set<Cookie> getCookies() {
+                    return Collections.emptySet();
+                }
+
+                @Override
+                public Cookie getCookieNamed(String name) {
+                    return null;
+                }
+
+                @Override
+                public Timeouts timeouts() {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public Window window() {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public Logs logs() {
+                    throw new UnsupportedOperationException();
+                }
+            };
         }
     }
 }
