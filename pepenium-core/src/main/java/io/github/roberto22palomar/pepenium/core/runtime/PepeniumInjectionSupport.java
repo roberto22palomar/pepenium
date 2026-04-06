@@ -242,13 +242,26 @@ final class PepeniumInjectionSupport {
 
     private Object instantiateToolkitType(Class<?> type, Object driverLike) {
         try {
-            Constructor<?> constructor = type.getDeclaredConstructor(driverLike.getClass().getInterfaces().length == 0
-                    ? driverLike.getClass()
-                    : driverLike instanceof AppiumDriver ? AppiumDriver.class : WebDriver.class);
+            Constructor<?> constructor = findCompatibleToolkitConstructor(type, driverLike);
             constructor.setAccessible(true);
             return constructor.newInstance(driverLike);
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Failed to create toolkit helper " + type.getName(), e);
+        }
+    }
+
+    private Constructor<?> findCompatibleToolkitConstructor(Class<?> type, Object driverLike) throws NoSuchMethodException {
+        Class<?> preferredType = driverLike instanceof AppiumDriver ? AppiumDriver.class : WebDriver.class;
+        try {
+            return type.getDeclaredConstructor(preferredType);
+        } catch (NoSuchMethodException ignored) {
+            for (Constructor<?> constructor : type.getDeclaredConstructors()) {
+                Class<?>[] parameterTypes = constructor.getParameterTypes();
+                if (parameterTypes.length == 1 && parameterTypes[0].isAssignableFrom(driverLike.getClass())) {
+                    return constructor;
+                }
+            }
+            throw new NoSuchMethodException(type.getName() + ".<init>(" + preferredType.getName() + ")");
         }
     }
 
