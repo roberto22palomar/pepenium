@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.7] - 2026-04-07
+
 ### Added
 - Added richer `.env` example files and expanded configuration guidance so local web, local Android and Appium capability tuning are easier to bootstrap from documented templates.
 - Added optional `PEPENIUM_WEB_*` overrides for the built-in local desktop web profiles so Chrome, Firefox and Edge runs can be tuned from environment variables without custom driver config classes.
