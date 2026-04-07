@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public final class PepeniumTimeline {
 
@@ -56,6 +57,25 @@ public final class PepeniumTimeline {
     public static void clear() {
         EVENTS.remove();
         STARTED_AT.remove();
+    }
+
+    static Snapshot remapScreenshotPaths(Snapshot snapshot, Function<String, String> mapper) {
+        List<Event> remapped = new ArrayList<>();
+        for (Event event : snapshot.getEvents()) {
+            String screenshotPath = event.getScreenshotPath();
+            if (screenshotPath != null) {
+                screenshotPath = mapper.apply(screenshotPath);
+            }
+            remapped.add(new Event(
+                    event.getEpochMillis(),
+                    event.getTime(),
+                    event.getType(),
+                    event.getStatus(),
+                    event.getMessage(),
+                    screenshotPath
+            ));
+        }
+        return new Snapshot(remapped, snapshot.getStartedAt());
     }
 
     private static void record(EventType type, EventStatus status, String message, String screenshotPath) {

@@ -97,14 +97,14 @@ final class PepeniumReportHtmlRenderer {
             html.append("<div class=\"timeline-preview\">");
             int previewCount = Math.min(5, keyTimelineEvents.size());
             for (int i = 0; i < previewCount; i++) {
-                html.append(renderTimelineCard(keyTimelineEvents.get(i), report.startedAt, null));
+                html.append(renderTimelineCard(keyTimelineEvents.get(i), report.startedAt, null, report.reportDir));
             }
             html.append("</div>");
             if (keyTimelineEvents.size() > previewCount) {
                 html.append("<details class=\"more-link\"><summary>View more key events (")
                         .append(keyTimelineEvents.size() - previewCount).append(" more)</summary><div class=\"timeline\" style=\"margin-top:12px;\">");
                 for (int i = previewCount; i < keyTimelineEvents.size(); i++) {
-                    html.append(renderTimelineCard(keyTimelineEvents.get(i), report.startedAt, null));
+                    html.append(renderTimelineCard(keyTimelineEvents.get(i), report.startedAt, null, report.reportDir));
                 }
                 html.append("</div></details>");
             }
@@ -146,7 +146,7 @@ final class PepeniumReportHtmlRenderer {
             html.append("<div class=\"empty\">No timeline events were recorded for this test.</div>");
         } else {
             for (PepeniumHtmlReportWriter.EventGroup group : report.eventGroups) {
-                html.append(renderTimelineCard(group.anchorEvent, report.startedAt, group));
+                html.append(renderTimelineCard(group.anchorEvent, report.startedAt, group, report.reportDir));
             }
         }
         html.append("</div></details></div></section>");
@@ -205,7 +205,7 @@ final class PepeniumReportHtmlRenderer {
             html.append(renderArtifactLink("Final screenshot", report.screenshotUri));
         }
         if (report.lastScreenshotPath != null) {
-            html.append(renderArtifactLink("Last manual screenshot", PepeniumReportSupport.pathToUri(report.lastScreenshotPath)));
+            html.append(renderArtifactLink("Last manual screenshot", PepeniumReportSupport.pathToHref(report.lastScreenshotPath, report.reportDir)));
         }
         if (report.remoteContext.enabled && report.remoteContext.dashboardUrl != null) {
             html.append(renderArtifactLink("Remote dashboard", report.remoteContext.dashboardUrl));
@@ -310,7 +310,8 @@ final class PepeniumReportHtmlRenderer {
     }
 
     private static String renderTimelineCard(PepeniumTimeline.Event anchor, Instant startedAt,
-                                             PepeniumHtmlReportWriter.EventGroup group) {
+                                             PepeniumHtmlReportWriter.EventGroup group,
+                                             java.nio.file.Path reportDir) {
         StringBuilder html = new StringBuilder();
         html.append("<article class=\"timeline-card ")
                 .append(timelineCardClass(anchor))
@@ -330,7 +331,7 @@ final class PepeniumReportHtmlRenderer {
                     .append(group.screenshots.size() == 1 ? " screenshot" : " screenshots")
                     .append("</summary><div class=\"attachments\">");
             for (PepeniumTimeline.Event screenshot : group.screenshots) {
-                String screenshotUri = PepeniumReportSupport.pathToUri(screenshot.getScreenshotPath());
+                String screenshotUri = PepeniumReportSupport.pathToHref(screenshot.getScreenshotPath(), reportDir);
                 html.append("<div class=\"attachment\"><div>")
                         .append(renderEventTypeBadge(screenshot))
                         .append("<span class=\"timeline-time\">").append(PepeniumReportSupport.escapeHtml(screenshot.getTime())).append("</span></div>")
