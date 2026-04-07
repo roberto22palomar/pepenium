@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Improved driver-session observability by logging the effective sanitized capabilities sent to the driver layer and surfacing the same detail in automatic failure reporting.
+
 ## [0.9.5] - 2026-04-06
 
 ### Fixed

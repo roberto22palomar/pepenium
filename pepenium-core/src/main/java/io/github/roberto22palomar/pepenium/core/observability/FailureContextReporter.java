@@ -42,7 +42,8 @@ public final class FailureContextReporter {
                 request.getExecutionProfileId(),
                 request.getDriverType());
         logSteps();
-        log.error("Capabilities: {}", CapabilitiesSummary.summarize(request.getCapabilities()));
+        log.error("Capabilities summary: {}", CapabilitiesSummary.summarize(request.getCapabilities()));
+        log.error("Effective capabilities: {}", CapabilitiesSummary.describe(request.getCapabilities()));
         LoggingPreferences.logDetail(log, "Detailed failure stacktrace", cause);
 
         logScreenshot(driver);
