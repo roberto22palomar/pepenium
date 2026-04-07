@@ -43,6 +43,7 @@ Ficheros de entorno listos para copiar:
 
 - [`.env.web.example`](.env.web.example)
 - [`.env.android.local.example`](.env.android.local.example)
+- [`.env.web.capabilities.example`](.env.web.capabilities.example)
 - [`.env.android.host-emulator.example`](.env.android.host-emulator.example)
 - [`.env.android.docker-emulator.example`](.env.android.docker-emulator.example)
 - [`.env.mobile.capabilities.example`](.env.mobile.capabilities.example)
@@ -57,7 +58,7 @@ Ficheros de entorno listos para copiar:
 - Logs mas limpios con contexto automatico y evidencia de fallo
 
 Consulta [START-HERE.es.md](docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
-Usa [ENVIRONMENT.md](docs/ENVIRONMENT.md) como referencia central de variables de entorno, reglas de precedencia y puntos de partida listos para copiar.
+Usa [ENVIRONMENT.md](docs/ENVIRONMENT.md) como referencia central de variables de entorno, reglas de precedencia, properties de runtime y patrones de override de capabilities.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 Usa [consumer-smoke/README.md](consumer-smoke/README.md) si quieres validar el consumo de la API publica desde un proyecto Maven separado.
 
