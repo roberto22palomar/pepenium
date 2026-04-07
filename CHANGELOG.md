@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Added richer `.env` example files and expanded configuration guidance so local web, local Android and Appium capability tuning are easier to bootstrap from documented templates.
+
 ### Changed
 - Added `PEPENIUM_SCREENSHOT_PATH` as the preferred screenshot output override while keeping `DEVICEFARM_SCREENSHOT_PATH` as a backward-compatible alias for existing and AWS Device Farm setups.
 
