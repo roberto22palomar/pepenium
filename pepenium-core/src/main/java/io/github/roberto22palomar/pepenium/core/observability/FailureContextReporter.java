@@ -94,7 +94,9 @@ public final class FailureContextReporter {
 
             log.error("Screenshot: {}", filePath.toAbsolutePath());
         } catch (Exception e) {
-            log.error("Screenshot: failed to capture ({})", e.getMessage());
+            log.error("Screenshot: failed to capture under '{}' ({})",
+                    resolveScreenshotBaseDir().toAbsolutePath(),
+                    e.getMessage());
         }
     }
 
@@ -185,11 +187,8 @@ public final class FailureContextReporter {
     }
 
     private static Path resolveScreenshotBaseDir() {
-        String baseDir = System.getenv("DEVICEFARM_SCREENSHOT_PATH");
-        if (baseDir == null || baseDir.isBlank()) {
-            baseDir = System.getProperty("java.io.tmpdir", ".");
-        }
-        return baseDir == null || baseDir.isBlank() ? Paths.get(".") : Path.of(baseDir);
+        Path baseDir = ScreenshotPathResolver.resolveBaseDir();
+        return baseDir == null ? Paths.get(".") : baseDir;
     }
 
     private static String rootType(Throwable cause) {

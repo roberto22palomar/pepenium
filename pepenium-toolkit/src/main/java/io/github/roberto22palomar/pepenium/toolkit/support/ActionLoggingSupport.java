@@ -2,6 +2,7 @@ package io.github.roberto22palomar.pepenium.toolkit.support;
 
 import io.github.roberto22palomar.pepenium.core.observability.LoggingPreferences;
 import io.github.roberto22palomar.pepenium.core.observability.PepeniumTimeline;
+import io.github.roberto22palomar.pepenium.core.observability.ScreenshotPathResolver;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -38,11 +39,7 @@ public final class ActionLoggingSupport {
     }
 
     public static Path resolveScreenshotBaseDir() {
-        String baseDir = System.getenv("DEVICEFARM_SCREENSHOT_PATH");
-        if (baseDir == null || baseDir.isBlank()) {
-            baseDir = System.getProperty("java.io.tmpdir");
-        }
-        return Path.of(baseDir);
+        return ScreenshotPathResolver.resolveBaseDir();
     }
 
     public static void recordSavedScreenshot(String fullPath) {

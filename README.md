@@ -451,7 +451,7 @@ Pepenium includes:
 - `takeScreenshot()` for safer evidence capture
 - `takeScreenshotFast()` for lighter checkpoints
 - HTML test reports under `target/pepenium-reports/`
-- temp-directory fallback when `DEVICEFARM_SCREENSHOT_PATH` is not set
+- `PEPENIUM_SCREENSHOT_PATH` as the preferred screenshot directory override, with `DEVICEFARM_SCREENSHOT_PATH` still supported as a legacy alias
 - a Pepenium ASCII banner when a session starts
 - compact logs with profile, target, driver and short session id
 - automatic failure reporting with screenshot path and runtime context

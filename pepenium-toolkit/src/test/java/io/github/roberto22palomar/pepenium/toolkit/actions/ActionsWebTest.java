@@ -1,6 +1,7 @@
 package io.github.roberto22palomar.pepenium.toolkit.actions;
 
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
+import io.github.roberto22palomar.pepenium.core.observability.ScreenshotPathResolver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,10 +51,12 @@ class ActionsWebTest {
     private Path tempDir;
 
     private String previousTmpDir;
+    private String previousScreenshotPath;
 
     @BeforeEach
     void captureTmpDir() {
         previousTmpDir = System.getProperty("java.io.tmpdir");
+        previousScreenshotPath = System.getProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY);
     }
 
     @AfterEach
@@ -62,6 +65,11 @@ class ActionsWebTest {
             System.clearProperty("java.io.tmpdir");
         } else {
             System.setProperty("java.io.tmpdir", previousTmpDir);
+        }
+        if (previousScreenshotPath == null) {
+            System.clearProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY);
+        } else {
+            System.setProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY, previousScreenshotPath);
         }
         StepTracker.clear();
     }
@@ -253,7 +261,7 @@ class ActionsWebTest {
         WebDriver screenshotDriver = mock(WebDriver.class, withSettings().extraInterfaces(TakesScreenshot.class));
         when(((TakesScreenshot) screenshotDriver).getScreenshotAs(OutputType.BYTES))
                 .thenReturn("png".getBytes(StandardCharsets.UTF_8));
-        System.setProperty("java.io.tmpdir", tempDir.toString());
+        System.setProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY, tempDir.toString());
 
         ActionsWeb actions = new ActionsWeb(screenshotDriver);
         String screenshotPath = actions.takeScreenshotFast();

@@ -70,6 +70,7 @@ class FailureContextReporterTest {
             System.setProperty("java.io.tmpdir", previousTmpDir);
         }
         System.clearProperty("pepenium.detail.logging");
+        System.clearProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY);
         StepTracker.clear();
     }
 
@@ -82,7 +83,7 @@ class FailureContextReporterTest {
 
     @Test
     void reportWritesScreenshotAndLogsWebContext() throws Exception {
-        System.setProperty("java.io.tmpdir", tempDir.toString());
+        System.setProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY, tempDir.toString());
         StepTracker.record("Open login page");
         MutableCapabilities capabilities = new MutableCapabilities();
         capabilities.setCapability("browserName", "chrome");
