@@ -3,6 +3,7 @@ package io.github.roberto22palomar.pepenium.core.configs.aws.ios;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
+import io.github.roberto22palomar.pepenium.core.config.validation.AppiumCapabilityOverrides;
 import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
 import io.appium.java_client.ios.options.XCUITestOptions;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
@@ -65,6 +66,7 @@ public class IOSConfigAWS implements DriverConfig {
                 .setWdaConnectionTimeout(Duration.ofSeconds(120))
                 .setAutoAcceptAlerts(true)
                 .setNoReset(false);
+        AppiumCapabilityOverrides.applyIos(env, opts);
 
         return DriverRequest.builder()
                 .driverType(DriverType.IOS_APPIUM)

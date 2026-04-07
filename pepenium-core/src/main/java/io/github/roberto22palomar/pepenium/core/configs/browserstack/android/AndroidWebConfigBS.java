@@ -1,10 +1,12 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.android;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.appium.java_client.android.options.UiAutomator2Options;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 import io.github.roberto22palomar.pepenium.core.config.browserstack.BrowserStackConfigMobile;
+import io.github.roberto22palomar.pepenium.core.config.validation.AppiumCapabilityOverrides;
 import io.github.roberto22palomar.pepenium.core.config.yaml.YamlLoaderMobile;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,6 +14,7 @@ import org.openqa.selenium.MutableCapabilities;
 
 import java.net.URL;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class AndroidWebConfigBS implements DriverConfig {
@@ -20,13 +23,14 @@ public class AndroidWebConfigBS implements DriverConfig {
 
     private final BrowserStackConfigMobile config;
     private final BrowserStackConfigMobile.Platform platform;
+    private final Function<String, String> env;
 
     @SuppressFBWarnings(
             value = "CT_CONSTRUCTOR_THROW",
             justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
     )
     public AndroidWebConfigBS() {
-        this(loadConfig(), null);
+        this(loadConfig(), null, System::getenv);
     }
 
     @SuppressFBWarnings(
@@ -34,16 +38,19 @@ public class AndroidWebConfigBS implements DriverConfig {
             justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
     )
     public AndroidWebConfigBS(BrowserStackConfigMobile.Platform platform) {
-        this(loadConfig(), platform);
+        this(loadConfig(), platform, System::getenv);
     }
 
     @SuppressFBWarnings(
             value = "CT_CONSTRUCTOR_THROW",
             justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
     )
-    private AndroidWebConfigBS(BrowserStackConfigMobile config, BrowserStackConfigMobile.Platform platform) {
+    AndroidWebConfigBS(BrowserStackConfigMobile config,
+                       BrowserStackConfigMobile.Platform platform,
+                       Function<String, String> env) {
         this.config = config;
         this.platform = platform != null ? platform : getDefaultPlatform(config);
+        this.env = env;
     }
 
     public static Stream<Arguments> platforms() {
@@ -53,9 +60,11 @@ public class AndroidWebConfigBS implements DriverConfig {
 
     @Override
     public DriverRequest createRequest() throws Exception {
-        MutableCapabilities caps = new MutableCapabilities();
-        caps.setCapability("platformName", "Android");
+        UiAutomator2Options caps = new UiAutomator2Options()
+                .setPlatformName("Android")
+                .setAutomationName("UiAutomator2");
         caps.setCapability("browserName", "Chrome");
+        AppiumCapabilityOverrides.applyAndroid(env, caps);
 
         MutableCapabilities bstackOptions = new MutableCapabilities();
         bstackOptions.setCapability("deviceName", platform.getDeviceName());

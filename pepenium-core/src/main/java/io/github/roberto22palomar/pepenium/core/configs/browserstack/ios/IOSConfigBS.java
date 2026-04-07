@@ -2,6 +2,7 @@ package io.github.roberto22palomar.pepenium.core.configs.browserstack.ios;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.appium.java_client.ios.options.XCUITestOptions;
+import io.github.roberto22palomar.pepenium.core.config.validation.AppiumCapabilityOverrides;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
@@ -14,6 +15,7 @@ import org.openqa.selenium.MutableCapabilities;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class IOSConfigBS implements DriverConfig {
@@ -22,13 +24,14 @@ public class IOSConfigBS implements DriverConfig {
 
     private final BrowserStackConfig config;
     private final BrowserStackConfig.Platform platform;
+    private final Function<String, String> env;
 
     @SuppressFBWarnings(
             value = "CT_CONSTRUCTOR_THROW",
             justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
     )
     public IOSConfigBS() {
-        this(loadConfig(), null);
+        this(loadConfig(), null, System::getenv);
     }
 
     @SuppressFBWarnings(
@@ -36,16 +39,17 @@ public class IOSConfigBS implements DriverConfig {
             justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
     )
     public IOSConfigBS(BrowserStackConfig.Platform platform) {
-        this(loadConfig(), platform);
+        this(loadConfig(), platform, System::getenv);
     }
 
     @SuppressFBWarnings(
             value = "CT_CONSTRUCTOR_THROW",
             justification = "Constructors validate remote provider configuration eagerly for invalid YAML."
     )
-    private IOSConfigBS(BrowserStackConfig config, BrowserStackConfig.Platform platform) {
+    IOSConfigBS(BrowserStackConfig config, BrowserStackConfig.Platform platform, Function<String, String> env) {
         this.config = config;
         this.platform = platform != null ? platform : getDefaultPlatform(config);
+        this.env = env;
     }
 
     public static Stream<Arguments> platforms() {
@@ -61,6 +65,7 @@ public class IOSConfigBS implements DriverConfig {
                 .setPlatformVersion(platform.getPlatformVersion())
                 .setApp(config.getApp())
                 .setNewCommandTimeout(Duration.ofSeconds(300));
+        AppiumCapabilityOverrides.applyIos(env, opts);
 
         MutableCapabilities bstackOptions = new MutableCapabilities();
         bstackOptions.setCapability("appProfiling", true);

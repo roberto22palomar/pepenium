@@ -62,6 +62,24 @@ class AndroidAwsConfigTest {
     }
 
     @Test
+    void createAndroidNativeRequestAppliesAppiumOverrides() throws Exception {
+        AppiumServiceBuilder builder = mockBuilder();
+        AppiumDriverLocalService service = mockService("http://127.0.0.1:49004");
+        when(builder.build()).thenReturn(service);
+        AndroidConfigAWS config = new AndroidConfigAWS(env(Map.ofEntries(
+                Map.entry("APPIUM_NO_RESET", "true"),
+                Map.entry("APPIUM_FULL_RESET", "true"),
+                Map.entry("APP_WAIT_ACTIVITY", ".SplashActivity")
+        )), () -> builder);
+
+        DriverRequest request = config.createRequest();
+
+        assertEquals(Boolean.TRUE, request.getCapabilities().getCapability("appium:noReset"));
+        assertEquals(Boolean.TRUE, request.getCapabilities().getCapability("appium:fullReset"));
+        assertEquals(".SplashActivity", request.getCapabilities().getCapability("appium:appWaitActivity"));
+    }
+
+    @Test
     void createAndroidNativeDeviceFarmRequestRejectsMissingAppPath() {
         AndroidConfigAWS config = new AndroidConfigAWS(
                 env(Map.of(
@@ -105,6 +123,22 @@ class AndroidAwsConfigTest {
         assertNull(request.getOwnedService());
         assertEquals("Galaxy Web", request.getCapabilities().getCapability("appium:deviceName"));
         assertEquals("Chrome", request.getCapabilities().getCapability("browserName"));
+    }
+
+    @Test
+    void createAndroidWebRequestAppliesAppiumOverrides() throws Exception {
+        AppiumServiceBuilder builder = mockBuilder();
+        AppiumDriverLocalService service = mockService("http://127.0.0.1:49005");
+        when(builder.build()).thenReturn(service);
+        AndroidWebConfigAWS config = new AndroidWebConfigAWS(env(Map.ofEntries(
+                Map.entry("APPIUM_NEW_COMMAND_TIMEOUT", "120"),
+                Map.entry("APPIUM_SKIP_DEVICE_INITIALIZATION", "true")
+        )), () -> builder);
+
+        DriverRequest request = config.createRequest();
+
+        assertEquals(120L, request.getCapabilities().getCapability("appium:newCommandTimeout"));
+        assertEquals(Boolean.TRUE, request.getCapabilities().getCapability("appium:skipDeviceInitialization"));
     }
 
     @Test
