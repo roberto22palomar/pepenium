@@ -1,6 +1,7 @@
 package io.github.roberto22palomar.pepenium.core.configs.local.android;
 
 import io.appium.java_client.android.options.UiAutomator2Options;
+import io.github.roberto22palomar.pepenium.core.config.validation.AppiumCapabilityOverrides;
 import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
@@ -39,6 +40,7 @@ public class AndroidWebConfigLocal implements DriverConfig {
                 .setUdid(udid)
                 .setNewCommandTimeout(Duration.ofSeconds(300));
         opts.setCapability("browserName", "Chrome");
+        AppiumCapabilityOverrides.applyAndroid(env, opts);
 
         return DriverRequest.builder()
                 .driverType(DriverType.ANDROID_APPIUM)

@@ -64,6 +64,25 @@ class IOSAwsConfigTest {
     }
 
     @Test
+    void createIosRequestAppliesAppiumOverrides() throws Exception {
+        AppiumServiceBuilder builder = mockBuilder();
+        AppiumDriverLocalService service = mockService("http://127.0.0.1:49006");
+        when(builder.build()).thenReturn(service);
+        IOSConfigAWS config = new IOSConfigAWS(env(Map.ofEntries(
+                Map.entry("APPIUM_NEW_COMMAND_TIMEOUT", "180"),
+                Map.entry("APPIUM_AUTO_ACCEPT_ALERTS", "false"),
+                Map.entry("APPIUM_WDA_CONNECTION_TIMEOUT", "60")
+        )), () -> builder);
+
+        DriverRequest request = config.createRequest();
+
+        assertEquals(180L, request.getCapabilities().getCapability("appium:newCommandTimeout"));
+        assertEquals(Boolean.FALSE, request.getCapabilities().getCapability("appium:autoAcceptAlerts"));
+        assertEquals(60000L, request.getCapabilities().getCapability("appium:wdaConnectionTimeout"));
+        assertSame(service, request.getOwnedService());
+    }
+
+    @Test
     void createIosDeviceFarmRequestRejectsMissingAppPath() {
         IOSConfigAWS config = new IOSConfigAWS(
                 env(Map.of(

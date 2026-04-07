@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.6] - 2026-04-07
+
+### Added
+- Added optional `APPIUM_*` and `APP_WAIT_*` overrides for the Appium-backed built-in mobile native and mobile web profiles so advanced capabilities can be tuned from environment variables without overriding framework classes.
+
 ## [0.9.5] - 2026-04-06
 
 ### Fixed
