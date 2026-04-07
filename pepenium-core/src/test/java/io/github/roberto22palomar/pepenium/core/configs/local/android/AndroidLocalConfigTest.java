@@ -59,6 +59,78 @@ class AndroidLocalConfigTest {
     }
 
     @Test
+    void createAndroidNativeRequestAppliesOptionalAppiumCapabilityOverrides() throws Exception {
+        AndroidConfigLocal config = new AndroidConfigLocal(env(Map.ofEntries(
+                Map.entry("APP_PACKAGE", "io.github.example"),
+                Map.entry("APP_ACTIVITY", ".MainActivity"),
+                Map.entry("APPIUM_PLATFORM_NAME", "Android"),
+                Map.entry("APPIUM_AUTOMATION_NAME", "UiAutomator2"),
+                Map.entry("APPIUM_PLATFORM_VERSION", "15"),
+                Map.entry("APPIUM_NEW_COMMAND_TIMEOUT", "120"),
+                Map.entry("APPIUM_AUTO_GRANT_PERMISSIONS", "false"),
+                Map.entry("APPIUM_NO_RESET", "true"),
+                Map.entry("APPIUM_FULL_RESET", "true"),
+                Map.entry("APPIUM_DONT_STOP_APP_ON_RESET", "true"),
+                Map.entry("APPIUM_SKIP_DEVICE_INITIALIZATION", "true"),
+                Map.entry("APPIUM_SKIP_SERVER_INSTALLATION", "true"),
+                Map.entry("APPIUM_IGNORE_HIDDEN_API_POLICY_ERROR", "true"),
+                Map.entry("APPIUM_AUTO_LAUNCH", "false"),
+                Map.entry("APPIUM_ADB_EXEC_TIMEOUT", "45000"),
+                Map.entry("APPIUM_UIAUTOMATOR2_SERVER_LAUNCH_TIMEOUT", "90000"),
+                Map.entry("APPIUM_UIAUTOMATOR2_SERVER_INSTALL_TIMEOUT", "91000"),
+                Map.entry("APPIUM_ANDROID_INSTALL_TIMEOUT", "92000"),
+                Map.entry("APP_WAIT_PACKAGE", "io.github.example"),
+                Map.entry("APP_WAIT_ACTIVITY", ".SplashActivity")
+        )));
+
+        DriverRequest request = config.createRequest();
+
+        assertEquals("15", request.getCapabilities().getCapability("appium:platformVersion"));
+        assertEquals("UiAutomator2", request.getCapabilities().getCapability("appium:automationName"));
+        assertEquals(120L, request.getCapabilities().getCapability("appium:newCommandTimeout"));
+        assertEquals(Boolean.FALSE, request.getCapabilities().getCapability("appium:autoGrantPermissions"));
+        assertEquals(Boolean.TRUE, request.getCapabilities().getCapability("appium:noReset"));
+        assertEquals(Boolean.TRUE, request.getCapabilities().getCapability("appium:fullReset"));
+        assertEquals(Boolean.TRUE, request.getCapabilities().getCapability("appium:dontStopAppOnReset"));
+        assertEquals(Boolean.TRUE, request.getCapabilities().getCapability("appium:skipDeviceInitialization"));
+        assertEquals(Boolean.TRUE, request.getCapabilities().getCapability("appium:skipServerInstallation"));
+        assertEquals(Boolean.TRUE, request.getCapabilities().getCapability("appium:ignoreHiddenApiPolicyError"));
+        assertEquals(Boolean.FALSE, request.getCapabilities().getCapability("appium:autoLaunch"));
+        assertEquals(45000L, request.getCapabilities().getCapability("appium:adbExecTimeout"));
+        assertEquals(90000L, request.getCapabilities().getCapability("appium:uiautomator2ServerLaunchTimeout"));
+        assertEquals(91000L, request.getCapabilities().getCapability("appium:uiautomator2ServerInstallTimeout"));
+        assertEquals(92000L, request.getCapabilities().getCapability("appium:androidInstallTimeout"));
+        assertEquals("io.github.example", request.getCapabilities().getCapability("appium:appWaitPackage"));
+        assertEquals(".SplashActivity", request.getCapabilities().getCapability("appium:appWaitActivity"));
+    }
+
+    @Test
+    void createAndroidNativeRequestRejectsInvalidBooleanOverride() {
+        AndroidConfigLocal config = new AndroidConfigLocal(env(Map.of(
+                "APP_PACKAGE", "io.github.example",
+                "APP_ACTIVITY", ".MainActivity",
+                "APPIUM_NO_RESET", "maybe"
+        )));
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, config::createRequest);
+
+        assertTrue(exception.getMessage().contains("APPIUM_NO_RESET must be either 'true' or 'false'."));
+    }
+
+    @Test
+    void createAndroidNativeRequestRejectsInvalidNumericOverride() {
+        AndroidConfigLocal config = new AndroidConfigLocal(env(Map.of(
+                "APP_PACKAGE", "io.github.example",
+                "APP_ACTIVITY", ".MainActivity",
+                "APPIUM_NEW_COMMAND_TIMEOUT", "abc"
+        )));
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, config::createRequest);
+
+        assertTrue(exception.getMessage().contains("APPIUM_NEW_COMMAND_TIMEOUT must be a valid integer value."));
+    }
+
+    @Test
     void createAndroidNativeRequestRejectsMissingAppConfiguration() {
         AndroidConfigLocal config = new AndroidConfigLocal(env(Map.of()));
 

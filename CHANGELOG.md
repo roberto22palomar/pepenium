@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Added optional `APPIUM_*` and `APP_WAIT_*` overrides for the local Android native profile so advanced Appium capabilities can be tuned from environment variables without overriding the framework class.
+
 ### Fixed
 - Made annotation-first injection compatible with manual lifecycle setups by deferring strict driver-bound wiring until after user-managed setup has had a chance to initialize the session.
 - Made annotation-first component creation deterministic when multiple constructors exist by requiring an explicit `@PepeniumInject` constructor.

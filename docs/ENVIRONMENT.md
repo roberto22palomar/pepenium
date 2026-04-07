@@ -95,6 +95,31 @@ PEPENIUM_PROFILE=local-web
   - local Android native
 - Purpose: Android activity to launch together with `APP_PACKAGE`
 
+### Optional local Android Appium capability overrides
+
+The local Android native profile also supports these optional environment variables:
+
+- `APPIUM_PLATFORM_NAME`
+- `APPIUM_AUTOMATION_NAME`
+- `APPIUM_PLATFORM_VERSION`
+- `APPIUM_NEW_COMMAND_TIMEOUT`
+- `APPIUM_AUTO_GRANT_PERMISSIONS`
+- `APPIUM_NO_RESET`
+- `APPIUM_FULL_RESET`
+- `APPIUM_DONT_STOP_APP_ON_RESET`
+- `APPIUM_SKIP_DEVICE_INITIALIZATION`
+- `APPIUM_SKIP_SERVER_INSTALLATION`
+- `APPIUM_IGNORE_HIDDEN_API_POLICY_ERROR`
+- `APPIUM_AUTO_LAUNCH`
+- `APPIUM_ADB_EXEC_TIMEOUT`
+- `APPIUM_UIAUTOMATOR2_SERVER_LAUNCH_TIMEOUT`
+- `APPIUM_UIAUTOMATOR2_SERVER_INSTALL_TIMEOUT`
+- `APPIUM_ANDROID_INSTALL_TIMEOUT`
+- `APP_WAIT_PACKAGE`
+- `APP_WAIT_ACTIVITY`
+
+They are intended for advanced local Android runs when the default `UiAutomator2Options` need to be tuned without forking the framework.
+
 ## Local Web and Mobile Web
 
 ### `PEPENIUM_BASE_URL`

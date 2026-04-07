@@ -27,6 +27,9 @@ public class AndroidConfigLocal implements DriverConfig {
         String appiumUrl = envOrDefault("APPIUM_URL", "http://localhost:4723");
         String udid = envOrDefault("ANDROID_UDID", "emulator-5554");
         String deviceName = envOrDefault("ANDROID_DEVICE_NAME", "Android Device");
+        String platformName = envOrDefault("APPIUM_PLATFORM_NAME", "Android");
+        String automationName = envOrDefault("APPIUM_AUTOMATION_NAME", "UiAutomator2");
+        String platformVersion = envValue("APPIUM_PLATFORM_VERSION");
         var serverUrl = ConfigValidationSupport.requireUrl(
                 appiumUrl,
                 "APPIUM_URL",
@@ -34,14 +37,28 @@ public class AndroidConfigLocal implements DriverConfig {
         );
 
         UiAutomator2Options opts = new UiAutomator2Options()
-                .setPlatformName("Android")
-                .setAutomationName("UiAutomator2")
+                .setPlatformName(platformName)
+                .setAutomationName(automationName)
                 .setDeviceName(deviceName)
                 .setUdid(udid)
-                .setNewCommandTimeout(Duration.ofSeconds(300))
-                .setAutoGrantPermissions(true)
-                .setNoReset(false)
-                .setFullReset(false);
+                .setNewCommandTimeout(Duration.ofSeconds(longEnvOrDefault("APPIUM_NEW_COMMAND_TIMEOUT", 300)))
+                .setAutoGrantPermissions(booleanEnvOrDefault("APPIUM_AUTO_GRANT_PERMISSIONS", true))
+                .setNoReset(booleanEnvOrDefault("APPIUM_NO_RESET", false))
+                .setFullReset(booleanEnvOrDefault("APPIUM_FULL_RESET", false));
+
+        if (notBlank(platformVersion)) {
+            opts.setPlatformVersion(platformVersion);
+        }
+
+        applyBooleanCapability(opts, "APPIUM_DONT_STOP_APP_ON_RESET", "appium:dontStopAppOnReset");
+        applyBooleanCapability(opts, "APPIUM_SKIP_DEVICE_INITIALIZATION", "appium:skipDeviceInitialization");
+        applyBooleanCapability(opts, "APPIUM_SKIP_SERVER_INSTALLATION", "appium:skipServerInstallation");
+        applyBooleanCapability(opts, "APPIUM_IGNORE_HIDDEN_API_POLICY_ERROR", "appium:ignoreHiddenApiPolicyError");
+        applyBooleanCapability(opts, "APPIUM_AUTO_LAUNCH", "appium:autoLaunch");
+        applyLongCapability(opts, "APPIUM_ADB_EXEC_TIMEOUT", "appium:adbExecTimeout");
+        applyLongCapability(opts, "APPIUM_UIAUTOMATOR2_SERVER_LAUNCH_TIMEOUT", "appium:uiautomator2ServerLaunchTimeout");
+        applyLongCapability(opts, "APPIUM_UIAUTOMATOR2_SERVER_INSTALL_TIMEOUT", "appium:uiautomator2ServerInstallTimeout");
+        applyLongCapability(opts, "APPIUM_ANDROID_INSTALL_TIMEOUT", "appium:androidInstallTimeout");
 
         String appPath = env.apply("APP_PATH");
         if (notBlank(appPath)) {
@@ -57,6 +74,16 @@ public class AndroidConfigLocal implements DriverConfig {
         if (notBlank(appPackage) && notBlank(appActivity)) {
             opts.setAppPackage(appPackage);
             opts.setAppActivity(appActivity);
+        }
+
+        String appWaitPackage = envValue("APP_WAIT_PACKAGE");
+        if (notBlank(appWaitPackage)) {
+            opts.setCapability("appium:appWaitPackage", appWaitPackage);
+        }
+
+        String appWaitActivity = envValue("APP_WAIT_ACTIVITY");
+        if (notBlank(appWaitActivity)) {
+            opts.setCapability("appium:appWaitActivity", appWaitActivity);
         }
 
         ConfigValidationSupport.requireAtLeastOneFilled(
@@ -81,8 +108,55 @@ public class AndroidConfigLocal implements DriverConfig {
     }
 
     private String envOrDefault(String key, String defaultValue) {
+        String value = envValue(key);
+        return value == null ? defaultValue : value;
+    }
+
+    private String envValue(String key) {
         String value = env.apply(key);
-        return (value == null || value.isBlank()) ? defaultValue : value.trim();
+        return (value == null || value.isBlank()) ? null : value.trim();
+    }
+
+    private boolean booleanEnvOrDefault(String key, boolean defaultValue) {
+        String value = envValue(key);
+        return value == null ? defaultValue : parseBoolean(key, value);
+    }
+
+    private long longEnvOrDefault(String key, long defaultValue) {
+        String value = envValue(key);
+        return value == null ? defaultValue : parseLong(key, value);
+    }
+
+    private void applyBooleanCapability(UiAutomator2Options options, String envKey, String capabilityName) {
+        String value = envValue(envKey);
+        if (value != null) {
+            options.setCapability(capabilityName, parseBoolean(envKey, value));
+        }
+    }
+
+    private void applyLongCapability(UiAutomator2Options options, String envKey, String capabilityName) {
+        String value = envValue(envKey);
+        if (value != null) {
+            options.setCapability(capabilityName, parseLong(envKey, value));
+        }
+    }
+
+    private long parseLong(String key, String value) {
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException ex) {
+            throw new IllegalStateException(key + " must be a valid integer value.", ex);
+        }
+    }
+
+    private boolean parseBoolean(String key, String value) {
+        if ("true".equalsIgnoreCase(value)) {
+            return true;
+        }
+        if ("false".equalsIgnoreCase(value)) {
+            return false;
+        }
+        throw new IllegalStateException(key + " must be either 'true' or 'false'.");
     }
 
     private static boolean notBlank(String value) {
