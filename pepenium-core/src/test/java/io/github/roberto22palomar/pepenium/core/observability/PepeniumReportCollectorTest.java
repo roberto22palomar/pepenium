@@ -15,7 +15,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.SessionId;
 
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,12 +41,13 @@ class PepeniumReportCollectorTest {
 
     @Test
     void collectCapturesRemoteContextTimelineAndScreenshotArtifacts() throws Exception {
+        Path manualScreenshot = Files.write(reportDir.resolve("manual-source.png"), new byte[]{9, 8, 7});
         StepTracker.record("Open login page");
         PepeniumTimeline.recordAction("Submit credentials");
         PepeniumTimeline.recordWait("Wait for secure area");
         PepeniumTimeline.recordWait("Wait for secure area");
         PepeniumTimeline.recordAssertionFailed("Assert secure area is visible");
-        PepeniumTimeline.recordScreenshot("Manual screenshot", "C:\\tmp\\manual.png");
+        PepeniumTimeline.recordScreenshot("Manual screenshot", manualScreenshot.toString());
         PepeniumTimeline.recordError("Remote session failed");
 
         MutableCapabilities capabilities = new MutableCapabilities();
@@ -88,7 +88,7 @@ class PepeniumReportCollectorTest {
         assertEquals(7, report.totalEvents);
         assertEquals(1, report.failedAssertions);
         assertEquals("Assert secure area is visible", report.lastAssertion);
-        assertEquals("C:\\tmp\\manual.png", report.lastScreenshotPath);
+        assertTrue(report.lastScreenshotPath.contains("screenshots"));
         assertEquals(6, report.eventGroups.size());
         assertEquals(1, report.eventGroups.get(4).screenshots.size());
         assertEquals(4, report.keyEventCount);
@@ -97,6 +97,8 @@ class PepeniumReportCollectorTest {
         assertEquals("Open login page", report.flowBlocks.get(0).title);
         assertEquals("Submit credentials", report.flowBlocks.get(0).events.get(1).getMessage());
         assertNotNull(report.screenshotUri);
-        assertTrue(Files.exists(Path.of(URI.create(report.screenshotUri))));
+        assertTrue(report.screenshotUri.startsWith("screenshots/"));
+        assertTrue(Files.exists(reportDir.resolve(report.screenshotUri)));
+        assertTrue(Files.exists(Path.of(report.lastScreenshotPath)));
     }
 }

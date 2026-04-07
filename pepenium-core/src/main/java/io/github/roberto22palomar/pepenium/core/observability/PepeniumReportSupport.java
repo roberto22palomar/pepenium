@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -133,14 +134,53 @@ final class PepeniumReportSupport {
             Files.createDirectories(screenshotDir);
             Path screenshotPath = screenshotDir.resolve("report_" + Instant.now().toEpochMilli() + ".png");
             Files.write(screenshotPath, screenshot);
-            return screenshotPath.toUri().toString();
+            return pathToHref(screenshotPath.toString(), reportDir);
         } catch (Exception e) {
             return null;
         }
     }
 
-    static String pathToUri(String path) {
-        return path == null ? null : Path.of(path).toUri().toString();
+    static String bundleScreenshotArtifact(String originalPath, Path reportDir) {
+        if (originalPath == null || originalPath.isBlank()) {
+            return null;
+        }
+        if (reportDir == null) {
+            return originalPath;
+        }
+        try {
+            Path source = Path.of(originalPath).normalize();
+            if (!Files.exists(source) || Files.isDirectory(source)) {
+                return originalPath;
+            }
+            Path screenshotDir = reportDir.resolve("screenshots");
+            Files.createDirectories(screenshotDir);
+            String fileName = source.getFileName() == null ? "manual.png" : source.getFileName().toString();
+            Path target = screenshotDir.resolve("manual_" + Instant.now().toEpochMilli() + "_" + fileName).normalize();
+            if (!source.equals(target)) {
+                Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+            return target.toString();
+        } catch (Exception ignored) {
+            return originalPath;
+        }
+    }
+
+    static String pathToHref(String path, Path reportDir) {
+        if (path == null || path.isBlank()) {
+            return null;
+        }
+        try {
+            Path resolved = Path.of(path).normalize();
+            if (reportDir != null && resolved.isAbsolute()) {
+                Path normalizedReportDir = reportDir.toAbsolutePath().normalize();
+                if (resolved.startsWith(normalizedReportDir)) {
+                    return normalizedReportDir.relativize(resolved).toString().replace('\\', '/');
+                }
+            }
+            return resolved.isAbsolute() ? resolved.toUri().toString() : resolved.toString().replace('\\', '/');
+        } catch (Exception ignored) {
+            return path;
+        }
     }
 
     static Path resolveReportDir() {

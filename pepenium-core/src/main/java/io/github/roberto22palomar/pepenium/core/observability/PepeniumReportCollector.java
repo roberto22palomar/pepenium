@@ -23,7 +23,10 @@ final class PepeniumReportCollector {
     static PepeniumHtmlReportWriter.ReportContext collect(String testName, DriverSession session, Throwable cause, Path reportDir) {
         Instant finishedAt = Instant.now();
         StepTracker.Snapshot stepSnapshot = StepTracker.snapshot();
-        PepeniumTimeline.Snapshot timelineSnapshot = PepeniumTimeline.snapshot();
+        PepeniumTimeline.Snapshot timelineSnapshot = PepeniumTimeline.remapScreenshotPaths(
+                PepeniumTimeline.snapshot(),
+                screenshotPath -> PepeniumReportSupport.bundleScreenshotArtifact(screenshotPath, reportDir)
+        );
         DriverRequest request = session == null ? null : session.getRequest();
         WebDriver driver = session == null ? null : session.getDriver();
         String outcome = cause == null ? "PASSED" : "FAILED";
@@ -50,6 +53,7 @@ final class PepeniumReportCollector {
                 PepeniumReportSupport.safe(PepeniumReportSupport.mobilePackage(driver)),
                 PepeniumReportSupport.safe(PepeniumReportSupport.mobileActivity(driver)),
                 deviceContext,
+                reportDir,
                 PepeniumReportSupport.safe(CapabilitiesSummary.summarize(request == null ? null : request.getCapabilities())),
                 stepSnapshot,
                 timelineSnapshot,
