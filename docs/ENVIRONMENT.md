@@ -177,8 +177,21 @@ They are intended for advanced mobile runs when the default Appium option sets n
 
 ## Screenshot Output
 
-### `DEVICEFARM_SCREENSHOT_PATH`
+### `pepenium.screenshot.path`
 
+- Type: Java system property
+- Required: No
+- Default fallback: Java temporary directory (`java.io.tmpdir`)
+- Purpose: Preferred override for the base directory where screenshots are written
+- Example:
+
+```text
+-Dpepenium.screenshot.path=C:\temp\pepenium-screenshots
+```
+
+### `PEPENIUM_SCREENSHOT_PATH`
+
+- Type: Environment variable
 - Required: No
 - Default fallback: Java temporary directory (`java.io.tmpdir`)
 - Used by:
@@ -186,7 +199,14 @@ They are intended for advanced mobile runs when the default Appium option sets n
   - Android screenshots
   - iOS screenshots
   - automatic failure screenshots
-- Purpose: Base directory where screenshots are written
+- Purpose: Preferred environment-variable override for the base directory where screenshots are written
+
+### `DEVICEFARM_SCREENSHOT_PATH`
+
+- Type: Environment variable
+- Required: No
+- Purpose: Legacy compatibility alias for screenshot output, still honored for AWS Device Farm and existing setups
+- Recommendation: Prefer `PEPENIUM_SCREENSHOT_PATH` in new local or shared `.env` files
 
 ## Observability
 
@@ -323,5 +343,11 @@ PEPENIUM_BASE_URL=https://example.com
 ```text
 PEPENIUM_DETAIL_LOGGING=true
 PEPENIUM_STEP_TRACKER_LIMIT=20
+```
+
+### Custom Screenshot Directory
+
+```text
+PEPENIUM_SCREENSHOT_PATH=C:\temp\pepenium-screenshots
 ```
 

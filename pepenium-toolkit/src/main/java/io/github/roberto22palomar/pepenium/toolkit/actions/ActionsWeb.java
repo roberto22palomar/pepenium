@@ -285,7 +285,8 @@ public class ActionsWeb {
 
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
             String filename = "screenshot_" + Instant.now().toEpochMilli() + ".png";
-            Path filePath = resolveScreenshotBaseDir().resolve(filename);
+            Path screenshotBaseDir = resolveScreenshotBaseDir();
+            Path filePath = screenshotBaseDir.resolve(filename);
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, screenshot);
 
@@ -295,10 +296,12 @@ public class ActionsWeb {
             return fullPath;
 
         } catch (IOException e) {
-            ActionLoggingSupport.logFailure(log, "save screenshot", "driver capture", e);
+            ActionLoggingSupport.logFailure(log, "save screenshot",
+                    "driver capture under " + resolveScreenshotBaseDir().toAbsolutePath(), e);
             return null;
         } catch (Exception e) {
-            ActionLoggingSupport.logFailure(log, "take screenshot", "driver capture", e);
+            ActionLoggingSupport.logFailure(log, "take screenshot",
+                    "driver capture under " + resolveScreenshotBaseDir().toAbsolutePath(), e);
             return null;
         }
     }
