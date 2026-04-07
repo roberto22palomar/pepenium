@@ -144,6 +144,9 @@ final class PepeniumReportSupport {
         if (originalPath == null || originalPath.isBlank()) {
             return null;
         }
+        if (reportDir == null) {
+            return originalPath;
+        }
         try {
             Path source = Path.of(originalPath).normalize();
             if (!Files.exists(source) || Files.isDirectory(source)) {
