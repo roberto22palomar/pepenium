@@ -154,7 +154,11 @@ final class PepeniumReportSupport {
             }
             Path screenshotDir = reportDir.resolve("screenshots");
             Files.createDirectories(screenshotDir);
-            String fileName = source.getFileName() == null ? "manual.png" : source.getFileName().toString();
+            Path fileNamePath = source.getFileName();
+            String fileName = "manual.png";
+            if (fileNamePath != null) {
+                fileName = fileNamePath.toString();
+            }
             Path target = screenshotDir.resolve("manual_" + Instant.now().toEpochMilli() + "_" + fileName).normalize();
             if (!source.equals(target)) {
                 Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
