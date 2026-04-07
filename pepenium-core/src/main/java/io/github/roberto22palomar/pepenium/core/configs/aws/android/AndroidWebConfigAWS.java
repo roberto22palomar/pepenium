@@ -3,6 +3,7 @@ package io.github.roberto22palomar.pepenium.core.configs.aws.android;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
+import io.github.roberto22palomar.pepenium.core.config.validation.AppiumCapabilityOverrides;
 import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
@@ -55,6 +56,7 @@ public class AndroidWebConfigAWS implements DriverConfig {
                 .setAutomationName("UiAutomator2")
                 .setNewCommandTimeout(Duration.ofSeconds(300));
         opts.setCapability("browserName", "Chrome");
+        AppiumCapabilityOverrides.applyAndroid(env, opts);
 
         return DriverRequest.builder()
                 .driverType(DriverType.ANDROID_APPIUM)

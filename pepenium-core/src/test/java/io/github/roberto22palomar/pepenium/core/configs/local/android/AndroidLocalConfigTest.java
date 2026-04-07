@@ -166,6 +166,19 @@ class AndroidLocalConfigTest {
     }
 
     @Test
+    void createAndroidWebRequestAppliesAppiumOverrides() throws Exception {
+        AndroidWebConfigLocal config = new AndroidWebConfigLocal(env(Map.ofEntries(
+                Map.entry("APPIUM_NEW_COMMAND_TIMEOUT", "90"),
+                Map.entry("APPIUM_SKIP_DEVICE_INITIALIZATION", "true")
+        )));
+
+        DriverRequest request = config.createRequest();
+
+        assertEquals(90L, request.getCapabilities().getCapability("appium:newCommandTimeout"));
+        assertEquals(Boolean.TRUE, request.getCapabilities().getCapability("appium:skipDeviceInitialization"));
+    }
+
+    @Test
     void createAndroidWebRequestRejectsInvalidAppiumUrl() {
         AndroidWebConfigLocal config = new AndroidWebConfigLocal(env(Map.of(
                 "APPIUM_URL", "not-a-url"

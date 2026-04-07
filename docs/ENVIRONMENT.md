@@ -95,9 +95,19 @@ PEPENIUM_PROFILE=local-web
   - local Android native
 - Purpose: Android activity to launch together with `APP_PACKAGE`
 
-### Optional local Android Appium capability overrides
+### Optional Appium capability overrides
 
-The local Android native profile also supports these optional environment variables:
+These optional environment variables are supported by the Appium-backed built-in profiles:
+
+- local Android native
+- local Android web
+- AWS Android native
+- AWS Android web
+- AWS iOS native
+- BrowserStack Android native
+- BrowserStack Android web
+- BrowserStack iOS native
+- BrowserStack iOS web
 
 - `APPIUM_PLATFORM_NAME`
 - `APPIUM_AUTOMATION_NAME`
@@ -118,7 +128,7 @@ The local Android native profile also supports these optional environment variab
 - `APP_WAIT_PACKAGE`
 - `APP_WAIT_ACTIVITY`
 
-They are intended for advanced local Android runs when the default `UiAutomator2Options` need to be tuned without forking the framework.
+They are intended for advanced mobile runs when the default Appium option sets need to be tuned without forking the framework.
 
 ## Local Web and Mobile Web
 
