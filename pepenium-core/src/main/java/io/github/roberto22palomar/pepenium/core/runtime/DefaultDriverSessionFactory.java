@@ -31,6 +31,10 @@ public class DefaultDriverSessionFactory implements DriverSessionFactory {
         log.info("Creating driver session: description='{}', capabilities={}",
                 request.getDescription(),
                 CapabilitiesSummary.summarize(request.getCapabilities()));
+        if (request.getServerUrl() != null) {
+            log.info("Driver server: {}", sanitizeServerUrl(request.getServerUrl()));
+        }
+        log.info("Effective capabilities: {}", CapabilitiesSummary.describe(request.getCapabilities()));
         WebDriver driver;
 
         switch (request.getDriverType()) {
@@ -61,6 +65,18 @@ public class DefaultDriverSessionFactory implements DriverSessionFactory {
         log.info("Driver session created successfully");
 
         return new DriverSession(driver, request);
+    }
+
+    private String sanitizeServerUrl(URL url) {
+        if (url == null) {
+            return "none";
+        }
+        String userInfo = url.getUserInfo();
+        if (userInfo == null || userInfo.isBlank()) {
+            return url.toString();
+        }
+        String raw = url.toString();
+        return raw.replace(userInfo + "@", "***@");
     }
 
     private URL requireServerUrl(DriverRequest request) {

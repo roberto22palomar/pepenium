@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 - Added `PEPENIUM_SCREENSHOT_PATH` as the preferred screenshot output override while keeping `DEVICEFARM_SCREENSHOT_PATH` as a backward-compatible alias for existing and AWS Device Farm setups.
+- Improved driver-session observability by logging the effective sanitized capabilities sent to the driver layer and surfacing the same detail in automatic failure reporting.
 
 ### Improved
 - Improved screenshot diagnostics so failed capture logs now include the target output directory, making path and permissions issues easier to understand.

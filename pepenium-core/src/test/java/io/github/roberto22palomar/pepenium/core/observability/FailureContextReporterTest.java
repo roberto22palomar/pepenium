@@ -109,7 +109,8 @@ class FailureContextReporterTest {
         assertTrue(appender.contains("Failure summary for 'webFailure': IllegalArgumentException - Broken field"));
         assertTrue(appender.contains("Recent steps"));
         assertTrue(appender.contains("Step:"));
-        assertTrue(appender.contains("Capabilities: browserName=chrome"));
+        assertTrue(appender.contains("Capabilities summary: browserName=chrome"));
+        assertTrue(appender.contains("Effective capabilities: browserName=chrome"));
         assertTrue(appender.contains("Session: abcdef123456"));
         assertTrue(appender.contains("Web: url='https://example.test/login', title='Example'"));
     }
