@@ -7,8 +7,35 @@ It is intended to be the single reference point for configuring local runs, remo
 Ready-to-copy examples for common local setups:
 
 - [`.env.web.example`](../.env.web.example)
+- [`.env.android.local.example`](../.env.android.local.example)
 - [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
 - [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
+- [`.env.mobile.capabilities.example`](../.env.mobile.capabilities.example)
+
+## How To Choose A Config Starting Point
+
+Use this quick rule:
+
+- `WEB_DESKTOP` on your machine: start from [`.env.web.example`](../.env.web.example)
+- `ANDROID_NATIVE` with local Appium: start from [`.env.android.local.example`](../.env.android.local.example)
+- `ANDROID_NATIVE` with Dockerized Appium and host emulator: start from [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
+- `ANDROID_NATIVE` with Dockerized Appium and Dockerized emulator: start from [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
+- Any Appium-backed mobile profile that needs extra tuning: copy the relevant keys from [`.env.mobile.capabilities.example`](../.env.mobile.capabilities.example)
+
+## Configuration Precedence In Practice
+
+The precedence order is:
+
+1. Java system property
+2. Environment variable
+3. Built-in default
+
+Practical examples:
+
+- `-Dpepenium.profile=aws-android` wins over `PEPENIUM_PROFILE=local-android`
+- if `PEPENIUM_PROFILE` is unset, Pepenium can still choose the target default profile
+- if `APPIUM_URL` is unset for local Android, Pepenium falls back to `http://localhost:4723`
+- if `DEVICEFARM_SCREENSHOT_PATH` is unset, screenshots fall back to the Java temporary directory
 
 ## Resolution Order
 
@@ -41,6 +68,23 @@ When a setting supports both a Java system property and an environment variable,
 ```text
 PEPENIUM_PROFILE=local-web
 ```
+
+Built-in profile ids currently available:
+
+- `local-android`
+- `local-android-web`
+- `local-web`
+- `local-web-firefox`
+- `local-web-edge`
+- `aws-android`
+- `aws-android-web`
+- `aws-ios`
+- `browserstack-android`
+- `browserstack-android-web`
+- `browserstack-ios`
+- `browserstack-ios-web`
+- `browserstack-windows-web`
+- `browserstack-mac-web`
 
 ## Local Android
 
@@ -250,6 +294,12 @@ Those YAML files define items such as:
 - platforms
 - browserstack local flag
 
+Typical model:
+
+- use `PEPENIUM_PROFILE` or `-Dpepenium.profile` to select the BrowserStack profile
+- keep BrowserStack credentials and platform catalogs in YAML
+- use environment variables mainly for cross-cutting runtime concerns such as screenshots, detail logging or Appium capability overrides
+
 ## Practical Setup Examples
 
 ### Local Android Native
@@ -290,5 +340,19 @@ PEPENIUM_BASE_URL=https://example.com
 ```text
 PEPENIUM_DETAIL_LOGGING=true
 PEPENIUM_STEP_TRACKER_LIMIT=20
+```
+
+### Local Android With Extra Appium Tuning
+
+```text
+PEPENIUM_PROFILE=local-android
+APPIUM_URL=http://127.0.0.1:4723
+ANDROID_UDID=emulator-5554
+ANDROID_DEVICE_NAME=Android Emulator
+APP_PACKAGE=com.example.app
+APP_ACTIVITY=.MainActivity
+APPIUM_NO_RESET=true
+APPIUM_NEW_COMMAND_TIMEOUT=300
+DEVICEFARM_SCREENSHOT_PATH=C:\temp\pepenium-screenshots
 ```
 

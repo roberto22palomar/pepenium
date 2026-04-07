@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Added richer `.env` example files and expanded configuration guidance so local web, local Android and Appium capability tuning are easier to bootstrap from documented templates.
+
 ## [0.9.5] - 2026-04-06
 
 ### Fixed
