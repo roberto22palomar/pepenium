@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Added optional `PEPENIUM_WEB_*` overrides for the built-in local desktop web profiles so Chrome, Firefox and Edge runs can be tuned from environment variables without custom driver config classes.
+
 ### Changed
 - Added `PEPENIUM_SCREENSHOT_PATH` as the preferred screenshot output override while keeping `DEVICEFARM_SCREENSHOT_PATH` as a backward-compatible alias for existing and AWS Device Farm setups.
 

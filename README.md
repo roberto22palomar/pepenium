@@ -42,6 +42,7 @@ Recommended first steps:
 Ready-to-copy environment examples:
 
 - [`.env.web.example`](.env.web.example)
+- [`.env.web.capabilities.example`](.env.web.capabilities.example)
 - [`.env.android.host-emulator.example`](.env.android.host-emulator.example)
 - [`.env.android.docker-emulator.example`](.env.android.docker-emulator.example)
 
@@ -55,7 +56,7 @@ Ready-to-copy environment examples:
 - Cleaner logs with automatic runtime context and failure evidence
 
 See [START-HERE.md](docs/START-HERE.md) for the fastest first-run path, [QUICK-START.md](docs/QUICK-START.md) for the fuller walkthrough and [CHANGELOG.md](CHANGELOG.md) for release history.
-Use [ENVIRONMENT.md](docs/ENVIRONMENT.md) as the central reference for environment variables and runtime properties.
+Use [ENVIRONMENT.md](docs/ENVIRONMENT.md) as the central reference for environment variables, runtime properties and capability override patterns.
 Use [API.md](docs/API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
 Use the root `docker-compose.yaml` if you want to run the local Appium server in Docker while keeping the Android emulator on the host.
 Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone public-API consumer smoke validation flow.

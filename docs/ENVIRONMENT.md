@@ -7,6 +7,7 @@ It is intended to be the single reference point for configuring local runs, remo
 Ready-to-copy examples for common local setups:
 
 - [`.env.web.example`](../.env.web.example)
+- [`.env.web.capabilities.example`](../.env.web.capabilities.example)
 - [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
 - [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
 
@@ -139,6 +140,29 @@ They are intended for advanced mobile runs when the default Appium option sets n
   - Android web example
   - iOS web example
 - Purpose: Base URL opened by the example tests
+
+### Optional local desktop web capability overrides
+
+These optional environment variables are supported by the built-in local desktop web profiles:
+
+- `local-web`
+- `local-web-firefox`
+- `local-web-edge`
+
+- `PEPENIUM_WEB_HEADLESS`
+- `PEPENIUM_WEB_ACCEPT_INSECURE_CERTS`
+- `PEPENIUM_WEB_PAGE_LOAD_STRATEGY`
+- `PEPENIUM_WEB_BROWSER_VERSION`
+- `PEPENIUM_WEB_BINARY_PATH`
+- `PEPENIUM_WEB_ARGS`
+- `PEPENIUM_WEB_CAPABILITIES`
+
+Notes:
+
+- `PEPENIUM_WEB_ARGS` uses `;` as separator, for example `--incognito;--window-size=1920,1080`
+- `PEPENIUM_WEB_CAPABILITIES` also uses `;` and `key=value` entries, for example `custom:flag=true;custom:retries=3`
+- `PEPENIUM_WEB_HEADLESS=true` maps to the browser-specific headless argument for Chromium and Firefox
+- `PEPENIUM_WEB_PAGE_LOAD_STRATEGY` accepts `normal`, `eager` or `none`
 
 ## AWS Device Farm
 
@@ -335,7 +359,20 @@ APP_PATH=C:\apps\my-app.apk
 ### Local Desktop Web
 
 ```text
+PEPENIUM_PROFILE=local-web
 PEPENIUM_BASE_URL=https://example.com
+```
+
+### Local Desktop Web With Driver Tuning
+
+```text
+PEPENIUM_PROFILE=local-web
+PEPENIUM_BASE_URL=https://example.com
+PEPENIUM_WEB_HEADLESS=true
+PEPENIUM_WEB_ACCEPT_INSECURE_CERTS=true
+PEPENIUM_WEB_PAGE_LOAD_STRATEGY=eager
+PEPENIUM_WEB_ARGS=--incognito;--window-size=1920,1080
+PEPENIUM_WEB_CAPABILITIES=custom:flag=true;custom:retries=3
 ```
 
 ### Detailed Diagnostics
