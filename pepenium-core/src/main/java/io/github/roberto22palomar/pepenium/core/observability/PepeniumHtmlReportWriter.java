@@ -62,6 +62,63 @@ public final class PepeniumHtmlReportWriter {
         }
     }
 
+    static final class FlowBlock {
+        final String title;
+        final String startedAt;
+        final long startedEpochMillis;
+        final long finishedEpochMillis;
+        final List<PepeniumTimeline.Event> events = new ArrayList<>();
+        final int actionCount;
+        final int waitCount;
+        final int assertionCount;
+        final int screenshotCount;
+        final int errorCount;
+        final boolean failed;
+        final String leadScreenshotPath;
+
+        FlowBlock(
+                String title,
+                String startedAt,
+                long startedEpochMillis,
+                long finishedEpochMillis,
+                List<PepeniumTimeline.Event> events,
+                int actionCount,
+                int waitCount,
+                int assertionCount,
+                int screenshotCount,
+                int errorCount,
+                boolean failed,
+                String leadScreenshotPath
+        ) {
+            this.title = title;
+            this.startedAt = startedAt;
+            this.startedEpochMillis = startedEpochMillis;
+            this.finishedEpochMillis = finishedEpochMillis;
+            this.events.addAll(events);
+            this.actionCount = actionCount;
+            this.waitCount = waitCount;
+            this.assertionCount = assertionCount;
+            this.screenshotCount = screenshotCount;
+            this.errorCount = errorCount;
+            this.failed = failed;
+            this.leadScreenshotPath = leadScreenshotPath;
+        }
+    }
+
+    static final class WaitHotspot {
+        final String message;
+        final int count;
+        final String firstSeen;
+        final String lastSeen;
+
+        WaitHotspot(String message, int count, String firstSeen, String lastSeen) {
+            this.message = message;
+            this.count = count;
+            this.firstSeen = firstSeen;
+            this.lastSeen = lastSeen;
+        }
+    }
+
     static final class RemoteContext {
         final boolean enabled;
         final String provider;
@@ -192,6 +249,9 @@ public final class PepeniumHtmlReportWriter {
         final StepTracker.Snapshot stepSnapshot;
         final PepeniumTimeline.Snapshot timelineSnapshot;
         final List<EventGroup> eventGroups;
+        final List<FlowBlock> flowBlocks;
+        final List<WaitHotspot> waitHotspots;
+        final int keyEventCount;
         final int totalEvents;
         final int actionCount;
         final int waitCount;
@@ -231,6 +291,9 @@ public final class PepeniumHtmlReportWriter {
                 StepTracker.Snapshot stepSnapshot,
                 PepeniumTimeline.Snapshot timelineSnapshot,
                 List<EventGroup> eventGroups,
+                List<FlowBlock> flowBlocks,
+                List<WaitHotspot> waitHotspots,
+                int keyEventCount,
                 int totalEvents,
                 int actionCount,
                 int waitCount,
@@ -269,6 +332,9 @@ public final class PepeniumHtmlReportWriter {
             this.stepSnapshot = stepSnapshot;
             this.timelineSnapshot = timelineSnapshot;
             this.eventGroups = eventGroups;
+            this.flowBlocks = flowBlocks;
+            this.waitHotspots = waitHotspots;
+            this.keyEventCount = keyEventCount;
             this.totalEvents = totalEvents;
             this.actionCount = actionCount;
             this.waitCount = waitCount;

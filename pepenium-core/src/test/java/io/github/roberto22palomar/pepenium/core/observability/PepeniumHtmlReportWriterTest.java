@@ -47,6 +47,10 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("Highlights"));
         assertTrue(reportHtml.contains("Last Step"));
         assertTrue(reportHtml.contains("Last Assertion"));
+        assertTrue(reportHtml.contains("Visual Summary"));
+        assertTrue(reportHtml.contains("Execution Blocks"));
+        assertTrue(reportHtml.contains("Key Timeline"));
+        assertTrue(reportHtml.contains("Wait Hotspots"));
         assertTrue(reportHtml.contains("Timeline"));
         assertTrue(reportHtml.contains("PASS"));
         assertTrue(indexHtml.contains("Total Reports"));
@@ -89,6 +93,7 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("FAIL"));
         assertTrue(reportHtml.contains("Assert secure area is visible"));
         assertTrue(reportHtml.contains("Last step before failure"));
+        assertTrue(reportHtml.contains("Open raw timeline"));
         assertTrue(reportJson.contains("\"failure\""));
         assertTrue(reportJson.contains("\"FAIL"));
     }

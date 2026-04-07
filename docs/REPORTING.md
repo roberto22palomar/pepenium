@@ -26,10 +26,20 @@ Per-test HTML reports include:
 
 - execution story and failure story
 - diagnostic focus and highlights
+- a visual summary with key signals, final location and remote provider context
+- execution blocks that condense long timelines into higher-level story chunks
+- a compact key timeline for steps, assertions, screenshots and errors
+- wait hotspots that make repeated polling patterns easier to spot
 - assertion pass/fail badges
 - grouped screenshot previews
-- timeline events for steps, actions, waits, assertions, screenshots and errors
+- the full raw timeline for steps, actions, waits, assertions, screenshots and errors
 - runtime context such as target, profile, provider, device, platform and browser details when available
+
+Remote execution notes:
+
+- the same HTML report structure is generated for local, BrowserStack and AWS Device Farm executions
+- on remote providers, Pepenium still embeds the execution context and remote session metadata when available
+- provider-specific video, network/device logs and dashboard tooling remain on the remote platform, so the Pepenium HTML report works best as the first diagnostic artifact and the provider dashboard as the deeper remote follow-up
 
 The report directory can be redirected with:
 

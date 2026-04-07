@@ -23,7 +23,7 @@ final class PepeniumReportHtmlRenderer {
                 .append(".keyvals{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:10px 16px;align-items:start;} .key{font-weight:700;color:#374151;} .keyvals div{word-break:break-word;} .report-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:18px;margin-top:24px;} .sidebar{display:flex;flex-direction:column;gap:0;align-self:start;position:sticky;top:18px;} @media (max-width:980px){.report-layout{grid-template-columns:1fr;}.sidebar{position:static;}}")
                 .append(".badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;margin-right:6px;} .badge-step{background:#eef2ff;color:#3730a3;} .badge-action{background:var(--action-bg);color:var(--action);} .badge-wait{background:var(--wait-bg);color:var(--wait);} .badge-assert{background:var(--assert-bg);color:var(--assert);} .badge-screenshot{background:var(--shot-bg);color:var(--shot);} .badge-error{background:var(--error-bg);color:var(--error);} .badge-pass{background:var(--pass-bg);color:var(--pass);} .badge-fail{background:var(--fail-bg);color:var(--fail);} .timeline{display:flex;flex-direction:column;gap:10px;} .timeline-card{padding:12px 14px;background:linear-gradient(180deg,#fff 0,#fbfcff 100%);} .timeline-card.is-failure{border-color:#ef9a9a;box-shadow:0 10px 24px rgba(207,34,46,.12);} .timeline-card.is-warning{border-color:#d8b4fe;box-shadow:0 10px 24px rgba(124,58,237,.10);} .timeline-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;} .timeline-time{font-size:11px;color:var(--muted);font-weight:700;} .timeline-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;} .timeline-pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:#eef2f8;color:#475467;font-size:10px;font-weight:700;} .timeline-message{margin-top:6px;font-size:14px;line-height:1.4;}")
                 .append(".attachments{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px;} .attachment{background:var(--surface-alt);border:1px dashed #c6d1e1;border-radius:12px;padding:10px;} .thumb{display:block;width:100%;max-height:180px;object-fit:cover;border-radius:10px;border:1px solid var(--border);margin-top:8px;background:#fff;} .path{margin-top:6px;font-size:11px;color:var(--muted);word-break:break-word;}")
-                .append(".list{display:flex;flex-direction:column;gap:10px;} .list-item{padding:12px 14px;border-radius:14px;background:var(--surface-alt);border:1px solid #e3e8f1;font-size:14px;line-height:1.45;} .stack{margin-top:12px;} details summary{cursor:pointer;font-weight:700;} pre{margin:10px 0 0;padding:16px;background:#0f172a;color:#e2e8f0;border-radius:16px;overflow:auto;white-space:pre-wrap;word-break:break-word;} .empty{padding:22px;border-radius:16px;border:1px dashed #c6d1e1;color:var(--muted);background:#fbfcfe;} .story-card{background:linear-gradient(135deg,#ffffff 0,#f7fbff 100%);border:1px solid var(--border);border-radius:18px;box-shadow:0 12px 24px rgba(16,24,40,.04);} .story-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:10px;} .story-body{font-size:15px;line-height:1.6;} .artifact-list,.focus-list{display:flex;flex-direction:column;gap:10px;} .artifact-link,.focus-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--surface-alt);border:1px solid #e3e8f1;font-size:14px;} .focus-item{align-items:flex-start;flex-direction:column;} .focus-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;} .focus-value{font-size:14px;line-height:1.5;word-break:break-word;}")
+                .append(".list{display:flex;flex-direction:column;gap:10px;} .list-item{padding:12px 14px;border-radius:14px;background:var(--surface-alt);border:1px solid #e3e8f1;font-size:14px;line-height:1.45;} .stack{margin-top:12px;} details summary{cursor:pointer;font-weight:700;} pre{margin:10px 0 0;padding:16px;background:#0f172a;color:#e2e8f0;border-radius:16px;overflow:auto;white-space:pre-wrap;word-break:break-word;} .empty{padding:22px;border-radius:16px;border:1px dashed #c6d1e1;color:var(--muted);background:#fbfcfe;} .story-card{background:linear-gradient(135deg,#ffffff 0,#f7fbff 100%);border:1px solid var(--border);border-radius:18px;box-shadow:0 12px 24px rgba(16,24,40,.04);} .story-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:10px;} .story-body{font-size:15px;line-height:1.6;} .artifact-list,.focus-list{display:flex;flex-direction:column;gap:10px;} .artifact-link,.focus-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--surface-alt);border:1px solid #e3e8f1;font-size:14px;} .focus-item{align-items:flex-start;flex-direction:column;} .focus-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;} .focus-value{font-size:14px;line-height:1.5;word-break:break-word;} .story-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;} .story-metric{padding:14px 16px;border-radius:16px;border:1px solid #dce5f2;background:linear-gradient(180deg,#fff 0,#fbfdff 100%);} .story-metric-label{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;} .story-metric-value{margin-top:8px;font-size:20px;font-weight:700;} .block-list{display:flex;flex-direction:column;gap:12px;} .block-card{padding:16px;border-radius:18px;border:1px solid #dce5f2;background:linear-gradient(180deg,#fff 0,#fbfdff 100%);} .block-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;} .block-title{font-size:16px;font-weight:700;} .block-subtitle{margin-top:4px;color:var(--muted);font-size:13px;} .block-kpis{display:flex;gap:8px;flex-wrap:wrap;} .chip{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#eef2f8;color:#475467;font-size:11px;font-weight:700;} .inline-list{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;} .inline-item{padding:6px 10px;border-radius:999px;background:#f5f8ff;border:1px solid #d9e4f5;font-size:12px;} .compact-details{margin-top:12px;} .compact-details summary{font-size:13px;} .timeline-details{margin-top:14px;} .timeline-details summary{padding:12px 14px;border:1px solid var(--border);border-radius:14px;background:#fff;} .remote-note{margin-top:12px;padding:12px 14px;border-radius:14px;background:#eef6ff;border:1px solid #cfe0ff;font-size:13px;line-height:1.5;color:#244f8f;}")
                 .append("</style></head><body><div class=\"wrap\">");
 
         html.append("<section class=\"hero\"><div class=\"hero-top\"><div><span class=\"status ")
@@ -42,6 +42,7 @@ final class PepeniumReportHtmlRenderer {
                 .append(renderMetric("Events", String.valueOf(report.totalEvents)))
                 .append(renderMetric("Actions", String.valueOf(report.actionCount)))
                 .append(renderMetric("Waits", String.valueOf(report.waitCount)))
+                .append(renderMetric("Key Signals", String.valueOf(report.keyEventCount)))
                 .append(renderMetric("Assertions", report.passedAssertions + " / " + report.failedAssertions))
                 .append(renderMetric("Screenshots", String.valueOf(report.screenshotCount)))
                 .append(renderMetric("Errors", String.valueOf(report.errorCount)))
@@ -57,13 +58,62 @@ final class PepeniumReportHtmlRenderer {
                 .append(renderFocusItem("Execution fingerprint", executionFingerprint(report)))
                 .append("</div></div></section>");
 
+        html.append("<section class=\"section\"><h2>Visual Summary</h2><div class=\"story-grid\">")
+                .append(renderStoryMetric("Flow blocks", String.valueOf(report.flowBlocks.size())))
+                .append(renderStoryMetric("Key events", String.valueOf(report.keyEventCount)))
+                .append(renderStoryMetric("Remote provider", remoteProviderLabel(report)))
+                .append(renderStoryMetric("Final location", finalLocation(report)))
+                .append("</div>");
+        if (report.remoteContext.enabled) {
+            html.append("<div class=\"remote-note\">This HTML report is generated the same way for local, BrowserStack, and AWS runs. On remote providers you typically inspect it from the downloaded report artifacts, while provider-specific video, logs, and device details stay in the remote dashboard.</div>");
+        }
+        html.append("</section>");
+
         html.append("<div class=\"report-layout\"><div>");
+
+        html.append("<section class=\"section\"><h2>Execution Blocks</h2><div class=\"panel\">");
+        if (report.flowBlocks.isEmpty()) {
+            html.append("<div class=\"empty\">No higher-level execution blocks could be derived from the timeline. Use the raw timeline for full detail.</div>");
+        } else {
+            html.append("<div class=\"block-list\">");
+            for (PepeniumHtmlReportWriter.FlowBlock block : report.flowBlocks) {
+                html.append(renderFlowBlock(block));
+            }
+            html.append("</div>");
+        }
+        html.append("</div></section>");
 
         html.append("<section class=\"section\"><h2>Highlights</h2><div class=\"grid\">")
                 .append(renderCard("Last Step", report.lastStep))
                 .append(renderCard("Last Assertion", report.lastAssertion))
                 .append(renderCard("Last Screenshot", report.lastScreenshotPath))
                 .append("</div></section>");
+
+        html.append("<section class=\"section\"><h2>Key Timeline</h2><div class=\"panel\">");
+        if (report.timelineSnapshot.getEvents().isEmpty()) {
+            html.append("<div class=\"empty\">No timeline events were recorded for this test.</div>");
+        } else {
+            html.append("<div class=\"timeline\">");
+            for (PepeniumTimeline.Event event : report.timelineSnapshot.getEvents()) {
+                if (isKeyTimelineEvent(event)) {
+                    html.append(renderTimelineCard(event, report.startedAt, null));
+                }
+            }
+            html.append("</div>");
+        }
+        html.append("</div></section>");
+
+        html.append("<section class=\"section\"><h2>Wait Hotspots</h2><div class=\"panel\">");
+        if (report.waitHotspots.isEmpty()) {
+            html.append("<div class=\"empty\">No repeated wait hotspots were detected in this execution.</div>");
+        } else {
+            html.append("<div class=\"list\">");
+            for (PepeniumHtmlReportWriter.WaitHotspot hotspot : report.waitHotspots) {
+                html.append(renderWaitHotspot(hotspot));
+            }
+            html.append("</div>");
+        }
+        html.append("</div></section>");
 
         html.append("<section class=\"section\"><h2>Recent Steps</h2><div class=\"panel\">");
         if (report.stepSnapshot.getSteps().isEmpty()) {
@@ -81,43 +131,17 @@ final class PepeniumReportHtmlRenderer {
         }
         html.append("</div></section>");
 
-        html.append("<section class=\"section\"><h2>Timeline</h2><div class=\"timeline\">");
+        html.append("<section class=\"section\"><h2>Timeline</h2><div class=\"panel\"><details class=\"timeline-details\"><summary>Open raw timeline (")
+                .append(report.eventGroups.size()).append(report.eventGroups.size() == 1 ? " grouped event" : " grouped events")
+                .append(")</summary><div class=\"timeline\" style=\"margin-top:14px;\">");
         if (report.eventGroups.isEmpty()) {
             html.append("<div class=\"empty\">No timeline events were recorded for this test.</div>");
         } else {
             for (PepeniumHtmlReportWriter.EventGroup group : report.eventGroups) {
-                PepeniumTimeline.Event anchor = group.anchorEvent;
-                html.append("<article class=\"timeline-card ")
-                        .append(timelineCardClass(anchor))
-                        .append("\"><div class=\"timeline-head\">")
-                        .append(renderEventTypeBadge(anchor))
-                        .append(renderEventStatusBadge(anchor))
-                        .append("<span class=\"timeline-time\">").append(PepeniumReportSupport.escapeHtml(anchor.getTime())).append("</span>")
-                        .append("</div><div class=\"timeline-meta\">")
-                        .append("<span class=\"timeline-pill\">+").append(PepeniumReportSupport.escapeHtml(formatElapsed(report.startedAt, anchor.getEpochMillis()))).append("</span>")
-                        .append("<span class=\"timeline-pill\">dt ").append(PepeniumReportSupport.escapeHtml(formatDelta(group))).append("</span>")
-                        .append("</div><div class=\"timeline-message\">").append(PepeniumReportSupport.escapeHtml(anchor.getMessage())).append("</div>");
-                if (!group.screenshots.isEmpty()) {
-                    html.append("<details><summary>Show ")
-                            .append(group.screenshots.size())
-                            .append(group.screenshots.size() == 1 ? " screenshot" : " screenshots")
-                            .append("</summary><div class=\"attachments\">");
-                    for (PepeniumTimeline.Event screenshot : group.screenshots) {
-                        String screenshotUri = PepeniumReportSupport.pathToUri(screenshot.getScreenshotPath());
-                        html.append("<div class=\"attachment\"><div>")
-                                .append(renderEventTypeBadge(screenshot))
-                                .append("<span class=\"timeline-time\">").append(PepeniumReportSupport.escapeHtml(screenshot.getTime())).append("</span></div>")
-                                .append("<div class=\"timeline-message\">").append(PepeniumReportSupport.escapeHtml(screenshot.getMessage())).append("</div>")
-                                .append("<a href=\"").append(PepeniumReportSupport.escapeHtml(screenshotUri)).append("\">Open screenshot</a>")
-                                .append("<img class=\"thumb\" src=\"").append(PepeniumReportSupport.escapeHtml(screenshotUri)).append("\" alt=\"Screenshot preview\">")
-                                .append("<div class=\"path\">").append(PepeniumReportSupport.escapeHtml(screenshot.getScreenshotPath())).append("</div></div>");
-                    }
-                    html.append("</div></details>");
-                }
-                html.append("</article>");
+                html.append(renderTimelineCard(group.anchorEvent, report.startedAt, group));
             }
         }
-        html.append("</div></section>");
+        html.append("</div></details></div></section>");
 
         if (report.failed) {
             html.append("<section class=\"section\"><h2>Failure Story</h2><div class=\"story-card\"><div class=\"story-title\">What likely happened</div><div class=\"story-body\">")
@@ -217,9 +241,140 @@ final class PepeniumReportHtmlRenderer {
                 + "</div></div>";
     }
 
+    private static String renderStoryMetric(String title, String value) {
+        return "<div class=\"story-metric\"><div class=\"story-metric-label\">" + PepeniumReportSupport.escapeHtml(title)
+                + "</div><div class=\"story-metric-value\">" + PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(value))
+                + "</div></div>";
+    }
+
     private static String renderKeyValue(String title, String value) {
         return "<div class=\"key\">" + PepeniumReportSupport.escapeHtml(title) + "</div><div>"
                 + PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(value)) + "</div>";
+    }
+
+    private static String renderFlowBlock(PepeniumHtmlReportWriter.FlowBlock block) {
+        long blockDurationMillis = Math.max(0L, block.finishedEpochMillis - block.startedEpochMillis);
+        StringBuilder html = new StringBuilder();
+        html.append("<article class=\"block-card\"><div class=\"block-head\"><div><div class=\"block-title\">")
+                .append(PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(block.title)))
+                .append("</div><div class=\"block-subtitle\">Started ")
+                .append(PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(block.startedAt)))
+                .append(" · ")
+                .append(PepeniumReportSupport.escapeHtml(PepeniumReportSupport.formatDurationMillis(blockDurationMillis)))
+                .append("</div></div><div class=\"block-kpis\">")
+                .append(renderChip(block.events.size() + (block.events.size() == 1 ? " event" : " events")))
+                .append(renderChip(block.actionCount + (block.actionCount == 1 ? " action" : " actions")))
+                .append(renderChip(block.waitCount + (block.waitCount == 1 ? " wait" : " waits")))
+                .append(renderChip(block.assertionCount + (block.assertionCount == 1 ? " assertion" : " assertions")))
+                .append("</div></div>");
+        if (!keyMessages(block).isEmpty()) {
+            html.append("<div class=\"inline-list\">");
+            for (String message : keyMessages(block)) {
+                html.append("<div class=\"inline-item\">").append(PepeniumReportSupport.escapeHtml(message)).append("</div>");
+            }
+            html.append("</div>");
+        }
+        if (!waitSummaries(block).isEmpty()) {
+            html.append("<details class=\"compact-details\"><summary>Wait summaries (")
+                    .append(waitSummaries(block).size()).append(")</summary><div class=\"list\" style=\"margin-top:12px;\">");
+            for (String waitSummary : waitSummaries(block)) {
+                html.append("<div class=\"list-item\">").append(PepeniumReportSupport.escapeHtml(waitSummary)).append("</div>");
+            }
+            html.append("</div></details>");
+        }
+        html.append("</article>");
+        return html.toString();
+    }
+
+    private static String renderWaitHotspot(PepeniumHtmlReportWriter.WaitHotspot hotspot) {
+        return "<div class=\"list-item\"><strong>" + PepeniumReportSupport.escapeHtml(hotspot.message)
+                + "</strong><div class=\"path\">Seen " + hotspot.count + (hotspot.count == 1 ? " time" : " times")
+                + " · first " + PepeniumReportSupport.escapeHtml(hotspot.firstSeen)
+                + " · last " + PepeniumReportSupport.escapeHtml(hotspot.lastSeen) + "</div></div>";
+    }
+
+    private static String renderTimelineCard(PepeniumTimeline.Event anchor, Instant startedAt,
+                                             PepeniumHtmlReportWriter.EventGroup group) {
+        StringBuilder html = new StringBuilder();
+        html.append("<article class=\"timeline-card ")
+                .append(timelineCardClass(anchor))
+                .append("\"><div class=\"timeline-head\">")
+                .append(renderEventTypeBadge(anchor))
+                .append(renderEventStatusBadge(anchor))
+                .append("<span class=\"timeline-time\">").append(PepeniumReportSupport.escapeHtml(anchor.getTime())).append("</span>")
+                .append("</div><div class=\"timeline-meta\">")
+                .append("<span class=\"timeline-pill\">+").append(PepeniumReportSupport.escapeHtml(formatElapsed(startedAt, anchor.getEpochMillis()))).append("</span>");
+        if (group != null) {
+            html.append("<span class=\"timeline-pill\">dt ").append(PepeniumReportSupport.escapeHtml(formatDelta(group))).append("</span>");
+        }
+        html.append("</div><div class=\"timeline-message\">").append(PepeniumReportSupport.escapeHtml(anchor.getMessage())).append("</div>");
+        if (group != null && !group.screenshots.isEmpty()) {
+            html.append("<details><summary>Show ")
+                    .append(group.screenshots.size())
+                    .append(group.screenshots.size() == 1 ? " screenshot" : " screenshots")
+                    .append("</summary><div class=\"attachments\">");
+            for (PepeniumTimeline.Event screenshot : group.screenshots) {
+                String screenshotUri = PepeniumReportSupport.pathToUri(screenshot.getScreenshotPath());
+                html.append("<div class=\"attachment\"><div>")
+                        .append(renderEventTypeBadge(screenshot))
+                        .append("<span class=\"timeline-time\">").append(PepeniumReportSupport.escapeHtml(screenshot.getTime())).append("</span></div>")
+                        .append("<div class=\"timeline-message\">").append(PepeniumReportSupport.escapeHtml(screenshot.getMessage())).append("</div>")
+                        .append("<a href=\"").append(PepeniumReportSupport.escapeHtml(screenshotUri)).append("\">Open screenshot</a>")
+                        .append("<img class=\"thumb\" src=\"").append(PepeniumReportSupport.escapeHtml(screenshotUri)).append("\" alt=\"Screenshot preview\">")
+                        .append("<div class=\"path\">").append(PepeniumReportSupport.escapeHtml(screenshot.getScreenshotPath())).append("</div></div>");
+            }
+            html.append("</div></details>");
+        }
+        html.append("</article>");
+        return html.toString();
+    }
+
+    private static String renderChip(String value) {
+        return "<span class=\"chip\">" + PepeniumReportSupport.escapeHtml(value) + "</span>";
+    }
+
+    private static java.util.List<String> keyMessages(PepeniumHtmlReportWriter.FlowBlock block) {
+        java.util.List<String> messages = new java.util.ArrayList<>();
+        for (PepeniumTimeline.Event event : block.events) {
+            if (isKeyTimelineEvent(event) && event.getMessage() != null && messages.size() < 4) {
+                messages.add(event.getMessage());
+            }
+        }
+        return messages;
+    }
+
+    private static java.util.List<String> waitSummaries(PepeniumHtmlReportWriter.FlowBlock block) {
+        java.util.List<String> summaries = new java.util.ArrayList<>();
+        for (PepeniumTimeline.Event event : block.events) {
+            if (event.getType() == PepeniumTimeline.EventType.WAIT && event.getMessage() != null && summaries.size() < 5) {
+                summaries.add(event.getMessage());
+            }
+        }
+        return summaries;
+    }
+
+    private static boolean isKeyTimelineEvent(PepeniumTimeline.Event event) {
+        return event.getType() == PepeniumTimeline.EventType.STEP
+                || event.getType() == PepeniumTimeline.EventType.ASSERT
+                || event.getType() == PepeniumTimeline.EventType.ERROR
+                || event.getType() == PepeniumTimeline.EventType.SCREENSHOT;
+    }
+
+    private static String remoteProviderLabel(PepeniumHtmlReportWriter.ReportContext report) {
+        return report.remoteContext.enabled
+                ? PepeniumReportSupport.defaultValue(report.remoteContext.provider)
+                : "Local";
+    }
+
+    private static String finalLocation(PepeniumHtmlReportWriter.ReportContext report) {
+        if (report.mobileActivity != null || report.mobilePackage != null) {
+            return PepeniumReportSupport.defaultValue(report.mobilePackage) + " / "
+                    + PepeniumReportSupport.defaultValue(report.mobileActivity);
+        }
+        if (report.currentUrl != null) {
+            return report.currentUrl;
+        }
+        return "Not captured";
     }
 
     private static String executionStory(PepeniumHtmlReportWriter.ReportContext report) {
@@ -232,11 +387,20 @@ final class PepeniumReportHtmlRenderer {
         story.append(" in ");
         story.append(report.duration);
         story.append(". ");
+        if (!report.flowBlocks.isEmpty()) {
+            story.append("The main flow was condensed into ").append(report.flowBlocks.size())
+                    .append(report.flowBlocks.size() == 1 ? " execution block" : " execution blocks").append(". ");
+        }
         if (report.actionCount > 0) {
             story.append("It performed ").append(report.actionCount).append(report.actionCount == 1 ? " action" : " actions").append(". ");
         }
         if (report.waitCount > 0) {
             story.append("It recorded ").append(report.waitCount).append(report.waitCount == 1 ? " wait" : " waits").append(". ");
+        }
+        if (report.keyEventCount > 0) {
+            story.append("Only ").append(report.keyEventCount)
+                    .append(report.keyEventCount == 1 ? " key event" : " key events")
+                    .append(" are highlighted in the compact timeline view. ");
         }
         if (report.passedAssertions + report.failedAssertions > 0) {
             story.append("Assertions: ").append(report.passedAssertions).append(" passed and ")
