@@ -84,7 +84,7 @@ Dependencia tipica de consumo:
 <dependency>
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-toolkit</artifactId>
-    <version>0.9.5</version>
+    <version>0.9.6</version>
 </dependency>
 ```
 
@@ -454,7 +454,7 @@ Pepenium incluye:
 
 - `takeScreenshot()` para capturas mas seguras
 - `takeScreenshotFast()` para checkpoints mas ligeros
-- fallback al directorio temporal cuando `DEVICEFARM_SCREENSHOT_PATH` no esta definido
+- `PEPENIUM_SCREENSHOT_PATH` como override preferido del directorio de screenshots, manteniendo `DEVICEFARM_SCREENSHOT_PATH` como alias legacy
 - un banner ASCII de Pepenium al arrancar una sesion
 - logs compactos con profile, target, driver y sesion corta
 - reporte automatico de fallo con screenshot y contexto de runtime

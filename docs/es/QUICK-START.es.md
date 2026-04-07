@@ -264,6 +264,8 @@ Helpers disponibles:
 
 `takeScreenshotFast()` es util para checkpoints rapidos donde quieres menos coste de captura.
 
+Usa `PEPENIUM_SCREENSHOT_PATH` para elegir un directorio comun de screenshots en local o en CI. `DEVICEFARM_SCREENSHOT_PATH` sigue soportado como alias legacy para setups existentes en AWS Device Farm.
+
 ## 11. Donde Se Resuelve la Ejecucion
 
 Clases principales:

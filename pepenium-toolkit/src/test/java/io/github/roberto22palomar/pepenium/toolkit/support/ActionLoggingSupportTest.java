@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.toolkit.support;
 
+import io.github.roberto22palomar.pepenium.core.observability.ScreenshotPathResolver;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -10,6 +11,23 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class ActionLoggingSupportTest {
+
+    @Test
+    void resolveScreenshotBaseDirUsesDedicatedPepeniumPropertyWhenPresent() {
+        String previous = System.getProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY);
+        System.setProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY, "C:\\temp\\pepenium-shots");
+
+        try {
+            Path resolved = ActionLoggingSupport.resolveScreenshotBaseDir();
+            assertEquals(Path.of("C:\\temp\\pepenium-shots"), resolved);
+        } finally {
+            if (previous == null) {
+                System.clearProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY);
+            } else {
+                System.setProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY, previous);
+            }
+        }
+    }
 
     @Test
     void resolveScreenshotBaseDirFallsBackToJavaTmpDir() {

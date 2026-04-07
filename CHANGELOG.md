@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 - Added richer `.env` example files and expanded configuration guidance so local web, local Android and Appium capability tuning are easier to bootstrap from documented templates.
 
+### Changed
+- Added `PEPENIUM_SCREENSHOT_PATH` as the preferred screenshot output override while keeping `DEVICEFARM_SCREENSHOT_PATH` as a backward-compatible alias for existing and AWS Device Farm setups.
+
+### Improved
+- Improved screenshot diagnostics so failed capture logs now include the target output directory, making path and permissions issues easier to understand.
+
+## [0.9.6] - 2026-04-07
+
+### Added
+- Added optional `APPIUM_*` and `APP_WAIT_*` overrides for the Appium-backed built-in mobile native and mobile web profiles so advanced capabilities can be tuned from environment variables without overriding framework classes.
+
 ## [0.9.5] - 2026-04-06
 
 ### Fixed

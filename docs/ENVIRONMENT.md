@@ -35,7 +35,7 @@ Practical examples:
 - `-Dpepenium.profile=aws-android` wins over `PEPENIUM_PROFILE=local-android`
 - if `PEPENIUM_PROFILE` is unset, Pepenium can still choose the target default profile
 - if `APPIUM_URL` is unset for local Android, Pepenium falls back to `http://localhost:4723`
-- if `DEVICEFARM_SCREENSHOT_PATH` is unset, screenshots fall back to the Java temporary directory
+- if neither `PEPENIUM_SCREENSHOT_PATH` nor `DEVICEFARM_SCREENSHOT_PATH` is set, screenshots fall back to the Java temporary directory
 
 ## Resolution Order
 
@@ -138,7 +138,40 @@ Built-in profile ids currently available:
 - Used by:
   - local Android native
 - Purpose: Android activity to launch together with `APP_PACKAGE`
+### Optional Appium capability overrides
 
+These optional environment variables are supported by the Appium-backed built-in profiles:
+
+- local Android native
+- local Android web
+- AWS Android native
+- AWS Android web
+- AWS iOS native
+- BrowserStack Android native
+- BrowserStack Android web
+- BrowserStack iOS native
+- BrowserStack iOS web
+
+- `APPIUM_PLATFORM_NAME`
+- `APPIUM_AUTOMATION_NAME`
+- `APPIUM_PLATFORM_VERSION`
+- `APPIUM_NEW_COMMAND_TIMEOUT`
+- `APPIUM_AUTO_GRANT_PERMISSIONS`
+- `APPIUM_NO_RESET`
+- `APPIUM_FULL_RESET`
+- `APPIUM_DONT_STOP_APP_ON_RESET`
+- `APPIUM_SKIP_DEVICE_INITIALIZATION`
+- `APPIUM_SKIP_SERVER_INSTALLATION`
+- `APPIUM_IGNORE_HIDDEN_API_POLICY_ERROR`
+- `APPIUM_AUTO_LAUNCH`
+- `APPIUM_ADB_EXEC_TIMEOUT`
+- `APPIUM_UIAUTOMATOR2_SERVER_LAUNCH_TIMEOUT`
+- `APPIUM_UIAUTOMATOR2_SERVER_INSTALL_TIMEOUT`
+- `APPIUM_ANDROID_INSTALL_TIMEOUT`
+- `APP_WAIT_PACKAGE`
+- `APP_WAIT_ACTIVITY`
+
+They are intended for advanced mobile runs when the default Appium option sets need to be tuned without forking the framework.
 ## Local Web and Mobile Web
 
 ### `PEPENIUM_BASE_URL`
@@ -188,8 +221,21 @@ Built-in profile ids currently available:
 
 ## Screenshot Output
 
-### `DEVICEFARM_SCREENSHOT_PATH`
+### `pepenium.screenshot.path`
 
+- Type: Java system property
+- Required: No
+- Default fallback: Java temporary directory (`java.io.tmpdir`)
+- Purpose: Preferred override for the base directory where screenshots are written
+- Example:
+
+```text
+-Dpepenium.screenshot.path=C:\temp\pepenium-screenshots
+```
+
+### `PEPENIUM_SCREENSHOT_PATH`
+
+- Type: Environment variable
 - Required: No
 - Default fallback: Java temporary directory (`java.io.tmpdir`)
 - Used by:
@@ -197,7 +243,14 @@ Built-in profile ids currently available:
   - Android screenshots
   - iOS screenshots
   - automatic failure screenshots
-- Purpose: Base directory where screenshots are written
+- Purpose: Preferred environment-variable override for the base directory where screenshots are written
+
+### `DEVICEFARM_SCREENSHOT_PATH`
+
+- Type: Environment variable
+- Required: No
+- Purpose: Legacy compatibility alias for screenshot output, still honored for AWS Device Farm and existing setups
+- Recommendation: Prefer `PEPENIUM_SCREENSHOT_PATH` in new local or shared `.env` files
 
 ## Observability
 
@@ -353,6 +406,12 @@ APP_PACKAGE=com.example.app
 APP_ACTIVITY=.MainActivity
 APPIUM_NO_RESET=true
 APPIUM_NEW_COMMAND_TIMEOUT=300
-DEVICEFARM_SCREENSHOT_PATH=C:\temp\pepenium-screenshots
+PEPENIUM_SCREENSHOT_PATH=C:\temp\pepenium-screenshots
+```
+
+### Custom Screenshot Directory
+
+```text
+PEPENIUM_SCREENSHOT_PATH=C:\temp\pepenium-screenshots
 ```
 

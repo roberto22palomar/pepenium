@@ -21,7 +21,7 @@ mvn -q -f consumer-smoke/pom.xml clean test-compile
 If needed, the consumed version can be overridden:
 
 ```bash
-mvn -q -f consumer-smoke/pom.xml clean test-compile -Dpepenium.version=0.9.5
+mvn -q -f consumer-smoke/pom.xml clean test-compile -Dpepenium.version=0.9.6
 ```
 
 ## What It Covers

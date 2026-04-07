@@ -2,6 +2,7 @@ package io.github.roberto22palomar.pepenium.core.configs.local.android;
 
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
+import io.github.roberto22palomar.pepenium.core.config.validation.AppiumCapabilityOverrides;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
@@ -59,6 +60,7 @@ public class AndroidConfigLocal implements DriverConfig {
             opts.setAppActivity(appActivity);
         }
 
+        AppiumCapabilityOverrides.applyAndroid(env, opts);
         ConfigValidationSupport.requireAtLeastOneFilled(
                 "Local Android native app configuration",
                 Arrays.asList(appPath, appPackage),
@@ -81,8 +83,13 @@ public class AndroidConfigLocal implements DriverConfig {
     }
 
     private String envOrDefault(String key, String defaultValue) {
+        String value = envValue(key);
+        return value == null ? defaultValue : value;
+    }
+
+    private String envValue(String key) {
         String value = env.apply(key);
-        return (value == null || value.isBlank()) ? defaultValue : value.trim();
+        return (value == null || value.isBlank()) ? null : value.trim();
     }
 
     private static boolean notBlank(String value) {
