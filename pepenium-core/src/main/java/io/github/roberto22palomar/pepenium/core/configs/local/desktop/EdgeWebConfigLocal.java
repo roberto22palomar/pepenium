@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.configs.local.desktop;
 
+import io.github.roberto22palomar.pepenium.core.config.validation.WebCapabilityOverrides;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
@@ -11,6 +12,7 @@ public class EdgeWebConfigLocal implements DriverConfig {
     public DriverRequest createRequest() {
         EdgeOptions options = new EdgeOptions();
         options.addArguments("start-maximized");
+        WebCapabilityOverrides.applyEdge(System::getenv, options);
 
         return DriverRequest.builder()
                 .driverType(DriverType.LOCAL_EDGE)
