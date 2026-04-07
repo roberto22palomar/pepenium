@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Improved
 - Improved screenshot diagnostics so failed capture logs now include the target output directory, making path and permissions issues easier to understand.
+- Reworked the per-test HTML report with a more visual first-read layout: execution blocks, compact key timeline, repeated-wait hotspots, and a collapsible raw timeline so long runs stay easier to scan.
+- Clarified that the same HTML report bundle is generated for local, BrowserStack and AWS runs, while remote dashboards remain the place for provider-specific video and device-side diagnostics.
 
 ## [0.9.6] - 2026-04-07
 

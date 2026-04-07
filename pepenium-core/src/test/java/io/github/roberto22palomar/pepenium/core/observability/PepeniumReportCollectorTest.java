@@ -44,6 +44,8 @@ class PepeniumReportCollectorTest {
     void collectCapturesRemoteContextTimelineAndScreenshotArtifacts() throws Exception {
         StepTracker.record("Open login page");
         PepeniumTimeline.recordAction("Submit credentials");
+        PepeniumTimeline.recordWait("Wait for secure area");
+        PepeniumTimeline.recordWait("Wait for secure area");
         PepeniumTimeline.recordAssertionFailed("Assert secure area is visible");
         PepeniumTimeline.recordScreenshot("Manual screenshot", "C:\\tmp\\manual.png");
         PepeniumTimeline.recordError("Remote session failed");
@@ -83,12 +85,17 @@ class PepeniumReportCollectorTest {
         assertEquals("Pixel 8", report.deviceContext.deviceName);
         assertEquals("BrowserStack", report.remoteContext.provider);
         assertTrue(report.remoteContext.enabled);
-        assertEquals(5, report.totalEvents);
+        assertEquals(7, report.totalEvents);
         assertEquals(1, report.failedAssertions);
         assertEquals("Assert secure area is visible", report.lastAssertion);
         assertEquals("C:\\tmp\\manual.png", report.lastScreenshotPath);
-        assertEquals(4, report.eventGroups.size());
-        assertEquals(1, report.eventGroups.get(2).screenshots.size());
+        assertEquals(6, report.eventGroups.size());
+        assertEquals(1, report.eventGroups.get(4).screenshots.size());
+        assertEquals(4, report.keyEventCount);
+        assertEquals(1, report.flowBlocks.size());
+        assertEquals(1, report.waitHotspots.size());
+        assertEquals("Open login page", report.flowBlocks.get(0).title);
+        assertEquals("Submit credentials", report.flowBlocks.get(0).events.get(1).getMessage());
         assertNotNull(report.screenshotUri);
         assertTrue(Files.exists(Path.of(URI.create(report.screenshotUri))));
     }

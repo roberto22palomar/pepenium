@@ -10,7 +10,10 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 final class PepeniumReportCollector {
 
@@ -51,6 +54,9 @@ final class PepeniumReportCollector {
                 stepSnapshot,
                 timelineSnapshot,
                 buildEventGroups(timelineSnapshot),
+                buildFlowBlocks(timelineSnapshot),
+                findWaitHotspots(timelineSnapshot),
+                countKeyEvents(timelineSnapshot),
                 countEvents(timelineSnapshot, null, null),
                 countEvents(timelineSnapshot, PepeniumTimeline.EventType.ACTION, null),
                 countEvents(timelineSnapshot, PepeniumTimeline.EventType.WAIT, null),
@@ -103,6 +109,79 @@ final class PepeniumReportCollector {
         return groups;
     }
 
+    static List<PepeniumHtmlReportWriter.FlowBlock> buildFlowBlocks(PepeniumTimeline.Snapshot snapshot) {
+        List<PepeniumHtmlReportWriter.FlowBlock> blocks = new ArrayList<>();
+        List<PepeniumTimeline.Event> currentEvents = new ArrayList<>();
+        String currentTitle = null;
+        String currentTime = null;
+        long currentStarted = -1L;
+
+        for (PepeniumTimeline.Event event : snapshot.getEvents()) {
+            if (event.getType() == PepeniumTimeline.EventType.STEP && !currentEvents.isEmpty()) {
+                blocks.add(toFlowBlock(currentTitle, currentTime, currentStarted, currentEvents));
+                currentEvents = new ArrayList<>();
+                currentTitle = null;
+                currentTime = null;
+                currentStarted = -1L;
+            }
+
+            if (currentEvents.isEmpty()) {
+                currentStarted = event.getEpochMillis();
+                currentTime = event.getTime();
+            }
+            if (currentTitle == null) {
+                currentTitle = event.getType() == PepeniumTimeline.EventType.STEP
+                        ? event.getMessage()
+                        : defaultBlockTitle(event);
+            }
+            currentEvents.add(event);
+        }
+
+        if (!currentEvents.isEmpty()) {
+            blocks.add(toFlowBlock(currentTitle, currentTime, currentStarted, currentEvents));
+        }
+        return blocks;
+    }
+
+    static List<PepeniumHtmlReportWriter.WaitHotspot> findWaitHotspots(PepeniumTimeline.Snapshot snapshot) {
+        Map<String, WaitCounter> counters = new LinkedHashMap<>();
+        for (PepeniumTimeline.Event event : snapshot.getEvents()) {
+            if (event.getType() != PepeniumTimeline.EventType.WAIT) {
+                continue;
+            }
+            WaitCounter counter = counters.computeIfAbsent(event.getMessage(),
+                    ignored -> new WaitCounter(event.getTime(), event.getTime()));
+            counter.count++;
+            counter.lastSeen = event.getTime();
+        }
+        List<PepeniumHtmlReportWriter.WaitHotspot> hotspots = new ArrayList<>();
+        counters.forEach((message, counter) -> {
+            if (counter.count > 1) {
+                hotspots.add(new PepeniumHtmlReportWriter.WaitHotspot(
+                        message,
+                        counter.count,
+                        counter.firstSeen,
+                        counter.lastSeen
+                ));
+            }
+        });
+        hotspots.sort(Comparator.comparingInt((PepeniumHtmlReportWriter.WaitHotspot item) -> item.count).reversed());
+        return hotspots.size() <= 5 ? hotspots : hotspots.subList(0, 5);
+    }
+
+    static int countKeyEvents(PepeniumTimeline.Snapshot snapshot) {
+        int total = 0;
+        for (PepeniumTimeline.Event event : snapshot.getEvents()) {
+            if (event.getType() == PepeniumTimeline.EventType.STEP
+                    || event.getType() == PepeniumTimeline.EventType.ASSERT
+                    || event.getType() == PepeniumTimeline.EventType.ERROR
+                    || event.getType() == PepeniumTimeline.EventType.SCREENSHOT) {
+                total++;
+            }
+        }
+        return total;
+    }
+
     static int countEvents(
             PepeniumTimeline.Snapshot snapshot,
             PepeniumTimeline.EventType type,
@@ -139,6 +218,84 @@ final class PepeniumReportCollector {
             }
         }
         return null;
+    }
+
+    private static PepeniumHtmlReportWriter.FlowBlock toFlowBlock(String title,
+                                                                  String startedAt,
+                                                                  long startedEpochMillis,
+                                                                  List<PepeniumTimeline.Event> events) {
+        int actionCount = 0;
+        int waitCount = 0;
+        int assertionCount = 0;
+        int screenshotCount = 0;
+        int errorCount = 0;
+        boolean failed = false;
+        String leadScreenshotPath = null;
+        long finishedEpochMillis = startedEpochMillis;
+
+        for (PepeniumTimeline.Event event : events) {
+            finishedEpochMillis = event.getEpochMillis();
+            switch (event.getType()) {
+                case ACTION:
+                    actionCount++;
+                    break;
+                case WAIT:
+                    waitCount++;
+                    break;
+                case ASSERT:
+                    assertionCount++;
+                    break;
+                case SCREENSHOT:
+                    screenshotCount++;
+                    if (leadScreenshotPath == null && event.getScreenshotPath() != null) {
+                        leadScreenshotPath = event.getScreenshotPath();
+                    }
+                    break;
+                case ERROR:
+                    errorCount++;
+                    break;
+                case STEP:
+                default:
+                    break;
+            }
+            if (event.getStatus() == PepeniumTimeline.EventStatus.FAILED
+                    || event.getType() == PepeniumTimeline.EventType.ERROR) {
+                failed = true;
+            }
+        }
+
+        return new PepeniumHtmlReportWriter.FlowBlock(
+                title,
+                startedAt,
+                startedEpochMillis,
+                finishedEpochMillis,
+                events,
+                actionCount,
+                waitCount,
+                assertionCount,
+                screenshotCount,
+                errorCount,
+                failed,
+                leadScreenshotPath
+        );
+    }
+
+    private static String defaultBlockTitle(PepeniumTimeline.Event event) {
+        switch (event.getType()) {
+            case ASSERT:
+                return "Assertion checkpoint";
+            case ACTION:
+                return "Action sequence";
+            case WAIT:
+                return "Wait sequence";
+            case SCREENSHOT:
+                return "Screenshot evidence";
+            case ERROR:
+                return "Failure event";
+            case STEP:
+            default:
+                return event.getMessage();
+        }
     }
 
     static PepeniumHtmlReportWriter.RemoteContext resolveRemoteContext(DriverRequest request, WebDriver driver) {
@@ -193,5 +350,16 @@ final class PepeniumReportCollector {
             return "Remote";
         }
         return driverType != null && driverType.contains("LOCAL") ? "Local" : "Unknown";
+    }
+
+    private static final class WaitCounter {
+        private int count;
+        private final String firstSeen;
+        private String lastSeen;
+
+        private WaitCounter(String firstSeen, String lastSeen) {
+            this.firstSeen = firstSeen;
+            this.lastSeen = lastSeen;
+        }
     }
 }
