@@ -245,6 +245,7 @@ public final class PepeniumHtmlReportWriter {
         final String mobilePackage;
         final String mobileActivity;
         final DeviceContext deviceContext;
+        final Path reportDir;
         final String capabilitiesSummary;
         final StepTracker.Snapshot stepSnapshot;
         final PepeniumTimeline.Snapshot timelineSnapshot;
@@ -287,6 +288,7 @@ public final class PepeniumHtmlReportWriter {
                 String mobilePackage,
                 String mobileActivity,
                 DeviceContext deviceContext,
+                Path reportDir,
                 String capabilitiesSummary,
                 StepTracker.Snapshot stepSnapshot,
                 PepeniumTimeline.Snapshot timelineSnapshot,
@@ -328,6 +330,7 @@ public final class PepeniumHtmlReportWriter {
             this.mobilePackage = mobilePackage;
             this.mobileActivity = mobileActivity;
             this.deviceContext = deviceContext;
+            this.reportDir = reportDir;
             this.capabilitiesSummary = capabilitiesSummary;
             this.stepSnapshot = stepSnapshot;
             this.timelineSnapshot = timelineSnapshot;
