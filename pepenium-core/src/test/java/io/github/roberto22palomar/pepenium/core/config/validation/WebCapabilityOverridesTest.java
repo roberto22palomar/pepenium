@@ -39,6 +39,22 @@ class WebCapabilityOverridesTest {
     }
 
     @Test
+    void applyChromeSupportsHeadlessFromSystemProperty() {
+        System.setProperty("pepenium.web.headless", "true");
+        try {
+            ChromeOptions options = new ChromeOptions();
+
+            WebCapabilityOverrides.applyChrome(WebCapabilityOverrides::systemPropertyOrEnv, options);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> chromeOptions = (Map<String, Object>) options.getCapability("goog:chromeOptions");
+            assertTrue(((java.util.List<String>) chromeOptions.get("args")).contains("--headless=new"));
+        } finally {
+            System.clearProperty("pepenium.web.headless");
+        }
+    }
+
+    @Test
     void applyFirefoxSupportsBinaryAndHeadless() {
         FirefoxOptions options = new FirefoxOptions();
 
