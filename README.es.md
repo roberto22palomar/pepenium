@@ -1,23 +1,3 @@
-<p align="center">
-  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
-    <img alt="Build" src="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml/badge.svg" />
-  </a>
-  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
-    <img alt="Coverage" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/roberto22palomar/pepenium/coverage-badge/.github/badges/coverage.json" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="LICENSE">
-    <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
-  </a>
-  <img alt="Java" src="https://img.shields.io/badge/Java-11-blue.svg" />
-  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.x-orange.svg" />
-  <img alt="JUnit" src="https://img.shields.io/badge/JUnit-5-purple.svg" />
-  <img alt="Selenium" src="https://img.shields.io/badge/Selenium-4-43B02A.svg" />
-  <img alt="Appium Client" src="https://img.shields.io/badge/Appium%20Client-10-00BFFF.svg" />
-</p>
-
 # Pepenium
 
 <p align="center">
@@ -57,19 +37,19 @@ Ficheros de entorno listos para copiar:
 - Capturas pensadas para flujos rapidos sin screenshots borrosos
 - Logs mas limpios con contexto automatico y evidencia de fallo
 
-Consulta [START-HERE.es.md](docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
+Consulta [START-HERE.es.md](docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico interno de cambios.
 Usa [ENVIRONMENT.md](docs/ENVIRONMENT.md) como referencia central de variables de entorno, reglas de precedencia, properties de runtime y patrones de override de capabilities.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 Usa [consumer-smoke/README.md](consumer-smoke/README.md) si quieres validar el consumo de la API publica desde un proyecto Maven separado.
 
-El workflow principal de CI ejecuta `verify` sobre el framework y despues valida ese consumer smoke, de modo que los quality gates y el consumo externo queden comprobados de forma continua.
+La ruta estandar de validacion ejecuta `verify` sobre el framework y despues valida ese consumer smoke, de modo que los quality gates y el consumo externo puedan comprobarse de forma consistente.
 
 ## Calidad
 
-- El CI ejecuta `mvn verify` en cada push y pull request sobre `main`
+- Ejecuta `mvn verify` antes de integrar cambios del framework
 - La cobertura se agrega a partir de los reportes JaCoCo generados por `pepenium-core` y `pepenium-toolkit`
 - Checkstyle, SpotBugs y `japicmp` forman parte del camino normal de verificacion
-- El proyecto independiente `consumer-smoke` valida el consumo de la API publica fuera del reactor principal
+- El proyecto independiente `consumer-smoke` valida el consumo de la API fuera del reactor principal
 
 ## Usar Pepenium Desde Otro Proyecto
 
@@ -164,10 +144,9 @@ Usa [REPORTING.es.md](docs/es/REPORTING.es.md) para la guia especifica de report
 ## Que Aporta La Linea Actual 0.9.x
 
 - Quality gates reales de Maven con Enforcer, JaCoCo, Checkstyle y SpotBugs
-- Un camino de `verify` mas fuerte en CI para comprobar higiene de libreria de forma continua
-- Metadata y packaging orientados a release con sources y Javadocs
-- Workflows dedicados de preflight y publicacion por tag para release
-- Comprobacion de compatibilidad de API publica y validacion mas fuerte de consumer smoke
+- Un camino de `verify` mas fuerte para comprobar higiene de libreria de forma consistente
+- Metadata interna del proyecto para el repositorio privado de GitLab
+- Comprobacion de compatibilidad de API y validacion mas fuerte de consumer smoke
 - Endurecimiento de `core`, `toolkit`, execution profiles y reporting
 
 ## Arquitectura Actual

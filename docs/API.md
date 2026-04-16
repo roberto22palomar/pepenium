@@ -1,10 +1,10 @@
-# Public API Guide
+# API Guide
 
-This document defines the intended public API surface of Pepenium in its current pre-`1.0.0` line.
+This document defines the intended API surface of Pepenium in its current pre-`1.0.0` line.
 
 Its goal is simple:
 
-- make it clear which classes external users are expected to build against
+- make it clear which classes consuming projects are expected to build against
 - make internal refactors safer for maintainers
 - define what should count as a breaking change on the road to `1.0.0`
 
@@ -171,7 +171,7 @@ These classes are visible and may be useful to advanced adopters, but should be 
 
 The `pepenium-examples` module is repository-only showcase material built on top of the stable authoring surface.
 
-Its tests, flows and page objects are useful learning material, but they are not published consumer artifacts and they are not protected by the public API compatibility contract.
+Its tests, flows and page objects are useful learning material, but they are not reusable consumer artifacts and they are not protected by the API compatibility contract.
 
 ### Execution and configuration types
 
@@ -236,7 +236,7 @@ For `BaseTest`, the protected authoring hooks used by test subclasses should als
 
 ## Automated Compatibility Gate
 
-Pepenium now runs an automatic `japicmp` comparison during `verify` for the released `pepenium` and `pepenium-toolkit` artifacts.
+Pepenium now runs an automatic `japicmp` comparison during `verify` for the `pepenium` and `pepenium-toolkit` modules.
 
 That build-time compatibility gate is intentionally scoped to the documented public API surface:
 

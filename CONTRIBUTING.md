@@ -85,7 +85,7 @@ Before submitting a pull request:
 - avoid breaking changes unless clearly justified
 - if you change `BaseTest`, `TestTarget`, built-in execution profile ids or reporting-contract expectations, update `docs/API.md` and the contract-focused tests together
 
-Pull requests should:
+Merge requests should:
 
 - reference an existing issue when possible
 - include a clear description of what changed and why
@@ -108,7 +108,7 @@ When deciding where to place a change:
 - prefer `pepenium-toolkit` for reusable authoring helpers
 - prefer `pepenium-examples` for showcase code and templates
 
-`pepenium-examples` should stay focused on runnable examples that consume the framework from inside this repository. It is not a published artifact surface and should not become a second home for reusable framework features.
+`pepenium-examples` should stay focused on runnable examples that consume the framework from inside this repository. It is not a reusable artifact surface and should not become a second home for framework features.
 
 For public-vs-internal API expectations, see [API.md](docs/API.md).
 
@@ -131,7 +131,7 @@ For documented public API, prefer this order whenever practical:
 - document the migration path
 - remove it only in a later released version unless a correctness or security reason forces a direct break
 
-Before creating a release tag, run the `Release Preflight` GitHub Actions workflow, or the equivalent local validation, so version alignment, `CHANGELOG.md`, `verify`, release-profile packaging and `consumer-smoke` are all checked before publication.
+Before creating an internal version tag, run the local validation path so version alignment, `CHANGELOG.md`, `verify` and `consumer-smoke` are checked.
 
 ---
 

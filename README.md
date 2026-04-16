@@ -1,23 +1,3 @@
-<p align="center">
-  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
-    <img alt="Build" src="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml/badge.svg" />
-  </a>
-  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
-    <img alt="Coverage" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/roberto22palomar/pepenium/coverage-badge/.github/badges/coverage.json" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="LICENSE">
-    <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
-  </a>
-  <img alt="Java" src="https://img.shields.io/badge/Java-11-blue.svg" />
-  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.x-orange.svg" />
-  <img alt="JUnit" src="https://img.shields.io/badge/JUnit-5-purple.svg" />
-  <img alt="Selenium" src="https://img.shields.io/badge/Selenium-4-43B02A.svg" />
-  <img alt="Appium Client" src="https://img.shields.io/badge/Appium%20Client-10-00BFFF.svg" />
-</p>
-
 # Pepenium
 
 <p align="center">
@@ -57,21 +37,21 @@ Ready-to-copy environment examples:
 - Screenshot helpers designed for fast flows without blurred captures
 - Cleaner logs with automatic runtime context and failure evidence
 
-See [START-HERE.md](docs/START-HERE.md) for the fastest first-run path, [QUICK-START.md](docs/QUICK-START.md) for the fuller walkthrough and [CHANGELOG.md](CHANGELOG.md) for release history.
+See [START-HERE.md](docs/START-HERE.md) for the fastest first-run path, [QUICK-START.md](docs/QUICK-START.md) for the fuller walkthrough and [CHANGELOG.md](CHANGELOG.md) for the internal change history.
 Use [ENVIRONMENT.md](docs/ENVIRONMENT.md) as the central reference for environment variables, precedence rules and ready-to-copy configuration starting points.
 Use [ENVIRONMENT.md](docs/ENVIRONMENT.md) as the central reference for environment variables, precedence rules, runtime properties and capability override patterns.
 Use [API.md](docs/API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
 Use the root `docker-compose.yaml` if you want to run the local Appium server in Docker while keeping the Android emulator on the host.
 Use [consumer-smoke/README.md](consumer-smoke/README.md) for the standalone public-API consumer smoke validation flow.
 
-The main CI workflow now runs framework `verify` and then validates that standalone consumer smoke, so quality gates and public API consumption are both checked continuously.
+The standard validation path runs framework `verify` and then validates the standalone consumer smoke, so quality gates and API consumption can be checked consistently.
 
 ## Quality
 
-- CI runs `mvn verify` on every push and pull request to `main`
+- Run `mvn verify` before merging framework changes
 - Coverage is aggregated from the JaCoCo reports produced by `pepenium-core` and `pepenium-toolkit`
 - Checkstyle, SpotBugs and `japicmp` are part of the normal verification path
-- The standalone `consumer-smoke` project validates public API consumption from outside the main reactor
+- The standalone `consumer-smoke` project validates API consumption from outside the main reactor
 
 ## Using Pepenium From Another Project
 
@@ -165,10 +145,9 @@ Use [REPORTING.md](docs/REPORTING.md) for the reporting-specific details and con
 ## What The Current 0.9.x Line Adds
 
 - Real Maven quality gates through Enforcer, JaCoCo, Checkstyle and SpotBugs
-- A stronger `verify` path in CI so library hygiene is checked continuously
-- Release-oriented metadata and packaging for sources and Javadocs
-- Dedicated release preflight and tagged publication workflows
-- Public API compatibility checks and stronger consumer-smoke validation
+- A stronger `verify` path so library hygiene can be checked consistently
+- Internal project metadata for the private GitLab repository
+- API compatibility checks and stronger consumer-smoke validation
 - Hardening passes in `core`, `toolkit`, execution profiles and reporting
 
 ## Current Architecture
@@ -226,7 +205,7 @@ Example tests showing the intended usage pattern:
 - `pepenium-examples/src/test/java/.../tests/myProjectExample/web`
 
 Examples are grouped by functional target instead of by environment.
-This module is intentionally repository-only: it is not a published consumer artifact and it is not part of the public API compatibility contract.
+This module is intentionally repository-only: it is not a reusable consumer artifact and it is not part of the public API compatibility contract.
 
 ## Execution Model
 
