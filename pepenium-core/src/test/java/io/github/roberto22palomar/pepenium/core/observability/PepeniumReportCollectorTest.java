@@ -101,4 +101,41 @@ class PepeniumReportCollectorTest {
         assertTrue(Files.exists(reportDir.resolve(report.screenshotUri)));
         assertTrue(Files.exists(Path.of(report.lastScreenshotPath)));
     }
+
+    @Test
+    void htmlReportRendersAllManualScreenshotsAsVisibleArtifacts() throws Exception {
+        Path firstScreenshot = Files.write(reportDir.resolve("first-source.png"), new byte[]{4, 5, 6});
+        Path secondScreenshot = Files.write(reportDir.resolve("second-source.png"), new byte[]{7, 8, 9});
+        StepTracker.record("Open dashboard");
+        PepeniumTimeline.recordScreenshot("First screenshot", firstScreenshot.toString());
+        StepTracker.record("Open detail");
+        PepeniumTimeline.recordScreenshot("Second screenshot", secondScreenshot.toString());
+
+        DriverRequest request = DriverRequest.builder()
+                .driverType(DriverType.LOCAL_CHROME)
+                .target(TestTarget.WEB_DESKTOP)
+                .description("local web")
+                .executionProfileId("local-web")
+                .capabilities(new MutableCapabilities())
+                .build();
+        when(driver.getScreenshotAs(OutputType.BYTES)).thenReturn(new byte[]{1, 2, 3});
+        when(driver.getSessionId()).thenReturn(new SessionId("session-654321"));
+        when(driver.getCurrentUrl()).thenReturn("https://example.test/dashboard");
+        when(driver.getTitle()).thenReturn("Dashboard");
+
+        PepeniumHtmlReportWriter.ReportContext report = PepeniumReportCollector.collect(
+                "dashboardFlow",
+                new DriverSession(driver, request),
+                null,
+                reportDir
+        );
+
+        String html = PepeniumReportHtmlRenderer.render(report);
+
+        assertTrue(html.contains("<h2>Screenshots</h2>"));
+        assertTrue(html.contains("Screenshot 1"));
+        assertTrue(html.contains("Screenshot 2"));
+        assertTrue(html.contains("first-source.png"));
+        assertTrue(html.contains("second-source.png"));
+    }
 }

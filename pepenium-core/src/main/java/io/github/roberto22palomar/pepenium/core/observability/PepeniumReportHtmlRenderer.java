@@ -2,6 +2,10 @@ package io.github.roberto22palomar.pepenium.core.observability;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 final class PepeniumReportHtmlRenderer {
 
@@ -198,6 +202,8 @@ final class PepeniumReportHtmlRenderer {
                     .append("</div></div></section>");
         }
 
+        List<String> manualScreenshotHrefs = manualScreenshotHrefs(report);
+
         html.append("<section class=\"section\"><h2>Artifacts</h2><div class=\"artifact-card\"><div class=\"artifact-list\">")
                 .append(renderArtifactLink("Suite index", "index.html"))
                 .append(renderArtifactLink("Suite summary JSON", "summary.json"));
@@ -211,6 +217,16 @@ final class PepeniumReportHtmlRenderer {
             html.append(renderArtifactLink("Remote dashboard", report.remoteContext.dashboardUrl));
         }
         html.append("</div></div></section>");
+
+        if (!manualScreenshotHrefs.isEmpty()) {
+            html.append("<section class=\"section\"><h2>Screenshots</h2><div class=\"artifact-card\"><div class=\"attachments\">");
+            int screenshotNumber = 1;
+            for (String screenshotHref : manualScreenshotHrefs) {
+                html.append(renderScreenshotAttachment("Screenshot " + screenshotNumber, screenshotHref));
+                screenshotNumber++;
+            }
+            html.append("</div></div></section>");
+        }
 
         if (report.screenshotUri != null) {
             html.append("<section class=\"section\"><h2>Final Screenshot</h2><div class=\"artifact-card\"><a href=\"")
@@ -249,6 +265,15 @@ final class PepeniumReportHtmlRenderer {
     private static String renderArtifactLink(String label, String href) {
         return "<a class=\"artifact-link\" href=\"" + PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(href))
                 + "\"><span>" + PepeniumReportSupport.escapeHtml(label) + "</span><span class=\"muted\">Open</span></a>";
+    }
+
+    private static String renderScreenshotAttachment(String label, String href) {
+        String safeHref = PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(href));
+        return "<div class=\"attachment\"><div><span class=\"badge badge-screenshot\">SCREENSHOT</span></div>"
+                + "<div class=\"timeline-message\">" + PepeniumReportSupport.escapeHtml(label) + "</div>"
+                + "<a href=\"" + safeHref + "\">Open screenshot</a>"
+                + "<img class=\"thumb\" src=\"" + safeHref + "\" alt=\"" + PepeniumReportSupport.escapeHtml(label) + "\">"
+                + "<div class=\"path\">" + safeHref + "</div></div>";
     }
 
     private static String renderFocusItem(String label, String value) {
@@ -344,6 +369,19 @@ final class PepeniumReportHtmlRenderer {
         }
         html.append("</article>");
         return html.toString();
+    }
+
+    private static List<String> manualScreenshotHrefs(PepeniumHtmlReportWriter.ReportContext report) {
+        Set<String> hrefs = new LinkedHashSet<>();
+        for (PepeniumHtmlReportWriter.EventGroup group : report.eventGroups) {
+            for (PepeniumTimeline.Event screenshot : group.screenshots) {
+                String screenshotHref = PepeniumReportSupport.pathToHref(screenshot.getScreenshotPath(), report.reportDir);
+                if (screenshotHref != null && !screenshotHref.isBlank()) {
+                    hrefs.add(screenshotHref);
+                }
+            }
+        }
+        return new ArrayList<>(hrefs);
     }
 
     private static String renderChip(String value) {
