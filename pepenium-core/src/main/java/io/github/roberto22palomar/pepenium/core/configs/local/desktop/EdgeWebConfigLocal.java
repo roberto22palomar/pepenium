@@ -12,7 +12,7 @@ public class EdgeWebConfigLocal implements DriverConfig {
     public DriverRequest createRequest() {
         EdgeOptions options = new EdgeOptions();
         options.addArguments("start-maximized");
-        WebCapabilityOverrides.applyEdge(System::getenv, options);
+        WebCapabilityOverrides.applyEdge(WebCapabilityOverrides::systemPropertyOrEnv, options);
 
         return DriverRequest.builder()
                 .driverType(DriverType.LOCAL_EDGE)

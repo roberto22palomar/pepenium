@@ -12,7 +12,7 @@ public class ChromeWebConfigLocal implements DriverConfig {
     public DriverRequest createRequest() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("start-maximized");
-        WebCapabilityOverrides.applyChrome(System::getenv, options);
+        WebCapabilityOverrides.applyChrome(WebCapabilityOverrides::systemPropertyOrEnv, options);
 
         return DriverRequest.builder()
                 .driverType(DriverType.LOCAL_CHROME)

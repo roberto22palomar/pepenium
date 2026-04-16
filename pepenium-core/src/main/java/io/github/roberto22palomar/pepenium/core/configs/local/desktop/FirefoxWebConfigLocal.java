@@ -13,7 +13,7 @@ public class FirefoxWebConfigLocal implements DriverConfig {
         FirefoxOptions options = new FirefoxOptions();
         options.addArguments("--width=1920");
         options.addArguments("--height=1080");
-        WebCapabilityOverrides.applyFirefox(System::getenv, options);
+        WebCapabilityOverrides.applyFirefox(WebCapabilityOverrides::systemPropertyOrEnv, options);
 
         return DriverRequest.builder()
                 .driverType(DriverType.LOCAL_FIREFOX)
