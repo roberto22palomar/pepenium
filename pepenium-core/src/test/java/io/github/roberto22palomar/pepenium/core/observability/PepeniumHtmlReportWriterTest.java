@@ -108,4 +108,30 @@ class PepeniumHtmlReportWriterTest {
 
         assertTrue(href.equals("screenshots/manual_123_screenshot.png"));
     }
+
+    @Test
+    void linksScreenshotsFromExecutionBlocksAndTimeline() throws Exception {
+        Path reportDir = Files.createTempDirectory("pepenium-report-screenshot-test");
+        Path screenshotDir = reportDir.resolve("screenshots");
+        Files.createDirectories(screenshotDir);
+        Path screenshot = screenshotDir.resolve("captured-step.png");
+        Files.write(screenshot, new byte[]{1, 2, 3});
+
+        System.setProperty("pepenium.report.dir", reportDir.toString());
+        StepTracker.record("Capture dashboard evidence");
+        PepeniumTimeline.recordScreenshot("Dashboard after load", screenshot.toString());
+
+        PepeniumHtmlReportWriter.write("sampleScreenshotTest", null, null);
+
+        Path reportFile = Files.list(reportDir)
+                .filter(path -> path.getFileName().toString().startsWith("report-"))
+                .filter(path -> path.getFileName().toString().endsWith(".html"))
+                .findFirst()
+                .orElseThrow();
+        String reportHtml = Files.readString(reportFile);
+
+        assertTrue(reportHtml.contains("Screenshots (1)"));
+        assertTrue(reportHtml.contains("Dashboard after load"));
+        assertTrue(reportHtml.contains("screenshots/"));
+    }
 }

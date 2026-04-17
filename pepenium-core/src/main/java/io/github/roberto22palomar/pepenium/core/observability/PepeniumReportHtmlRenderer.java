@@ -81,7 +81,7 @@ final class PepeniumReportHtmlRenderer {
         } else {
             html.append("<div class=\"block-list\">");
             for (PepeniumHtmlReportWriter.FlowBlock block : report.flowBlocks) {
-                html.append(renderFlowBlock(block));
+                html.append(renderFlowBlock(block, report.reportDir));
             }
             html.append("</div>");
         }
@@ -293,7 +293,7 @@ final class PepeniumReportHtmlRenderer {
                 + PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(value)) + "</div>";
     }
 
-    private static String renderFlowBlock(PepeniumHtmlReportWriter.FlowBlock block) {
+    private static String renderFlowBlock(PepeniumHtmlReportWriter.FlowBlock block, java.nio.file.Path reportDir) {
         long blockDurationMillis = Math.max(0L, block.finishedEpochMillis - block.startedEpochMillis);
         StringBuilder html = new StringBuilder();
         html.append("<article class=\"block-card\"><div class=\"block-head\"><div><div class=\"block-title\">")
@@ -320,6 +320,17 @@ final class PepeniumReportHtmlRenderer {
                     .append(waitSummaries(block).size()).append(")</summary><div class=\"list\" style=\"margin-top:12px;\">");
             for (String waitSummary : waitSummaries(block)) {
                 html.append("<div class=\"list-item\">").append(PepeniumReportSupport.escapeHtml(waitSummary)).append("</div>");
+            }
+            html.append("</div></details>");
+        }
+        if (!screenshotEvents(block).isEmpty()) {
+            html.append("<details class=\"compact-details\"><summary>Screenshots (")
+                    .append(screenshotEvents(block).size()).append(")</summary><div class=\"attachments\">");
+            int screenshotNumber = 1;
+            for (PepeniumTimeline.Event screenshot : screenshotEvents(block)) {
+                String screenshotHref = PepeniumReportSupport.pathToHref(screenshot.getScreenshotPath(), reportDir);
+                html.append(renderScreenshotEventAttachment("Step screenshot " + screenshotNumber, screenshot, screenshotHref));
+                screenshotNumber++;
             }
             html.append("</div></details>");
         }
@@ -350,6 +361,12 @@ final class PepeniumReportHtmlRenderer {
             html.append("<span class=\"timeline-pill\">dt ").append(PepeniumReportSupport.escapeHtml(formatDelta(group))).append("</span>");
         }
         html.append("</div><div class=\"timeline-message\">").append(PepeniumReportSupport.escapeHtml(anchor.getMessage())).append("</div>");
+        if (anchor.getType() == PepeniumTimeline.EventType.SCREENSHOT && anchor.getScreenshotPath() != null) {
+            String screenshotUri = PepeniumReportSupport.pathToHref(anchor.getScreenshotPath(), reportDir);
+            html.append("<div class=\"attachments\">")
+                    .append(renderScreenshotEventAttachment("Screenshot evidence", anchor, screenshotUri))
+                    .append("</div>");
+        }
         if (group != null && !group.screenshots.isEmpty()) {
             html.append("<details><summary>Show ")
                     .append(group.screenshots.size())
@@ -357,13 +374,7 @@ final class PepeniumReportHtmlRenderer {
                     .append("</summary><div class=\"attachments\">");
             for (PepeniumTimeline.Event screenshot : group.screenshots) {
                 String screenshotUri = PepeniumReportSupport.pathToHref(screenshot.getScreenshotPath(), reportDir);
-                html.append("<div class=\"attachment\"><div>")
-                        .append(renderEventTypeBadge(screenshot))
-                        .append("<span class=\"timeline-time\">").append(PepeniumReportSupport.escapeHtml(screenshot.getTime())).append("</span></div>")
-                        .append("<div class=\"timeline-message\">").append(PepeniumReportSupport.escapeHtml(screenshot.getMessage())).append("</div>")
-                        .append("<a href=\"").append(PepeniumReportSupport.escapeHtml(screenshotUri)).append("\">Open screenshot</a>")
-                        .append("<img class=\"thumb\" src=\"").append(PepeniumReportSupport.escapeHtml(screenshotUri)).append("\" alt=\"Screenshot preview\">")
-                        .append("<div class=\"path\">").append(PepeniumReportSupport.escapeHtml(screenshot.getScreenshotPath())).append("</div></div>");
+                html.append(renderScreenshotEventAttachment("Screenshot preview", screenshot, screenshotUri));
             }
             html.append("</div></details>");
         }
@@ -406,6 +417,16 @@ final class PepeniumReportHtmlRenderer {
             }
         }
         return summaries;
+    }
+
+    private static java.util.List<PepeniumTimeline.Event> screenshotEvents(PepeniumHtmlReportWriter.FlowBlock block) {
+        java.util.List<PepeniumTimeline.Event> screenshots = new java.util.ArrayList<>();
+        for (PepeniumTimeline.Event event : block.events) {
+            if (event.getType() == PepeniumTimeline.EventType.SCREENSHOT && event.getScreenshotPath() != null) {
+                screenshots.add(event);
+            }
+        }
+        return screenshots;
     }
 
     private static boolean isKeyTimelineEvent(PepeniumTimeline.Event event) {
@@ -557,6 +578,17 @@ final class PepeniumReportHtmlRenderer {
     private static String renderEventTypeBadge(PepeniumTimeline.Event event) {
         return "<span class=\"badge " + eventTypeBadgeClass(event.getType()) + "\">"
                 + PepeniumReportSupport.escapeHtml(event.getType().name()) + "</span>";
+    }
+
+    private static String renderScreenshotEventAttachment(String label, PepeniumTimeline.Event screenshot, String href) {
+        String safeHref = PepeniumReportSupport.escapeHtml(href);
+        return "<div class=\"attachment\"><div>"
+                + renderEventTypeBadge(screenshot)
+                + "<span class=\"timeline-time\">" + PepeniumReportSupport.escapeHtml(screenshot.getTime()) + "</span></div>"
+                + "<div class=\"timeline-message\">" + PepeniumReportSupport.escapeHtml(screenshot.getMessage()) + "</div>"
+                + "<a href=\"" + safeHref + "\">Open screenshot</a>"
+                + "<img class=\"thumb\" src=\"" + safeHref + "\" alt=\"" + PepeniumReportSupport.escapeHtml(label) + "\">"
+                + "<div class=\"path\">" + PepeniumReportSupport.escapeHtml(screenshot.getScreenshotPath()) + "</div></div>";
     }
 
     private static String renderEventStatusBadge(PepeniumTimeline.Event event) {
