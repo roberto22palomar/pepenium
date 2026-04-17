@@ -97,4 +97,15 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportJson.contains("\"failure\""));
         assertTrue(reportJson.contains("\"FAIL"));
     }
+
+    @Test
+    void rendersScreenshotHrefRelativeToReportDirectory() {
+        Path reportDir = Path.of("target", "pepenium-reports");
+        String href = PepeniumReportSupport.pathToHref(
+                "target/pepenium-reports/screenshots/manual_123_screenshot.png",
+                reportDir
+        );
+
+        assertTrue(href.equals("screenshots/manual_123_screenshot.png"));
+    }
 }
