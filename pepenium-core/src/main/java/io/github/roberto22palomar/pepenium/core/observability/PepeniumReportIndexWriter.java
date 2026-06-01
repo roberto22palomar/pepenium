@@ -1,5 +1,8 @@
 package io.github.roberto22palomar.pepenium.core.observability;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -15,6 +18,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class PepeniumReportIndexWriter {
+
+    private static final Logger log = LoggerFactory.getLogger(PepeniumReportIndexWriter.class);
 
     private PepeniumReportIndexWriter() {
     }
@@ -42,6 +47,13 @@ final class PepeniumReportIndexWriter {
                 PepeniumReportJsonRenderer.renderSuiteSummaryJson(summaries),
                 StandardCharsets.UTF_8
         );
+        try {
+            Path pdfSummary = PepeniumReportPdfWriter.writeSummaryPdf(reportDir, summaries);
+            log.info("Pepenium PDF execution summary: {}", pdfSummary.toUri());
+        } catch (Exception e) {
+            log.warn("Failed to write Pepenium PDF execution summary: {}", e.getMessage());
+            LoggingPreferences.logDetail(log, "Detailed PDF execution summary failure", e);
+        }
         String indexHtml = renderIndexHtml(reportDir, summaries);
         Path runIndexFile = reportDir.resolve(PepeniumReportRun.indexFileName());
         Files.writeString(runIndexFile, indexHtml, StandardCharsets.UTF_8);
@@ -99,7 +111,9 @@ final class PepeniumReportIndexWriter {
                 .append(renderSelect("profile", "Profile", uniqueValues(summaries, summary -> summary.profileId)))
                 .append(renderSelect("provider", "Provider", uniqueValues(summaries, summary -> summary.provider)))
                 .append("</div><div class=\"toolbar\"><span id=\"visible-count\" class=\"muted small\">")
-                .append(summaries.size()).append(" report(s) visible</span><a href=\"summary.json\">Open suite summary JSON</a></div></section>");
+                .append(summaries.size()).append(" report(s) visible</span><span><a href=\"")
+                .append(PepeniumReportPdfWriter.SUMMARY_PDF_FILE)
+                .append("\">Open PDF summary</a> | <a href=\"summary.json\">Open suite summary JSON</a></span></div></section>");
 
         html.append("<section class=\"section\"><h2>Useful Signals</h2><div class=\"breakdowns\">")
                 .append(renderBreakdownPanel("By Target", groupCounts(summaries, summary -> summary.target)))

@@ -29,6 +29,7 @@ class PepeniumHtmlReportWriterTest {
 
         assertTrue(Files.exists(reportDir.resolve("index.html")));
         assertTrue(Files.exists(reportDir.resolve("summary.json")));
+        assertTrue(Files.exists(reportDir.resolve("execution-summary.pdf")));
         Path reportFile = Files.list(reportDir)
                 .filter(path -> path.getFileName().toString().startsWith("report-"))
                 .filter(path -> path.getFileName().toString().endsWith(".html"))
@@ -58,6 +59,7 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("PASS"));
         assertTrue(indexHtml.contains("Total Reports"));
         assertTrue(indexHtml.contains("Passed"));
+        assertTrue(indexHtml.contains("Open PDF summary"));
         assertTrue(indexHtml.contains("Open suite summary JSON"));
         assertTrue(reportJson.contains("\"stats\""));
         assertTrue(reportJson.contains("\"events\""));
@@ -126,6 +128,7 @@ class PepeniumHtmlReportWriterTest {
 
         PepeniumHtmlReportWriter.write("sampleScreenshotTest", null, null);
 
+        assertTrue(Files.exists(reportDir.resolve("execution-summary.pdf")));
         Path reportFile = Files.list(reportDir)
                 .filter(path -> path.getFileName().toString().startsWith("report-"))
                 .filter(path -> path.getFileName().toString().endsWith(".html"))

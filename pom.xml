@@ -39,6 +39,7 @@
 
         <lombok.version>1.18.42</lombok.version>
         <snakeyaml.version>2.5</snakeyaml.version>
+        <pdfbox.version>3.0.5</pdfbox.version>
 
         <slf4j.version>2.0.17</slf4j.version>
         <log4j2.version>2.25.3</log4j2.version>
