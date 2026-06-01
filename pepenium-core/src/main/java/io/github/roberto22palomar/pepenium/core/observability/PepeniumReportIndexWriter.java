@@ -55,42 +55,44 @@ final class PepeniumReportIndexWriter {
         long passedCount = summaries.stream().filter(summary -> "PASSED".equals(summary.outcome)).count();
         long failedCount = summaries.size() - passedCount;
         long totalDuration = summaries.stream().mapToLong(summary -> summary.durationMillis).sum();
-        long remoteRuns = summaries.stream().filter(summary -> "true".equalsIgnoreCase(summary.remoteEnabled)).count();
-
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\">")
                 .append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">")
-                .append("<title>Pepenium Reports</title>")
+                .append("<title>Pepenium Execution</title>")
                 .append("<style>")
-                .append(":root{--bg:#f5f7fb;--surface:#fff;--border:#d8dee9;--text:#1f2937;--muted:#5b6472;--pass:#117a37;--pass-bg:#dafbe1;--fail:#cf222e;--fail-bg:#ffebe9;}")
-                .append("*{box-sizing:border-box;}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top,#edf4ff 0,#f5f7fb 35%,#f7f8fb 100%);color:var(--text);}a{color:#0969da;text-decoration:none;}a:hover{text-decoration:underline;}")
-                .append(".wrap{max-width:1360px;margin:0 auto;padding:28px 20px 44px;} .hero,.panel,.report-row,.metric{background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:0 14px 32px rgba(16,24,40,.05);}")
-                .append(".hero{padding:28px;background:linear-gradient(135deg,#ffffff 0,#f7fbff 100%);} .hero h1{margin:0 0 8px;font-size:32px;} .muted{color:var(--muted);} .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:20px;} .metric{padding:16px 18px;} .metric-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;} .metric-value{margin-top:8px;font-size:24px;font-weight:700;}")
+                .append(":root{--bg:#f4f7fb;--surface:#fff;--border:#d8dee9;--text:#111827;--muted:#667085;--pass:#117a37;--pass-bg:#dafbe1;--fail:#cf222e;--fail-bg:#ffebe9;--ink:#0f2942;}")
+                .append("*{box-sizing:border-box;}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,#dceeff 0,#f4f7fb 34%,#f8fafc 100%);color:var(--text);}a{color:#0969da;text-decoration:none;}a:hover{text-decoration:underline;}")
+                .append(".wrap{max-width:1360px;margin:0 auto;padding:28px 20px 44px;} .hero,.panel,.report-row,.metric{background:var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:0 18px 42px rgba(16,24,40,.07);}")
+                .append(".hero{padding:30px;background:linear-gradient(135deg,#ffffff 0,#f7fbff 62%,#eaf4ff 100%);} .hero h1{margin:0 0 8px;font-size:36px;letter-spacing:-.04em;color:var(--ink);} .hero-lead{max-width:760px;font-size:16px;line-height:1.55;} .muted{color:var(--muted);} .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:22px;} .metric{padding:16px 18px;} .metric-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;} .metric-value{margin-top:8px;font-size:25px;font-weight:800;} .health{height:14px;border-radius:999px;background:#edf2f7;overflow:hidden;margin-top:18px;border:1px solid #d8e2ef;} .health-pass{height:100%;background:linear-gradient(90deg,#22c55e,#86efac);}")
                 .append(".filters{display:grid;grid-template-columns:2fr repeat(4,minmax(0,1fr));gap:12px;margin-top:22px;} @media (max-width:980px){.filters{grid-template-columns:1fr;}} input,select{width:100%;padding:12px 14px;border-radius:14px;border:1px solid #c7d2e2;background:#fff;font-size:14px;}")
                 .append(".section{margin-top:22px;} .section h2{margin:0 0 12px;font-size:18px;} .breakdowns{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;} .panel{padding:18px;} .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;} .tag{padding:8px 10px;border-radius:999px;background:#eef5ff;color:#1f4c8f;font-size:12px;font-weight:700;} .ranking{display:flex;flex-direction:column;gap:10px;margin-top:10px;} .ranking-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;background:#f8fbff;border:1px solid #e3e8f1;font-size:14px;}")
-                .append(".reports{display:flex;flex-direction:column;gap:14px;} .report-row{padding:18px;} .row-top,.row-bottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;} .row-title{font-size:18px;font-weight:700;} .row-meta,.row-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}")
+                .append(".reports{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:14px;} .report-row{padding:18px;} .row-top,.row-bottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;} .row-title{font-size:18px;font-weight:800;} .row-meta,.row-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}")
                 .append(".badge{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;} .passed{background:var(--pass-bg);color:var(--pass);} .failed{background:var(--fail-bg);color:var(--fail);} .meta{padding:6px 10px;border-radius:999px;background:#eef2f8;color:#344054;font-size:12px;font-weight:700;}")
                 .append(".hidden{display:none;} .toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px;} .small{font-size:13px;}")
                 .append("</style><script>")
                 .append("function applyFilters(){const q=document.getElementById('search').value.toLowerCase();const status=document.getElementById('status').value;const target=document.getElementById('target').value;const profile=document.getElementById('profile').value;const provider=document.getElementById('provider').value;let visible=0;document.querySelectorAll('.report-row').forEach(row=>{const text=row.dataset.search;const ok=(!q||text.includes(q))&&(!status||row.dataset.status===status)&&(!target||row.dataset.target===target)&&(!profile||row.dataset.profile===profile)&&(!provider||row.dataset.provider===provider);row.classList.toggle('hidden',!ok);if(ok){visible++;}});document.getElementById('visible-count').textContent=visible+' report(s) visible';}")
                 .append("</script></head><body><div class=\"wrap\">");
 
-        html.append("<section class=\"hero\"><h1>Pepenium Current Execution</h1>")
-                .append("<p class=\"muted\">Latest run reports with per-test HTML, JSON artifacts and suite-level summary under ")
-                .append(PepeniumReportSupport.escapeHtml(reportDir.toAbsolutePath().toString()))
-                .append("</p><p class=\"muted small\">Run ")
+        int passRate = summaries.isEmpty() ? 0 : (int) Math.round((passedCount * 100.0d) / summaries.size());
+
+        html.append("<section class=\"hero\"><h1>Execution Report</h1>")
+                .append("<p class=\"muted hero-lead\">A quick view of the latest Pepenium run: status, slow spots and the tests that need attention.</p>")
+                .append("<p class=\"muted small\">Run ")
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportRun.id()))
-                .append(" started at ")
+                .append(" - started ")
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportRun.startedAt().toString()))
-                .append(". This run can be reopened later from ")
+                .append(" - <a href=\"")
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportRun.indexFileName()))
+                .append("\">permanent index</a>")
                 .append("</p><div class=\"metrics\">")
                 .append(renderMetric("Total Reports", String.valueOf(summaries.size())))
                 .append(renderMetric("Passed", String.valueOf(passedCount)))
                 .append(renderMetric("Failed", String.valueOf(failedCount)))
-                .append(renderMetric("Remote Runs", String.valueOf(remoteRuns)))
+                .append(renderMetric("Pass Rate", passRate + "%"))
                 .append(renderMetric("Total Duration", PepeniumReportSupport.formatDurationMillis(totalDuration)))
-                .append("</div><div class=\"filters\">")
+                .append("</div><div class=\"health\"><div class=\"health-pass\" style=\"width:")
+                .append(passRate)
+                .append("%\"></div></div><div class=\"filters\">")
                 .append("<input id=\"search\" type=\"search\" placeholder=\"Search test, profile, target or driver\" oninput=\"applyFilters()\">")
                 .append(renderSelect("status", "Status", uniqueValues(summaries, summary -> summary.outcome)))
                 .append(renderSelect("target", "Target", uniqueValues(summaries, summary -> summary.target)))
@@ -99,13 +101,8 @@ final class PepeniumReportIndexWriter {
                 .append("</div><div class=\"toolbar\"><span id=\"visible-count\" class=\"muted small\">")
                 .append(summaries.size()).append(" report(s) visible</span><a href=\"summary.json\">Open suite summary JSON</a></div></section>");
 
-        html.append("<section class=\"section\"><h2>Suite Summary</h2><div class=\"breakdowns\">")
+        html.append("<section class=\"section\"><h2>Useful Signals</h2><div class=\"breakdowns\">")
                 .append(renderBreakdownPanel("By Target", groupCounts(summaries, summary -> summary.target)))
-                .append(renderBreakdownPanel("By Profile", groupCounts(summaries, summary -> summary.profileId)))
-                .append(renderBreakdownPanel("By Provider", groupCounts(summaries, summary -> summary.provider)))
-                .append("</div></section>");
-
-        html.append("<section class=\"section\"><h2>Suite Insights</h2><div class=\"breakdowns\">")
                 .append(renderTopListPanel("Slowest Tests", topSlowest(summaries)))
                 .append(renderTopListPanel("Most Screenshots", topScreenshots(summaries)))
                 .append("</div></section>");

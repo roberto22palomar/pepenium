@@ -48,7 +48,9 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("Highlights"));
         assertTrue(reportHtml.contains("Last Step"));
         assertTrue(reportHtml.contains("Last Assertion"));
-        assertTrue(reportHtml.contains("Visual Summary"));
+        assertTrue(reportHtml.contains("At a Glance"));
+        assertTrue(reportHtml.contains("What matters"));
+        assertTrue(reportHtml.contains("Look first"));
         assertTrue(reportHtml.contains("Execution Blocks"));
         assertTrue(reportHtml.contains("Key Timeline"));
         assertTrue(reportHtml.contains("Wait Hotspots"));
@@ -88,7 +90,7 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("Boom"));
         assertTrue(reportHtml.contains("Submit login form"));
         assertTrue(reportHtml.contains("Timeline"));
-        assertTrue(reportHtml.contains("Remote Session") || reportHtml.contains("Execution Context"));
+        assertTrue(reportHtml.contains("Technical Details"));
         assertTrue(reportHtml.contains("Screenshot saved"));
         assertTrue(reportHtml.contains("ASSERT"));
         assertTrue(reportHtml.contains("FAIL"));
@@ -149,7 +151,7 @@ class PepeniumHtmlReportWriterTest {
         String summaryJson = Files.readString(reportDir.resolve("summary.json"));
 
         assertTrue(Files.exists(reportDir.resolve(PepeniumReportRun.indexFileName())));
-        assertTrue(indexHtml.contains("Pepenium Current Execution"));
+        assertTrue(indexHtml.contains("Execution Report"));
         assertTrue(indexHtml.contains("currentExecutionTest"));
         assertTrue(indexHtml.contains(PepeniumReportRun.indexFileName()));
         assertFalse(indexHtml.contains("oldExecutionTest"));
