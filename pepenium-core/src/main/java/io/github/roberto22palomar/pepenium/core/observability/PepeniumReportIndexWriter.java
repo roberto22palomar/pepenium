@@ -42,8 +42,12 @@ final class PepeniumReportIndexWriter {
                 PepeniumReportJsonRenderer.renderSuiteSummaryJson(summaries),
                 StandardCharsets.UTF_8
         );
+        String indexHtml = renderIndexHtml(reportDir, summaries);
+        Path runIndexFile = reportDir.resolve(PepeniumReportRun.indexFileName());
+        Files.writeString(runIndexFile, indexHtml, StandardCharsets.UTF_8);
+
         Path indexFile = reportDir.resolve("index.html");
-        Files.writeString(indexFile, renderIndexHtml(reportDir, summaries), StandardCharsets.UTF_8);
+        Files.writeString(indexFile, indexHtml, StandardCharsets.UTF_8);
         return indexFile;
     }
 
@@ -78,6 +82,8 @@ final class PepeniumReportIndexWriter {
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportRun.id()))
                 .append(" started at ")
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportRun.startedAt().toString()))
+                .append(". This run can be reopened later from ")
+                .append(PepeniumReportSupport.escapeHtml(PepeniumReportRun.indexFileName()))
                 .append("</p><div class=\"metrics\">")
                 .append(renderMetric("Total Reports", String.valueOf(summaries.size())))
                 .append(renderMetric("Passed", String.valueOf(passedCount)))

@@ -148,8 +148,10 @@ class PepeniumHtmlReportWriterTest {
         String indexHtml = Files.readString(reportDir.resolve("index.html"));
         String summaryJson = Files.readString(reportDir.resolve("summary.json"));
 
+        assertTrue(Files.exists(reportDir.resolve(PepeniumReportRun.indexFileName())));
         assertTrue(indexHtml.contains("Pepenium Current Execution"));
         assertTrue(indexHtml.contains("currentExecutionTest"));
+        assertTrue(indexHtml.contains(PepeniumReportRun.indexFileName()));
         assertFalse(indexHtml.contains("oldExecutionTest"));
         assertTrue(summaryJson.contains("\"totalReports\": 1"));
     }

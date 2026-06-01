@@ -17,4 +17,8 @@ final class PepeniumReportRun {
     static Instant startedAt() {
         return STARTED_AT;
     }
+
+    static String indexFileName() {
+        return "index-" + ID + ".html";
+    }
 }
