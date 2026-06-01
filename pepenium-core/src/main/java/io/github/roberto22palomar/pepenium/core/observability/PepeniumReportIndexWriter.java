@@ -32,7 +32,7 @@ final class PepeniumReportIndexWriter {
         List<PepeniumHtmlReportWriter.ReportSummary> summaries = new ArrayList<>();
         for (Path jsonFile : jsonFiles) {
             PepeniumHtmlReportWriter.ReportSummary summary = PepeniumReportJsonRenderer.loadSummary(jsonFile);
-            if (summary != null) {
+            if (summary != null && PepeniumReportRun.id().equals(summary.runId)) {
                 summaries.add(summary);
             }
         }
@@ -71,9 +71,13 @@ final class PepeniumReportIndexWriter {
                 .append("function applyFilters(){const q=document.getElementById('search').value.toLowerCase();const status=document.getElementById('status').value;const target=document.getElementById('target').value;const profile=document.getElementById('profile').value;const provider=document.getElementById('provider').value;let visible=0;document.querySelectorAll('.report-row').forEach(row=>{const text=row.dataset.search;const ok=(!q||text.includes(q))&&(!status||row.dataset.status===status)&&(!target||row.dataset.target===target)&&(!profile||row.dataset.profile===profile)&&(!provider||row.dataset.provider===provider);row.classList.toggle('hidden',!ok);if(ok){visible++;}});document.getElementById('visible-count').textContent=visible+' report(s) visible';}")
                 .append("</script></head><body><div class=\"wrap\">");
 
-        html.append("<section class=\"hero\"><h1>Pepenium Reports</h1>")
-                .append("<p class=\"muted\">Shareable execution reports with per-test HTML, JSON artifacts and suite-level summary under ")
+        html.append("<section class=\"hero\"><h1>Pepenium Current Execution</h1>")
+                .append("<p class=\"muted\">Latest run reports with per-test HTML, JSON artifacts and suite-level summary under ")
                 .append(PepeniumReportSupport.escapeHtml(reportDir.toAbsolutePath().toString()))
+                .append("</p><p class=\"muted small\">Run ")
+                .append(PepeniumReportSupport.escapeHtml(PepeniumReportRun.id()))
+                .append(" started at ")
+                .append(PepeniumReportSupport.escapeHtml(PepeniumReportRun.startedAt().toString()))
                 .append("</p><div class=\"metrics\">")
                 .append(renderMetric("Total Reports", String.valueOf(summaries.size())))
                 .append(renderMetric("Passed", String.valueOf(passedCount)))

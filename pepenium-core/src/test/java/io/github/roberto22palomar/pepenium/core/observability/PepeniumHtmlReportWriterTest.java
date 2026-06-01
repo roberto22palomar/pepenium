@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PepeniumHtmlReportWriterTest {
@@ -133,5 +134,41 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("Screenshots (1)"));
         assertTrue(reportHtml.contains("Dashboard after load"));
         assertTrue(reportHtml.contains("screenshots/"));
+    }
+
+    @Test
+    void indexOnlyShowsReportsFromCurrentExecution() throws Exception {
+        Path reportDir = Files.createTempDirectory("pepenium-report-current-run-test");
+        System.setProperty("pepenium.report.dir", reportDir.toString());
+        Files.writeString(reportDir.resolve("report-old.json"), oldReportJson(), java.nio.charset.StandardCharsets.UTF_8);
+
+        StepTracker.record("Open current page");
+        PepeniumHtmlReportWriter.write("currentExecutionTest", null, null);
+
+        String indexHtml = Files.readString(reportDir.resolve("index.html"));
+        String summaryJson = Files.readString(reportDir.resolve("summary.json"));
+
+        assertTrue(indexHtml.contains("Pepenium Current Execution"));
+        assertTrue(indexHtml.contains("currentExecutionTest"));
+        assertFalse(indexHtml.contains("oldExecutionTest"));
+        assertTrue(summaryJson.contains("\"totalReports\": 1"));
+    }
+
+    private static String oldReportJson() {
+        return "{\n"
+                + "  \"schemaVersion\": 1,\n"
+                + "  \"generatedAt\": \"2026-01-01T00:00:00Z\",\n"
+                + "  \"runId\": \"old-run\",\n"
+                + "  \"runStartedAt\": \"2026-01-01T00:00:00Z\",\n"
+                + "  \"htmlReport\": \"report-old.html\",\n"
+                + "  \"outcome\": \"PASSED\",\n"
+                + "  \"testName\": \"oldExecutionTest\",\n"
+                + "  \"profileId\": \"local-web\",\n"
+                + "  \"target\": \"WEB_DESKTOP\",\n"
+                + "  \"driverType\": \"LOCAL_CHROME\",\n"
+                + "  \"timing\": {\"durationMillis\": 1, \"durationDisplay\": \"0s 001ms\"},\n"
+                + "  \"stats\": {\"screenshots\": 0},\n"
+                + "  \"remote\": {\"provider\": \"local\", \"enabled\": false}\n"
+                + "}\n";
     }
 }
