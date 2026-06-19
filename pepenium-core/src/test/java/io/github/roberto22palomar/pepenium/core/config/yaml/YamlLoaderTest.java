@@ -37,6 +37,33 @@ class YamlLoaderTest {
     }
 
     @Test
+    void trimsConfiguredYamlPathBeforeResolving() {
+        Path resolvedPath = YamlLoader.resolvePath("  src/test/resources/browserstackIOS.yml  ");
+
+        assertTrue(resolvedPath.endsWith(Path.of("src", "main", "resources", "browserstackExamples", "browserstackIOS.yml.example")));
+    }
+
+    @Test
+    void rejectsNullYamlPathClearly() {
+        NullPointerException error = assertThrows(
+                NullPointerException.class,
+                () -> YamlLoader.resolvePath(null)
+        );
+
+        assertEquals("yamlPath must not be null", error.getMessage());
+    }
+
+    @Test
+    void rejectsBlankYamlPathClearly() {
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> YamlLoader.resolvePath("   ")
+        );
+
+        assertTrue(error.getMessage().contains("BrowserStack YAML path must not be blank"));
+    }
+
+    @Test
     void loadsDesktopExampleConfigFromFallbackExampleFile() {
         BrowserStackConfigDesktop config = YamlLoaderDesktop.load("src/test/resources/browserstack.yml");
 

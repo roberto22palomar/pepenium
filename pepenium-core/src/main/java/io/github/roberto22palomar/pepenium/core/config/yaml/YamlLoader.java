@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class YamlLoader {
@@ -28,10 +29,11 @@ public final class YamlLoader {
     }
 
     static Path resolvePath(String yamlPath) {
-        Path directPath = Paths.get(yamlPath);
+        String normalizedYamlPath = requireYamlPath(yamlPath);
+        Path directPath = Paths.get(normalizedYamlPath);
         rejectPackagedRuntimeIntent(directPath);
         Path fileNamePath = directPath.getFileName();
-        String fileName = fileNamePath == null ? yamlPath : fileNamePath.toString();
+        String fileName = fileNamePath == null ? normalizedYamlPath : fileNamePath.toString();
         Path localConfigDir = Paths.get(".pepenium", "browserstack");
 
         List<Path> candidates = List.of(
@@ -56,6 +58,15 @@ public final class YamlLoader {
 
         rejectPackagedRuntimePath(resolved);
         return resolved;
+    }
+
+    private static String requireYamlPath(String yamlPath) {
+        Objects.requireNonNull(yamlPath, "yamlPath must not be null");
+        String normalizedYamlPath = yamlPath.trim();
+        if (normalizedYamlPath.isEmpty()) {
+            throw ConfigValidationSupport.invalid("BrowserStack YAML path must not be blank");
+        }
+        return normalizedYamlPath;
     }
 
     private static void rejectPackagedRuntimeIntent(Path requestedPath) {
