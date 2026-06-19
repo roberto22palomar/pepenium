@@ -39,14 +39,14 @@ Primeros pasos recomendados:
 2. Ejecuta el showcase web desktop para tener tu primer exito real
 3. Pasa a Android solo cuando la ruta web ya funcione
 
-Ficheros de entorno listos para copiar:
+Los ficheros de entorno listos para copiar estan en [docs/env](docs/env/README.md):
 
-- [`.env.web.example`](.env.web.example)
-- [`.env.android.local.example`](.env.android.local.example)
-- [`.env.web.capabilities.example`](.env.web.capabilities.example)
-- [`.env.android.host-emulator.example`](.env.android.host-emulator.example)
-- [`.env.android.docker-emulator.example`](.env.android.docker-emulator.example)
-- [`.env.mobile.capabilities.example`](.env.mobile.capabilities.example)
+- [`.env.web.example`](docs/env/.env.web.example)
+- [`.env.android.local.example`](docs/env/.env.android.local.example)
+- [`.env.web.capabilities.example`](docs/env/.env.web.capabilities.example)
+- [`.env.android.host-emulator.example`](docs/env/.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](docs/env/.env.android.docker-emulator.example)
+- [`.env.mobile.capabilities.example`](docs/env/.env.mobile.capabilities.example)
 
 ## Por Que Pepenium
 

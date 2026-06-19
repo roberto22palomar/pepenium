@@ -4,24 +4,24 @@ This document lists the environment variables and system properties currently us
 
 It is intended to be the single reference point for configuring local runs, remote executions and observability features.
 
-Ready-to-copy examples for common local setups:
+Ready-to-copy examples for common local setups live in [docs/env](env/README.md):
 
-- [`.env.web.example`](../.env.web.example)
-- [`.env.android.local.example`](../.env.android.local.example)
-- [`.env.web.capabilities.example`](../.env.web.capabilities.example)
-- [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
-- [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
-- [`.env.mobile.capabilities.example`](../.env.mobile.capabilities.example)
+- [`.env.web.example`](env/.env.web.example)
+- [`.env.android.local.example`](env/.env.android.local.example)
+- [`.env.web.capabilities.example`](env/.env.web.capabilities.example)
+- [`.env.android.host-emulator.example`](env/.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](env/.env.android.docker-emulator.example)
+- [`.env.mobile.capabilities.example`](env/.env.mobile.capabilities.example)
 
 ## How To Choose A Config Starting Point
 
 Use this quick rule:
 
-- `WEB_DESKTOP` on your machine: start from [`.env.web.example`](../.env.web.example)
-- `ANDROID_NATIVE` with local Appium: start from [`.env.android.local.example`](../.env.android.local.example)
-- `ANDROID_NATIVE` with Dockerized Appium and host emulator: start from [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
-- `ANDROID_NATIVE` with Dockerized Appium and Dockerized emulator: start from [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
-- Any Appium-backed mobile profile that needs extra tuning: copy the relevant keys from [`.env.mobile.capabilities.example`](../.env.mobile.capabilities.example)
+- `WEB_DESKTOP` on your machine: start from [`.env.web.example`](env/.env.web.example)
+- `ANDROID_NATIVE` with local Appium: start from [`.env.android.local.example`](env/.env.android.local.example)
+- `ANDROID_NATIVE` with Dockerized Appium and host emulator: start from [`.env.android.host-emulator.example`](env/.env.android.host-emulator.example)
+- `ANDROID_NATIVE` with Dockerized Appium and Dockerized emulator: start from [`.env.android.docker-emulator.example`](env/.env.android.docker-emulator.example)
+- Any Appium-backed mobile profile that needs extra tuning: copy the relevant keys from [`.env.mobile.capabilities.example`](env/.env.mobile.capabilities.example)
 
 ## Configuration Precedence In Practice
 

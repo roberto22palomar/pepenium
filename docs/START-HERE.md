@@ -69,7 +69,7 @@ Start your Android emulator the way you normally do it on your machine.
 
 ### 3.3 Use These Environment Values
 
-Example file: [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
+Example file: [`.env.android.host-emulator.example`](env/.env.android.host-emulator.example)
 
 ```text
 APPIUM_URL=http://localhost:4723
@@ -91,7 +91,7 @@ Start it with:
 docker compose -f docker-compose.yaml -f docker-compose.emulator.yaml up -d
 ```
 
-Example file: [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
+Example file: [`.env.android.docker-emulator.example`](env/.env.android.docker-emulator.example)
 
 ```text
 APPIUM_URL=http://localhost:4723

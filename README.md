@@ -39,14 +39,14 @@ Recommended first steps:
 2. Run the desktop web showcase for your first live success
 3. Move to Android only after the web path is working
 
-Ready-to-copy environment examples:
+Ready-to-copy environment examples live in [docs/env](docs/env/README.md):
 
-- [`.env.web.example`](.env.web.example)
-- [`.env.android.local.example`](.env.android.local.example)
-- [`.env.web.capabilities.example`](.env.web.capabilities.example)
-- [`.env.android.host-emulator.example`](.env.android.host-emulator.example)
-- [`.env.android.docker-emulator.example`](.env.android.docker-emulator.example)
-- [`.env.mobile.capabilities.example`](.env.mobile.capabilities.example)
+- [`.env.web.example`](docs/env/.env.web.example)
+- [`.env.android.local.example`](docs/env/.env.android.local.example)
+- [`.env.web.capabilities.example`](docs/env/.env.web.capabilities.example)
+- [`.env.android.host-emulator.example`](docs/env/.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](docs/env/.env.android.docker-emulator.example)
+- [`.env.mobile.capabilities.example`](docs/env/.env.mobile.capabilities.example)
 
 ## Why Pepenium
 

@@ -10,6 +10,17 @@ It exists to show how `pepenium` and `pepenium-toolkit` are intended to be used 
 - demonstrate authoring patterns built on `BaseTest`, `TestTarget`, `Actions*` and `Assertions*`
 - keep showcase code separate from the reusable framework artifacts
 
+## What The Showcases Prove
+
+| Showcase | What it proves | Execution style |
+| --- | --- | --- |
+| Desktop web login | A real browser flow can be expressed with page objects, injected toolkit helpers and shared assertions | Live, opt-in |
+| Mobile web | The same profile-driven model can target a mobile browser without changing the framework wiring | Template |
+| Android native | Native screens can use reusable mobile actions, locator helpers and platform-specific assertions without leaking Appium setup into tests | Template |
+| iOS native | iOS authoring follows the same shape as Android while keeping platform-specific implementation details isolated | Template |
+
+The point of these examples is not to maximize test count. It is to make the intended Pepenium authoring style obvious enough that contributors and consumers can copy the shape safely.
+
 ## Non-goals
 
 - it is not a published Maven consumer artifact
