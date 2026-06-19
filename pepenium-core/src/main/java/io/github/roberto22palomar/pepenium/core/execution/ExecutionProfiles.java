@@ -5,6 +5,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,26 @@ public final class ExecutionProfiles {
                 .collect(Collectors.joining(System.lineSeparator()));
     }
 
+    public static String suggestedProfileIdsMultiline(String requestedProfileId, TestTarget target) {
+        if (isBlank(requestedProfileId)) {
+            return "";
+        }
+        String requested = requestedProfileId.trim();
+        int maximumDistance = Math.max(2, requested.length() / 3);
+        return list().stream()
+                .filter(profile -> target == null || profile.getTarget() == target)
+                .map(ExecutionProfile::getId)
+                .map(profileId -> new ProfileSuggestion(profileId, levenshteinDistance(requested, profileId)))
+                .filter(suggestion -> suggestion.distance <= maximumDistance)
+                .sorted(Comparator
+                        .comparingInt(ProfileSuggestion::distance)
+                        .thenComparing(ProfileSuggestion::profileId))
+                .limit(3)
+                .map(ProfileSuggestion::profileId)
+                .map(profileId -> "- " + profileId)
+                .collect(Collectors.joining(System.lineSeparator()));
+    }
+
     private static Map<String, ExecutionProfile> loadProfiles() {
         try (InputStream input = ExecutionProfiles.class.getClassLoader().getResourceAsStream(PROFILES_RESOURCE)) {
             if (input == null) {
@@ -145,6 +166,46 @@ public final class ExecutionProfiles {
 
     private static boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private static int levenshteinDistance(String left, String right) {
+        int[] previous = new int[right.length() + 1];
+        int[] current = new int[right.length() + 1];
+        for (int j = 0; j <= right.length(); j++) {
+            previous[j] = j;
+        }
+        for (int i = 1; i <= left.length(); i++) {
+            current[0] = i;
+            for (int j = 1; j <= right.length(); j++) {
+                int cost = left.charAt(i - 1) == right.charAt(j - 1) ? 0 : 1;
+                current[j] = Math.min(
+                        Math.min(current[j - 1] + 1, previous[j] + 1),
+                        previous[j - 1] + cost
+                );
+            }
+            int[] swap = previous;
+            previous = current;
+            current = swap;
+        }
+        return previous[right.length()];
+    }
+
+    private static final class ProfileSuggestion {
+        private final String profileId;
+        private final int distance;
+
+        private ProfileSuggestion(String profileId, int distance) {
+            this.profileId = profileId;
+            this.distance = distance;
+        }
+
+        private String profileId() {
+            return profileId;
+        }
+
+        private int distance() {
+            return distance;
+        }
     }
 
     public static class ProfilesFile {

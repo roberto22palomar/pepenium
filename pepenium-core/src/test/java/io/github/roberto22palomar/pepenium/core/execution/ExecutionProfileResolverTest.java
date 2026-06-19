@@ -78,4 +78,17 @@ class ExecutionProfileResolverTest {
         assertTrue(error.getMessage().contains("- browserstack-mac-web"));
         assertTrue(error.getMessage().contains("All available profiles:"));
     }
+
+    @Test
+    void suggestsClosestCompatibleProfileWhenOverrideLooksLikeATypo() {
+        System.setProperty("pepenium.profile", "local-wbe");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> resolver.resolve(TestTarget.WEB_DESKTOP, null)
+        );
+
+        assertTrue(error.getMessage().contains("Did you mean:"));
+        assertTrue(error.getMessage().contains("- local-web"));
+    }
 }

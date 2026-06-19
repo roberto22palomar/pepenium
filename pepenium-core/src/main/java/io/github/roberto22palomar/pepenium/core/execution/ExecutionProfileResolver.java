@@ -27,10 +27,18 @@ public class ExecutionProfileResolver {
             String sourceMessage = overrideSource != null
                     ? " via " + overrideSource
                     : "";
+            String suggestions = ExecutionProfiles.suggestedProfileIdsMultiline(profileId, target);
+            String suggestionMessage = suggestions.isBlank()
+                    ? ""
+                    : System.lineSeparator() + System.lineSeparator()
+                            + "Did you mean:"
+                            + System.lineSeparator()
+                            + suggestions;
             throw new IllegalStateException(
                     "Unknown execution profile '" + profileId + "'" + sourceMessage
                             + " for target " + target
                             + "."
+                            + suggestionMessage
                             + System.lineSeparator() + System.lineSeparator()
                             + "Compatible profiles for " + target + ":"
                             + System.lineSeparator()
