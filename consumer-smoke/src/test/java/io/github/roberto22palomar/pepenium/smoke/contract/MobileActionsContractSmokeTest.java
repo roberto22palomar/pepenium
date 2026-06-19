@@ -6,6 +6,7 @@ import io.github.roberto22palomar.pepenium.core.runtime.PepeniumTest;
 import io.github.roberto22palomar.pepenium.toolkit.actions.MobileActions;
 import io.github.roberto22palomar.pepenium.toolkit.actions.SwipeDirection;
 import io.github.roberto22palomar.pepenium.toolkit.assertions.MobileAssertions;
+import io.github.roberto22palomar.pepenium.toolkit.locators.PepeniumBy;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 
@@ -20,7 +21,8 @@ class MobileActionsContractSmokeTest {
 
     @Test
     void sharedMobileActionsApiCompilesForExternalConsumers() {
-        By locator = By.id("shared-mobile-control");
+        By locator = PepeniumBy.accessibilityId("shared-mobile-control");
+        By readyText = PepeniumBy.textContains("ready");
         SwipeDirection direction = SwipeDirection.UP;
 
         if (actions != null) {
@@ -31,7 +33,7 @@ class MobileActionsContractSmokeTest {
         }
         if (assertions != null) {
             assertions.assertPresent(locator);
-            assertions.assertTextContains(locator, "ready");
+            assertions.assertTextContains(readyText, "ready");
         }
     }
 }

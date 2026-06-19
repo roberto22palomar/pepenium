@@ -116,6 +116,7 @@
                                     <include>io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS</include>
+                                    <include>io.github.roberto22palomar.pepenium.toolkit.locators.PepeniumBy</include>
                                 </includes>
                                 <accessModifier>public</accessModifier>
                                 <onlyModified>true</onlyModified>

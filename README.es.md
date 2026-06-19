@@ -92,7 +92,7 @@ Dependencia tipica de consumo:
 Por que `pepenium-toolkit` suele ser el punto de entrada correcto:
 
 - es el artefacto contra el que la mayoria de usuarios externos querran construir
-- te da `ActionsWeb`, `WebActions`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS` y `MobileAssertions`
+- te da `ActionsWeb`, `WebActions`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS`, `MobileAssertions` y `PepeniumBy`
 - arrastra transitivamente el core/runtime, asi que sigues teniendo `BaseTest` y `TestTarget` sin cablear ambas capas a mano
 
 Si quieres un ejemplo concreto de consumidor, mira [consumer-smoke/README.md](consumer-smoke/README.md).
@@ -216,6 +216,7 @@ Bloques reutilizables:
 - `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `WebActions`
 - `toolkit/actions`: `MobileActions` y `SwipeDirection` para flows compatibles Android/iOS
 - `toolkit/assertions`: `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS`, `MobileAssertions`
+- `toolkit/locators`: `PepeniumBy` para localizadores nativos compatibles Android/iOS
 - `toolkit/support`: helpers reutilizables de settle y scroll
 
 ### `examples`

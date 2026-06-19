@@ -93,7 +93,7 @@ Typical consumer dependency:
 Why `pepenium-toolkit` is usually the right entry point:
 
 - it is the artifact most external users actually want to build against
-- it gives you `ActionsWeb`, `WebActions`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS` and `MobileAssertions`
+- it gives you `ActionsWeb`, `WebActions`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS`, `MobileAssertions` and `PepeniumBy`
 - it pulls in the core runtime transitively, so you still get `BaseTest` and `TestTarget` without wiring both layers manually
 
 If you want a concrete consumer example, see [consumer-smoke/README.md](consumer-smoke/README.md).
@@ -216,6 +216,7 @@ Reusable building blocks:
 - `toolkit/actions`: `ActionsWeb`, `WebActions`, `ActionsApp`, `ActionsAppIOS`
 - `toolkit/actions`: `MobileActions` and `SwipeDirection` for Android/iOS-compatible flows
 - `toolkit/assertions`: `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS`, `MobileAssertions`
+- `toolkit/locators`: `PepeniumBy` for Android/iOS-compatible native locators
 - `toolkit/support`: reusable settle and scroll helpers
 ### `examples`
 

@@ -134,7 +134,7 @@ The ids above are contract. The internal wiring behind them is not. The `configK
 
 ### `Actions*` and `Assertions*` stay the stable authoring surface
 
-The documented `WebActions`, `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `SwipeDirection`, `WebAssertions`, `MobileAssertions`, `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` types are now the intended stable authoring surface for `1.0.0`.
+The documented `WebActions`, `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `SwipeDirection`, `WebAssertions`, `MobileAssertions`, `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS` and `PepeniumBy` types are now the intended stable authoring surface for `1.0.0`.
 
 That means public methods on those classes should follow the existing deprecation-first policy instead of being renamed or removed directly.
 
@@ -161,6 +161,7 @@ Current decision:
 - [AssertionsWeb](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsWeb.java)
 - [AssertionsApp](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsApp.java)
 - [AssertionsAppIOS](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsAppIOS.java)
+- [PepeniumBy](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/locators/PepeniumBy.java)
 
 These are intended as the reusable building blocks for writing tests, flows and page objects.
 
@@ -171,6 +172,8 @@ For web flows that should depend on a stable contract instead of a concrete help
 For native mobile flows that should compile against both Android and iOS helpers, prefer `MobileActions` plus `SwipeDirection`. `ActionsApp` and `ActionsAppIOS` remain the concrete helpers for platform-specific flows and continue to expose their existing nested `Direction` enums for compatibility.
 
 For assertion-heavy flows, prefer `WebAssertions` on web and `MobileAssertions` on native mobile. `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` remain the concrete helpers and implement those contracts.
+
+For native mobile locators, prefer `PepeniumBy.accessibilityId(...)` for controls that have the same accessibility identifier on Android and iOS. `PepeniumBy.text(...)` and `PepeniumBy.textContains(...)` are convenience fallbacks that match common Android text and iOS label/name/value attributes when a stable accessibility id is not available.
 
 The shared assertion surface should stay aligned around `assertVisible(...)`, `assertNotVisible(...)`, `assertPresent(...)`, `assertTextEquals(...)` and `assertTextContains(...)`, while web-only assertions should be reserved for browser-specific concerns such as URL, title and input-value checks.
 
