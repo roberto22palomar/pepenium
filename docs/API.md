@@ -134,7 +134,7 @@ The ids above are contract. The internal wiring behind them is not. The `configK
 
 ### `Actions*` and `Assertions*` stay the stable authoring surface
 
-The documented `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `SwipeDirection`, `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` types are now the intended stable authoring surface for `1.0.0`.
+The documented `WebActions`, `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `SwipeDirection`, `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` types are now the intended stable authoring surface for `1.0.0`.
 
 That means public methods on those classes should follow the existing deprecation-first policy instead of being renamed or removed directly.
 
@@ -151,6 +151,7 @@ Current decision:
 ### Toolkit authoring API
 
 - [ActionsWeb](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsWeb.java)
+- [WebActions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/WebActions.java)
 - [ActionsApp](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsApp.java)
 - [ActionsAppIOS](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsAppIOS.java)
 - [MobileActions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/MobileActions.java)
@@ -162,6 +163,8 @@ Current decision:
 These are intended as the reusable building blocks for writing tests, flows and page objects.
 
 For cross-platform consistency, the supported cross-platform action surface should converge on the same core verbs across web, Android and iOS, especially `click(...)`, `clickIfVisible(...)`, `type(...)` and `waitUntilHidden(...)`.
+
+For web flows that should depend on a stable contract instead of a concrete helper, prefer `WebActions`. `ActionsWeb` remains the concrete helper and implements that contract.
 
 For native mobile flows that should compile against both Android and iOS helpers, prefer `MobileActions` plus `SwipeDirection`. `ActionsApp` and `ActionsAppIOS` remain the concrete helpers for platform-specific flows and continue to expose their existing nested `Direction` enums for compatibility.
 
@@ -245,7 +248,7 @@ Pepenium now runs an automatic `japicmp` comparison during `verify` for the rele
 That build-time compatibility gate is intentionally scoped to the documented public API surface:
 
 - `pepenium-core`: `PepeniumTest`, `PepeniumInject`, `PepeniumPage`, `PepeniumSteps`, `BaseTest` and `TestTarget`
-- `pepenium-toolkit`: the documented `Actions*`, `MobileActions`, `SwipeDirection` and `Assertions*` authoring types
+- `pepenium-toolkit`: the documented `Actions*`, `WebActions`, `MobileActions`, `SwipeDirection` and `Assertions*` authoring types
 
 This keeps the compatibility check focused on what normal external users are expected to import directly, while semantic contract details such as lifecycle defaults, target defaults and built-in profile ids are protected by dedicated tests and docs.
 

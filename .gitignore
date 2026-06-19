@@ -1,13 +1,21 @@
+# Build output
 target/
 **/target/
+
+# IDE and local scratch data
 /.idea/
 /logs/
-".idea/" 
-"logs/"
+/tmp/
+/artifacts/
 
+# Local secrets and machine-specific config
+*.env
+
+# Local binaries and logs
+*.exe
+*.log
+
+# Runtime YAML files are often secret/provider-specific.
 *.yml
 !pepenium-core/src/main/resources/execution-profiles.yml
 !.github/workflows/*.yml
-*.env
-*.exe
-*.log

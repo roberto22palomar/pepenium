@@ -20,6 +20,7 @@ import java.util.Set;
 final class PepeniumInjectionSupport {
 
     private static final String ACTIONS_WEB = "io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb";
+    private static final String WEB_ACTIONS = "io.github.roberto22palomar.pepenium.toolkit.actions.WebActions";
     private static final String ASSERTIONS_WEB = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb";
     private static final String ACTIONS_APP = "io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp";
     private static final String ASSERTIONS_APP = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp";
@@ -68,6 +69,7 @@ final class PepeniumInjectionSupport {
                 || type == DriverSession.class
                 || type == AppiumDriver.class
                 || type.getName().equals(ACTIONS_WEB)
+                || type.getName().equals(WEB_ACTIONS)
                 || type.getName().equals(ASSERTIONS_WEB)
                 || type.getName().equals(ACTIONS_APP)
                 || type.getName().equals(ASSERTIONS_APP)
@@ -190,6 +192,9 @@ final class PepeniumInjectionSupport {
         if (type.getName().equals(ACTIONS_WEB)) {
             return instantiateToolkitType(type, requireWebDriver(type));
         }
+        if (type.getName().equals(WEB_ACTIONS)) {
+            return instantiateToolkitType(loadToolkitType(ACTIONS_WEB), requireWebDriver(type));
+        }
         if (type.getName().equals(ASSERTIONS_WEB)) {
             return instantiateToolkitType(type, requireWebDriver(type));
         }
@@ -223,6 +228,14 @@ final class PepeniumInjectionSupport {
             return Class.forName(implementation);
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("MobileActions implementation is not available: " + implementation, e);
+        }
+    }
+
+    private Class<?> loadToolkitType(String typeName) {
+        try {
+            return Class.forName(typeName);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Toolkit helper is not available: " + typeName, e);
         }
     }
 

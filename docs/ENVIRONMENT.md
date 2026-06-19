@@ -171,8 +171,16 @@ These optional environment variables are supported by the Appium-backed built-in
 - `APPIUM_ANDROID_INSTALL_TIMEOUT`
 - `APP_WAIT_PACKAGE`
 - `APP_WAIT_ACTIVITY`
+- `PEPENIUM_APPIUM_CAPABILITIES`
 
 They are intended for advanced mobile runs when the default Appium option sets need to be tuned without forking the framework.
+
+Notes:
+
+- `PEPENIUM_APPIUM_CAPABILITIES` uses `;` separators and `key=value` entries, for example `appWaitDuration=30000;vendor:flag=true`
+- unprefixed keys are applied as `appium:*` capabilities, so `appWaitDuration=30000` becomes `appium:appWaitDuration=30000`
+- W3C keys such as `platformName` and `browserName`, and vendor-prefixed keys such as `bstack:options`, are kept as written
+- scalar values are typed automatically: `true` / `false` become booleans, integer values become longs and decimal values become doubles
 ## Local Web and Mobile Web
 
 ### `PEPENIUM_BASE_URL`
@@ -443,6 +451,7 @@ APP_PACKAGE=com.example.app
 APP_ACTIVITY=.MainActivity
 APPIUM_NO_RESET=true
 APPIUM_NEW_COMMAND_TIMEOUT=300
+PEPENIUM_APPIUM_CAPABILITIES=appWaitDuration=30000;customRetries=3
 PEPENIUM_SCREENSHOT_PATH=C:\temp\pepenium-screenshots
 ```
 

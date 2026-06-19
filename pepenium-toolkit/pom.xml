@@ -104,6 +104,7 @@
                             <parameter>
                                 <includes>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb</include>
+                                    <include>io.github.roberto22palomar.pepenium.toolkit.actions.WebActions</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp.Direction</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS</include>

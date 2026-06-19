@@ -75,6 +75,17 @@ class ActionsWebTest {
     }
 
     @Test
+    void implementsSharedWebActionsContract() {
+        when(driver.findElement(LOCATOR)).thenThrow(new NoSuchElementException("gone"));
+
+        WebActions actions = new ActionsWeb(driver);
+
+        assertSame(driver, actions.getDriver());
+        assertFalse(actions.isElementPresent(LOCATOR));
+        assertTrue(actions.waitGone(LOCATOR));
+    }
+
+    @Test
     void clickPerformsClickAndRecordsStep() {
         when(driver.findElement(LOCATOR)).thenReturn(element);
         when(element.isDisplayed()).thenReturn(true);

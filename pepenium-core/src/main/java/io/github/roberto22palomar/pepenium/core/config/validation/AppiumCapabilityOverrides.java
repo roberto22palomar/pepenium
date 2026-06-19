@@ -4,6 +4,7 @@ import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.ios.options.XCUITestOptions;
 
 import java.time.Duration;
+import java.util.Set;
 import java.util.function.Function;
 
 public final class AppiumCapabilityOverrides {
@@ -33,6 +34,7 @@ public final class AppiumCapabilityOverrides {
         applyLongCapability(env, options, "APPIUM_ANDROID_INSTALL_TIMEOUT", "appium:androidInstallTimeout");
         applyStringCapability(env, options, "APP_WAIT_PACKAGE", "appium:appWaitPackage");
         applyStringCapability(env, options, "APP_WAIT_ACTIVITY", "appium:appWaitActivity");
+        applyGenericCapabilities(env, options);
     }
 
     public static void applyIos(Function<String, String> env, XCUITestOptions options) {
@@ -46,6 +48,7 @@ public final class AppiumCapabilityOverrides {
         applyDurationSeconds(env, "APPIUM_WDA_LAUNCH_TIMEOUT", options::setWdaLaunchTimeout);
         applyDurationSeconds(env, "APPIUM_WDA_CONNECTION_TIMEOUT", options::setWdaConnectionTimeout);
         applyBooleanCapability(env, options, "APPIUM_AUTO_LAUNCH", "appium:autoLaunch");
+        applyGenericCapabilities(env, options);
     }
 
     private static void applyString(Function<String, String> env, String key, java.util.function.Consumer<String> setter) {
@@ -117,6 +120,50 @@ public final class AppiumCapabilityOverrides {
         }
     }
 
+    private static void applyGenericCapabilities(Function<String, String> env, Object options) {
+        String value = envValue(env, "PEPENIUM_APPIUM_CAPABILITIES");
+        if (value == null) {
+            return;
+        }
+        for (String rawEntry : value.split(";")) {
+            String entry = rawEntry == null ? null : rawEntry.trim();
+            if (entry == null || entry.isBlank()) {
+                continue;
+            }
+            int separator = entry.indexOf('=');
+            if (separator <= 0 || separator == entry.length() - 1) {
+                throw new IllegalStateException(
+                        "PEPENIUM_APPIUM_CAPABILITIES entries must follow key=value format "
+                                + "and be separated with ';'."
+                );
+            }
+            String key = normalizeCapabilityName(entry.substring(0, separator).trim());
+            String rawValue = entry.substring(separator + 1).trim();
+            if (key.isBlank() || rawValue.isBlank()) {
+                throw new IllegalStateException(
+                        "PEPENIUM_APPIUM_CAPABILITIES entries must follow key=value format "
+                                + "and be separated with ';'."
+                );
+            }
+            setCapability(options, key, parseScalar(rawValue));
+        }
+    }
+
+    private static String normalizeCapabilityName(String key) {
+        if (key.contains(":") || W3C_CAPABILITIES.contains(key)) {
+            return key;
+        }
+        return "appium:" + key;
+    }
+
+    private static void setCapability(Object options, String capabilityName, Object value) {
+        if (options instanceof UiAutomator2Options) {
+            ((UiAutomator2Options) options).setCapability(capabilityName, value);
+        } else {
+            ((XCUITestOptions) options).setCapability(capabilityName, value);
+        }
+    }
+
     private static String envValue(Function<String, String> env, String key) {
         String value = env.apply(key);
         return (value == null || value.isBlank()) ? null : value.trim();
@@ -139,4 +186,30 @@ public final class AppiumCapabilityOverrides {
         }
         throw new IllegalStateException(key + " must be either 'true' or 'false'.");
     }
+
+    private static Object parseScalar(String rawValue) {
+        String value = rawValue.trim();
+        if ("true".equalsIgnoreCase(value)) {
+            return true;
+        }
+        if ("false".equalsIgnoreCase(value)) {
+            return false;
+        }
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException ignored) {
+        }
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException ignored) {
+        }
+        return value;
+    }
+
+    private static final Set<String> W3C_CAPABILITIES = Set.of(
+            "acceptInsecureCerts",
+            "browserName",
+            "pageLoadStrategy",
+            "platformName"
+    );
 }
