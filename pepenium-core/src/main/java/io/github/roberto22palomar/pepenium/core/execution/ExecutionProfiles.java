@@ -21,7 +21,8 @@ public final class ExecutionProfiles {
     }
 
     public static ExecutionProfile get(String profileId) {
-        ExecutionProfile profile = PROFILES.get(profileId);
+        String normalizedProfileId = normalizeProfileId(profileId);
+        ExecutionProfile profile = PROFILES.get(normalizedProfileId);
         if (profile == null) {
             throw new IllegalArgumentException(
                     "Unknown Pepenium execution profile: " + profileId
@@ -32,7 +33,8 @@ public final class ExecutionProfiles {
     }
 
     public static boolean exists(String profileId) {
-        return profileId != null && PROFILES.containsKey(profileId);
+        String normalizedProfileId = normalizeProfileId(profileId);
+        return normalizedProfileId != null && PROFILES.containsKey(normalizedProfileId);
     }
 
     public static List<ExecutionProfile> list() {
@@ -202,6 +204,10 @@ public final class ExecutionProfiles {
 
     private static boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private static String normalizeProfileId(String profileId) {
+        return profileId == null ? null : profileId.trim();
     }
 
     private static int levenshteinDistance(String left, String right) {
