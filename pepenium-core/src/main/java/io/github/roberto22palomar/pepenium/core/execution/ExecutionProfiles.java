@@ -60,11 +60,25 @@ public final class ExecutionProfiles {
 
     public static void validateCompatibility(ExecutionProfile profile, TestTarget target) {
         if (profile.getTarget() != target) {
+            String closestProfiles = closestCompatibleProfileIdsMultiline(profile, target);
+            String closestMessage = closestProfiles.isBlank()
+                    ? ""
+                    : System.lineSeparator() + System.lineSeparator()
+                            + "Closest compatible profiles:"
+                            + System.lineSeparator()
+                            + closestProfiles;
             throw new IllegalStateException(
                     "Execution profile '" + profile.getId() + "' targets " + profile.getTarget()
                             + " but the test targets " + target
-                            + ". Description: " + profile.getDescription()
-                            + ". Compatible profiles for " + target + ": " + compatibleProfileIds(target)
+                            + "." + System.lineSeparator()
+                            + "Profile description: " + profile.getDescription()
+                            + System.lineSeparator()
+                            + "Use a profile that targets " + target + "."
+                            + closestMessage
+                            + System.lineSeparator() + System.lineSeparator()
+                            + "Compatible profiles for " + target + ":"
+                            + System.lineSeparator()
+                            + compatibleProfileIdsMultiline(target)
             );
         }
     }
@@ -82,6 +96,28 @@ public final class ExecutionProfiles {
                 .map(ExecutionProfile::getId)
                 .map(profileId -> "- " + profileId)
                 .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    private static String closestCompatibleProfileIdsMultiline(ExecutionProfile incompatibleProfile,
+                                                               TestTarget target) {
+        String requestedPrefix = backendPrefix(incompatibleProfile.getId());
+        if (requestedPrefix.isBlank()) {
+            return "";
+        }
+        return list().stream()
+                .filter(profile -> profile.getTarget() == target)
+                .map(ExecutionProfile::getId)
+                .filter(profileId -> backendPrefix(profileId).equals(requestedPrefix))
+                .map(profileId -> "- " + profileId)
+                .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    private static String backendPrefix(String profileId) {
+        if (isBlank(profileId)) {
+            return "";
+        }
+        int separatorIndex = profileId.indexOf('-');
+        return separatorIndex < 0 ? profileId : profileId.substring(0, separatorIndex);
     }
 
     public static String suggestedProfileIdsMultiline(String requestedProfileId, TestTarget target) {
