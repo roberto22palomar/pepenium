@@ -12,7 +12,7 @@
     <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
   </a>
   <img alt="Java" src="https://img.shields.io/badge/Java-11-blue.svg" />
-  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.x-orange.svg" />
+  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.9%2B-orange.svg" />
   <img alt="JUnit" src="https://img.shields.io/badge/JUnit-5-purple.svg" />
   <img alt="Selenium" src="https://img.shields.io/badge/Selenium-4-43B02A.svg" />
   <img alt="Appium Client" src="https://img.shields.io/badge/Appium%20Client-10-00BFFF.svg" />
@@ -22,7 +22,7 @@
 
 <p align="center">
   <strong>English</strong> |
-  <a href="README.es.md">Espanol</a>
+  <a href="README.es.md">Español</a>
 </p>
 
 Pepenium is a Java automation framework for Android, iOS and Web built on top of Appium, Selenium and JUnit 5.
@@ -53,12 +53,11 @@ Ready-to-copy environment examples:
 - One test per functional target, not one test per provider
 - Shared execution model for local, BrowserStack and AWS Device Farm
 - Centralized driver/session lifecycle through a single session factory
-- Reusable `Actions*` helpers for Web, Android and iOS
+- Reusable `Actions*` helpers for Web, Android and iOS, plus `MobileActions` for shared mobile flows
 - Screenshot helpers designed for fast flows without blurred captures
 - Cleaner logs with automatic runtime context and failure evidence
 
 See [START-HERE.md](docs/START-HERE.md) for the fastest first-run path, [QUICK-START.md](docs/QUICK-START.md) for the fuller walkthrough and [CHANGELOG.md](CHANGELOG.md) for release history.
-Use [ENVIRONMENT.md](docs/ENVIRONMENT.md) as the central reference for environment variables, precedence rules and ready-to-copy configuration starting points.
 Use [ENVIRONMENT.md](docs/ENVIRONMENT.md) as the central reference for environment variables, precedence rules, runtime properties and capability override patterns.
 Use [API.md](docs/API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
 Use the root `docker-compose.yaml` if you want to run the local Appium server in Docker while keeping the Android emulator on the host.
@@ -94,7 +93,7 @@ Typical consumer dependency:
 Why `pepenium-toolkit` is usually the right entry point:
 
 - it is the artifact most external users actually want to build against
-- it gives you `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS`
+- it gives you `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS`
 - it pulls in the core runtime transitively, so you still get `BaseTest` and `TestTarget` without wiring both layers manually
 
 If you want a concrete consumer example, see [consumer-smoke/README.md](consumer-smoke/README.md).
@@ -215,6 +214,7 @@ Provider-specific request builders currently live under:
 Reusable building blocks:
 
 - `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
+- `toolkit/actions`: `MobileActions` and `SwipeDirection` for Android/iOS-compatible flows
 - `toolkit/assertions`: `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS`
 - `toolkit/support`: reusable settle and scroll helpers
 ### `examples`

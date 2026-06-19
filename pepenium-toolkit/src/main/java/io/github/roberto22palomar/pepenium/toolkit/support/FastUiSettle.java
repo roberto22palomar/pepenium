@@ -7,6 +7,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @SuppressFBWarnings(
@@ -37,22 +39,25 @@ public final class FastUiSettle {
 
         while (System.nanoTime() < deadline) {
             if (hasScreenReadyFlag()) {
-                sleep(settle);
-                return true;
+                return sleep(settle);
             }
 
             if (hasGenericSpinner()) {
                 observedMovement = true;
-                sleep(poll);
+                if (!sleep(poll)) {
+                    return false;
+                }
                 previousHash = safeHash(pageSourceSafe());
                 continue;
             }
 
-            sleep(poll);
+            if (!sleep(poll)) {
+                return false;
+            }
             String currentHash = safeHash(pageSourceSafe());
             if (currentHash.equals(previousHash)) {
                 if (observedMovement) {
-                    sleep(settle);
+                    return sleep(settle);
                 }
                 return true;
             }
@@ -66,19 +71,19 @@ public final class FastUiSettle {
 
     private boolean hasGenericSpinner() {
         try {
-            for (WebElement element : driver.findElements(By.className("android.widget.ProgressBar"))) {
+            for (WebElement element : elements(By.className("android.widget.ProgressBar"))) {
                 if (element.isDisplayed()) {
                     return true;
                 }
             }
 
-            for (WebElement element : driver.findElements(By.className("XCUIElementTypeActivityIndicator"))) {
+            for (WebElement element : elements(By.className("XCUIElementTypeActivityIndicator"))) {
                 if (element.isDisplayed()) {
                     return true;
                 }
             }
 
-            for (WebElement element : driver.findElements(By.className("XCUIElementTypeProgressIndicator"))) {
+            for (WebElement element : elements(By.className("XCUIElementTypeProgressIndicator"))) {
                 if (element.isDisplayed()) {
                     return true;
                 }
@@ -91,7 +96,7 @@ public final class FastUiSettle {
 
     private boolean hasScreenReadyFlag() {
         try {
-            for (WebElement element : driver.findElements(By.xpath("//*[@resource-id='screen-ready']"))) {
+            for (WebElement element : elements(By.xpath("//*[@resource-id='screen-ready']"))) {
                 if (element.isDisplayed()) {
                     log.debug("Screen-ready marker detected before screenshot");
                     return true;
@@ -105,10 +110,16 @@ public final class FastUiSettle {
 
     private String pageSourceSafe() {
         try {
-            return driver.getPageSource();
+            String source = driver.getPageSource();
+            return source == null ? "" : source;
         } catch (Exception e) {
             return "";
         }
+    }
+
+    private List<WebElement> elements(By locator) {
+        List<WebElement> elements = driver.findElements(locator);
+        return elements == null ? Collections.emptyList() : elements;
     }
 
     private String safeHash(String source) {
@@ -116,11 +127,13 @@ public final class FastUiSettle {
         return Integer.toHexString(source.substring(0, length).hashCode());
     }
 
-    private void sleep(Duration duration) {
+    private boolean sleep(Duration duration) {
         try {
             Thread.sleep(duration.toMillis());
+            return true;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            return false;
         }
     }
 }

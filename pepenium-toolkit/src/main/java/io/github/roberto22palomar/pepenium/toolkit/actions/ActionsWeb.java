@@ -251,7 +251,6 @@ public class ActionsWeb {
         ActionLoggingSupport.recordWait("Wait until hidden " + locator);
         try {
             WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
             wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
         } catch (TimeoutException e) {
             ActionLoggingSupport.logTimeout(log, "hidden wait", locator, e);
@@ -284,7 +283,7 @@ public class ActionsWeb {
             }
 
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            String filename = "screenshot_" + Instant.now().toEpochMilli() + ".png";
+            String filename = uniqueScreenshotFileName("screenshot");
             Path screenshotBaseDir = resolveScreenshotBaseDir();
             Path filePath = screenshotBaseDir.resolve(filename);
             Files.createDirectories(filePath.getParent());
@@ -372,5 +371,10 @@ public class ActionsWeb {
 
     private Path resolveScreenshotBaseDir() {
         return ActionLoggingSupport.resolveScreenshotBaseDir();
+    }
+
+    private String uniqueScreenshotFileName(String prefix) {
+        return prefix + "_" + Instant.now().toEpochMilli()
+                + "_" + Long.toUnsignedString(System.nanoTime(), 36) + ".png";
     }
 }

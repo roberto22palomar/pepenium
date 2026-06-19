@@ -1,6 +1,8 @@
 package io.github.roberto22palomar.pepenium.core.runtime;
 
 import io.appium.java_client.AppiumDriver;
+import io.github.roberto22palomar.pepenium.core.execution.DriverType;
+import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
@@ -23,6 +25,7 @@ final class PepeniumInjectionSupport {
     private static final String ASSERTIONS_APP = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp";
     private static final String ACTIONS_APP_IOS = "io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS";
     private static final String ASSERTIONS_APP_IOS = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS";
+    private static final String MOBILE_ACTIONS = "io.github.roberto22palomar.pepenium.toolkit.actions.MobileActions";
 
     static final class CacheState {
         private final Map<Class<?>, Object> components = new HashMap<>();
@@ -70,6 +73,7 @@ final class PepeniumInjectionSupport {
                 || type.getName().equals(ASSERTIONS_APP)
                 || type.getName().equals(ACTIONS_APP_IOS)
                 || type.getName().equals(ASSERTIONS_APP_IOS)
+                || type.getName().equals(MOBILE_ACTIONS)
                 || type == PepeniumSteps.class;
     }
 
@@ -201,10 +205,31 @@ final class PepeniumInjectionSupport {
         if (type.getName().equals(ASSERTIONS_APP_IOS)) {
             return instantiateToolkitType(type, requireAppiumDriver(type));
         }
+        if (type.getName().equals(MOBILE_ACTIONS)) {
+            return instantiateToolkitType(resolveMobileActionsImplementation(), requireAppiumDriver(type));
+        }
         if (type == PepeniumSteps.class) {
             return (PepeniumSteps) StepTracker::record;
         }
         throw new IllegalStateException("Unsupported direct Pepenium injection type: " + type.getName());
+    }
+
+    private Class<?> resolveMobileActionsImplementation() {
+        DriverSession session = requireSession(MOBILE_ACTIONS);
+        TestTarget target = session.getRequest() == null ? null : session.getRequest().getTarget();
+        DriverType driverType = session.getRequest() == null ? null : session.getRequest().getDriverType();
+        String implementation = isIosTarget(target, driverType) ? ACTIONS_APP_IOS : ACTIONS_APP;
+        try {
+            return Class.forName(implementation);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("MobileActions implementation is not available: " + implementation, e);
+        }
+    }
+
+    private boolean isIosTarget(TestTarget target, DriverType driverType) {
+        return target == TestTarget.IOS_NATIVE
+                || target == TestTarget.IOS_WEB
+                || driverType == DriverType.IOS_APPIUM;
     }
 
     private WebDriver requireWebDriver(Object target) {

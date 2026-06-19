@@ -132,7 +132,7 @@ final class PepeniumReportSupport {
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
             Path screenshotDir = reportDir.resolve("screenshots");
             Files.createDirectories(screenshotDir);
-            Path screenshotPath = screenshotDir.resolve("report_" + Instant.now().toEpochMilli() + ".png");
+            Path screenshotPath = screenshotDir.resolve(uniqueArtifactStem("report") + ".png");
             Files.write(screenshotPath, screenshot);
             return pathToHref(screenshotPath.toString(), reportDir);
         } catch (Exception e) {
@@ -159,7 +159,7 @@ final class PepeniumReportSupport {
             if (fileNamePath != null) {
                 fileName = fileNamePath.toString();
             }
-            Path target = screenshotDir.resolve("manual_" + Instant.now().toEpochMilli() + "_" + fileName).normalize();
+            Path target = screenshotDir.resolve(uniqueArtifactStem("manual") + "_" + fileName).normalize();
             if (!source.equals(target)) {
                 Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -362,5 +362,10 @@ final class PepeniumReportSupport {
         }
         value.append(path);
         return value.toString();
+    }
+
+    private static String uniqueArtifactStem(String prefix) {
+        return prefix + "_" + Instant.now().toEpochMilli()
+                + "_" + Long.toUnsignedString(System.nanoTime(), 36);
     }
 }

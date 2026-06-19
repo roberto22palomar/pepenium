@@ -245,15 +245,24 @@ class ActionsWebTest {
     @Test
     void waitUntilHiddenWaitsForElementToDisappear() {
         when(driver.findElement(LOCATOR))
-                .thenReturn(element)
                 .thenThrow(new NoSuchElementException("gone"));
-        when(element.isDisplayed()).thenReturn(true);
 
         ActionsWeb actions = new ActionsWeb(driver);
         actions.waitUntilHidden(LOCATOR);
 
         assertTrue(StepTracker.snapshot().getSteps().stream()
                 .anyMatch(step -> step.contains("Wait until hidden " + LOCATOR)));
+    }
+
+    @Test
+    void waitUntilHiddenReturnsImmediatelyWhenElementIsAlreadyHidden() {
+        when(driver.findElement(LOCATOR)).thenThrow(new NoSuchElementException("already gone"));
+
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        actions.waitUntilHidden(LOCATOR);
+
+        verify(driver).findElement(LOCATOR);
     }
 
     @Test

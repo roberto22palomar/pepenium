@@ -12,7 +12,7 @@
     <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
   </a>
   <img alt="Java" src="https://img.shields.io/badge/Java-11-blue.svg" />
-  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.x-orange.svg" />
+  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.9%2B-orange.svg" />
   <img alt="JUnit" src="https://img.shields.io/badge/JUnit-5-purple.svg" />
   <img alt="Selenium" src="https://img.shields.io/badge/Selenium-4-43B02A.svg" />
   <img alt="Appium Client" src="https://img.shields.io/badge/Appium%20Client-10-00BFFF.svg" />
@@ -22,7 +22,7 @@
 
 <p align="center">
   <a href="README.md">English</a> |
-  <strong>Espanol</strong>
+  <strong>Español</strong>
 </p>
 
 Pepenium es un framework de automatizacion en Java para Android, iOS y Web construido sobre Appium, Selenium y JUnit 5.
@@ -53,7 +53,7 @@ Ficheros de entorno listos para copiar:
 - Un test por target funcional, no un test por proveedor
 - Un modelo de ejecucion compartido para local, BrowserStack y AWS Device Farm
 - Lifecycle de driver y sesion centralizado en una unica factoria
-- Helpers reutilizables `Actions*` para Web, Android e iOS
+- Helpers reutilizables `Actions*` para Web, Android e iOS, mas `MobileActions` para flows mobile compartidos
 - Capturas pensadas para flujos rapidos sin screenshots borrosos
 - Logs mas limpios con contexto automatico y evidencia de fallo
 
@@ -92,7 +92,7 @@ Dependencia tipica de consumo:
 Por que `pepenium-toolkit` suele ser el punto de entrada correcto:
 
 - es el artefacto contra el que la mayoria de usuarios externos querran construir
-- te da `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `AssertionsWeb`, `AssertionsApp` y `AssertionsAppIOS`
+- te da `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `AssertionsApp` y `AssertionsAppIOS`
 - arrastra transitivamente el core/runtime, asi que sigues teniendo `BaseTest` y `TestTarget` sin cablear ambas capas a mano
 
 Si quieres un ejemplo concreto de consumidor, mira [consumer-smoke/README.md](consumer-smoke/README.md).
@@ -214,6 +214,7 @@ Los builders de request especificos de proveedor viven actualmente en:
 Bloques reutilizables:
 
 - `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
+- `toolkit/actions`: `MobileActions` y `SwipeDirection` para flows compatibles Android/iOS
 - `toolkit/assertions`: `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS`
 - `toolkit/support`: helpers reutilizables de settle y scroll
 

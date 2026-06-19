@@ -300,7 +300,7 @@ final class PepeniumReportHtmlRenderer {
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(block.title)))
                 .append("</div><div class=\"block-subtitle\">Started ")
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(block.startedAt)))
-                .append(" · ")
+                .append(" &middot; ")
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportSupport.formatDurationMillis(blockDurationMillis)))
                 .append("</div></div><div class=\"block-kpis\">")
                 .append(renderChip(block.events.size() + (block.events.size() == 1 ? " event" : " events")))
@@ -330,8 +330,8 @@ final class PepeniumReportHtmlRenderer {
     private static String renderWaitHotspot(PepeniumHtmlReportWriter.WaitHotspot hotspot) {
         return "<div class=\"list-item\"><strong>" + PepeniumReportSupport.escapeHtml(hotspot.message)
                 + "</strong><div class=\"path\">Seen " + hotspot.count + (hotspot.count == 1 ? " time" : " times")
-                + " · first " + PepeniumReportSupport.escapeHtml(hotspot.firstSeen)
-                + " · last " + PepeniumReportSupport.escapeHtml(hotspot.lastSeen) + "</div></div>";
+                + " &middot; first " + PepeniumReportSupport.escapeHtml(hotspot.firstSeen)
+                + " &middot; last " + PepeniumReportSupport.escapeHtml(hotspot.lastSeen) + "</div></div>";
     }
 
     private static String renderTimelineCard(PepeniumTimeline.Event anchor, Instant startedAt,

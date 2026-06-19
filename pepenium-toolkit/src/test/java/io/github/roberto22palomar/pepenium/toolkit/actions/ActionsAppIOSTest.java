@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -273,6 +274,44 @@ class ActionsAppIOSTest {
         actions.swipeAtElement(LOCATOR, ActionsAppIOS.Direction.LEFT, 2, 1.0, 150);
 
         verify(driver, times(2)).perform(anyList());
+    }
+
+    @Test
+    void implementsSharedMobileActionsContract() {
+        when(element.getRect()).thenReturn(new Rectangle(10, 10, 20, 20));
+        when(driver.manage()).thenReturn(options);
+        when(options.window()).thenReturn(window);
+        when(window.getSize()).thenReturn(new Dimension(200, 400));
+
+        MobileActions actions = new ActionsAppIOS(driver) {
+            @Override
+            public boolean waitStableScreen() {
+                return true;
+            }
+
+            @Override
+            public WebElement waitToBeVisible(By locator) {
+                return element;
+            }
+        };
+
+        assertSame(driver, actions.getDriver());
+        actions.tapCenter();
+        actions.swipeAtElement(LOCATOR, SwipeDirection.DOWN, 1, 0.5, 150);
+
+        verify(driver, times(2)).perform(anyList());
+    }
+
+    @Test
+    void swipeAtElementRejectsInvalidArgumentsBeforeTouchingDriver() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> actions.swipeAtElement(LOCATOR, (ActionsAppIOS.Direction) null, 1, 0.5, 150));
+        assertThrows(IllegalArgumentException.class,
+                () -> actions.swipeAtElement(LOCATOR, ActionsAppIOS.Direction.UP, 1, 1.5, 150));
+        assertThrows(IllegalArgumentException.class,
+                () -> actions.swipeAtElement(LOCATOR, ActionsAppIOS.Direction.UP, 1, 0.5, 0));
     }
 
     @Test
