@@ -192,6 +192,9 @@ final class PepeniumReportSupport {
         if (override == null || override.isBlank()) {
             override = System.getenv("PEPENIUM_REPORT_DIR");
         }
+        if (override != null) {
+            override = override.trim();
+        }
         return override == null || override.isBlank()
                 ? reportDirHint()
                 : Paths.get(override);
