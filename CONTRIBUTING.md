@@ -99,6 +99,7 @@ High-level structure:
 - `pepenium-core/` - framework runtime, execution model and provider/config infrastructure
 - `pepenium-toolkit/` - reusable test-author helpers such as actions and assertions
 - `pepenium-examples/` - repository-only showcase tests, flows and page objects
+- `consumer-smoke/` - standalone Maven consumer that proves public API usage outside the reactor
 
 Please respect the existing module boundaries and avoid adding project-specific logic to `pepenium-core` unless it benefits all users of the framework.
 
@@ -110,7 +111,7 @@ When deciding where to place a change:
 
 `pepenium-examples` should stay focused on runnable examples that consume the framework from inside this repository. It is not a published artifact surface and should not become a second home for reusable framework features.
 
-For public-vs-internal API expectations, see [API.md](docs/API.md).
+For the full placement guide, see [REPOSITORY.md](docs/REPOSITORY.md). For public-vs-internal API expectations, see [API.md](docs/API.md).
 
 ---
 
