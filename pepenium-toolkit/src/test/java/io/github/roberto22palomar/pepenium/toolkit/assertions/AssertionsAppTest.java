@@ -11,7 +11,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,5 +48,27 @@ class AssertionsAppTest {
         assertions.assertVisible(LOCATOR);
 
         assertTrue(StepTracker.snapshot().getSteps().get(0).contains("Assert visible " + LOCATOR));
+    }
+
+    @Test
+    void assertTextEqualsRejectsNullExpectedTextBeforeTouchingDriver() {
+        AssertionsApp assertions = new AssertionsApp(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> assertions.assertTextEquals(LOCATOR, null));
+
+        assertTrue(error.getMessage().contains("expectedText"));
+        verifyNoInteractions(driver);
+    }
+
+    @Test
+    void assertTextContainsRejectsNullExpectedFragmentBeforeTouchingDriver() {
+        AssertionsApp assertions = new AssertionsApp(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> assertions.assertTextContains(LOCATOR, null));
+
+        assertTrue(error.getMessage().contains("expectedFragment"));
+        verifyNoInteractions(driver);
     }
 }

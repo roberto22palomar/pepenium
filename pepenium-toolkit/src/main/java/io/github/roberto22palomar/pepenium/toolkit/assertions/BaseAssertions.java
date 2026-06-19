@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.Objects;
 
 abstract class BaseAssertions {
 
@@ -82,6 +83,7 @@ abstract class BaseAssertions {
     }
 
     protected void assertTextEquals(By locator, String expectedText) {
+        Objects.requireNonNull(expectedText, "expectedText must not be null");
         String actualText = readText(locator);
         if (!expectedText.equals(actualText)) {
             throw assertion(
@@ -92,6 +94,7 @@ abstract class BaseAssertions {
     }
 
     protected void assertTextEquals(WebElement element, String expectedText) {
+        Objects.requireNonNull(expectedText, "expectedText must not be null");
         String actualText = readText(element);
         if (!expectedText.equals(actualText)) {
             throw assertion(
@@ -102,6 +105,7 @@ abstract class BaseAssertions {
     }
 
     protected void assertTextContains(By locator, String expectedFragment) {
+        Objects.requireNonNull(expectedFragment, "expectedFragment must not be null");
         String actualText = readText(locator);
         if (actualText == null || !actualText.contains(expectedFragment)) {
             throw assertion(
@@ -112,6 +116,7 @@ abstract class BaseAssertions {
     }
 
     protected void assertTextContains(WebElement element, String expectedFragment) {
+        Objects.requireNonNull(expectedFragment, "expectedFragment must not be null");
         String actualText = readText(element);
         if (actualText == null || !actualText.contains(expectedFragment)) {
             throw assertion(

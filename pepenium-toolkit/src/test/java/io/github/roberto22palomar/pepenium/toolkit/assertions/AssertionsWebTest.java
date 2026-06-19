@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -111,6 +112,39 @@ class AssertionsWebTest {
 
         assertTrue(StepTracker.snapshot().getSteps().stream()
                 .anyMatch(step -> step.contains("Assert input value on " + LOCATOR)));
+    }
+
+    @Test
+    void assertUrlContainsRejectsNullExpectedFragmentBeforeTouchingDriver() {
+        AssertionsWeb assertions = new AssertionsWeb(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> assertions.assertUrlContains(null));
+
+        assertTrue(error.getMessage().contains("expectedFragment"));
+        verifyNoInteractions(driver);
+    }
+
+    @Test
+    void assertTitleContainsRejectsNullExpectedFragmentBeforeTouchingDriver() {
+        AssertionsWeb assertions = new AssertionsWeb(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> assertions.assertTitleContains(null));
+
+        assertTrue(error.getMessage().contains("expectedFragment"));
+        verifyNoInteractions(driver);
+    }
+
+    @Test
+    void assertInputValueEqualsRejectsNullExpectedValueBeforeTouchingDriver() {
+        AssertionsWeb assertions = new AssertionsWeb(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> assertions.assertInputValueEquals(LOCATOR, null));
+
+        assertTrue(error.getMessage().contains("expectedValue"));
+        verifyNoInteractions(driver);
     }
 
     @Test

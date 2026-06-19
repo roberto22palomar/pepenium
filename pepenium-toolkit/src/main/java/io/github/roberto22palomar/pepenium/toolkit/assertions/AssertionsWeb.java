@@ -6,6 +6,8 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.util.Objects;
+
 public class AssertionsWeb extends PlatformAssertions implements WebAssertions {
 
     public AssertionsWeb(WebDriver driver) {
@@ -23,6 +25,7 @@ public class AssertionsWeb extends PlatformAssertions implements WebAssertions {
 
     @Override
     public void assertUrlContains(String expectedFragment) {
+        Objects.requireNonNull(expectedFragment, "expectedFragment must not be null");
         runAssertion("Assert URL contains " + expectedFragment, () -> {
             try {
                 assertionWait().until(d -> {
@@ -37,6 +40,7 @@ public class AssertionsWeb extends PlatformAssertions implements WebAssertions {
 
     @Override
     public void assertTitleContains(String expectedFragment) {
+        Objects.requireNonNull(expectedFragment, "expectedFragment must not be null");
         runAssertion("Assert title contains " + expectedFragment, () -> {
             try {
                 assertionWait().until(d -> {
@@ -51,6 +55,7 @@ public class AssertionsWeb extends PlatformAssertions implements WebAssertions {
 
     @Override
     public void assertInputValueEquals(By locator, String expectedValue) {
+        Objects.requireNonNull(expectedValue, "expectedValue must not be null");
         runAssertion("Assert input value on " + locator, () -> {
             WebElement element = assertionWait().until(d -> d.findElement(locator));
             String actualValue = element.getAttribute("value");
