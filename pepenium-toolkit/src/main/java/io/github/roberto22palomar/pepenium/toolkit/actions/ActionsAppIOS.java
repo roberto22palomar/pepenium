@@ -6,6 +6,7 @@ import io.appium.java_client.AppiumDriver;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import io.github.roberto22palomar.pepenium.toolkit.support.ActionLoggingSupport;
 import io.github.roberto22palomar.pepenium.toolkit.support.FastUiSettle;
+import io.github.roberto22palomar.pepenium.toolkit.support.ToolkitTimeouts;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,7 @@ public class ActionsAppIOS implements MobileActions {
     }
 
     private WebDriverWait shortWait() {
-        WebDriverWait wait = new WebDriverWait(driver, DEFAULT_TIMEOUT);
+        WebDriverWait wait = new WebDriverWait(driver, defaultTimeout());
         wait.pollingEvery(POLLING);
         wait.ignoring(NoSuchElementException.class)
                 .ignoring(StaleElementReferenceException.class);
@@ -66,7 +67,7 @@ public class ActionsAppIOS implements MobileActions {
     }
 
     private WebDriverWait longWait() {
-        WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
+        WebDriverWait wait = new WebDriverWait(driver, longTimeout());
         wait.pollingEvery(POLLING);
         wait.ignoring(NoSuchElementException.class)
                 .ignoring(StaleElementReferenceException.class);
@@ -504,6 +505,14 @@ public class ActionsAppIOS implements MobileActions {
 
     private Path resolveScreenshotBaseDir() {
         return ActionLoggingSupport.resolveScreenshotBaseDir();
+    }
+
+    private Duration defaultTimeout() {
+        return ToolkitTimeouts.actionTimeout(DEFAULT_TIMEOUT);
+    }
+
+    private Duration longTimeout() {
+        return ToolkitTimeouts.longActionTimeout(LONG_TIMEOUT);
     }
 
     private String uniqueScreenshotFileName(String prefix) {

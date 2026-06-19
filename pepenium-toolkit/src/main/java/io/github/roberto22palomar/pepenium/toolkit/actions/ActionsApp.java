@@ -6,6 +6,7 @@ import io.appium.java_client.AppiumDriver;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import io.github.roberto22palomar.pepenium.toolkit.support.ActionLoggingSupport;
 import io.github.roberto22palomar.pepenium.toolkit.support.FastUiSettle;
+import io.github.roberto22palomar.pepenium.toolkit.support.ToolkitTimeouts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -53,28 +54,28 @@ public class ActionsApp implements MobileActions {
     @Override
     public WebElement waitToBePresent(By locator) {
         ActionLoggingSupport.recordWait("Wait for present " + locator);
-        WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
+        WebDriverWait wait = new WebDriverWait(driver, longTimeout());
         return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
     }
 
     @Override
     public WebElement waitToBeVisible(By locator) {
         ActionLoggingSupport.recordWait("Wait for visible " + locator);
-        WebDriverWait wait = new WebDriverWait(driver, DEFAULT_TIMEOUT);
+        WebDriverWait wait = new WebDriverWait(driver, defaultTimeout());
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
     @Override
     public WebElement waitToBeClickable(By locator) {
         ActionLoggingSupport.recordWait("Wait for clickable " + locator);
-        WebDriverWait wait = new WebDriverWait(driver, DEFAULT_TIMEOUT);
+        WebDriverWait wait = new WebDriverWait(driver, defaultTimeout());
         return wait.until(ExpectedConditions.elementToBeClickable(locator));
     }
 
     @Override
     public boolean waitForElementText(By locator, String expectedText) {
         try {
-            return new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            return new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.textToBe(locator, expectedText));
         } catch (TimeoutException e) {
             log.warn("Timeout waiting for text '{}' on element: {}", expectedText, locator);
@@ -95,7 +96,7 @@ public class ActionsApp implements MobileActions {
     @Override
     public boolean isElementVisible(By locator) {
         try {
-            new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.visibilityOfElementLocated(locator));
             return true;
         } catch (TimeoutException e) {
@@ -107,7 +108,7 @@ public class ActionsApp implements MobileActions {
     @Override
     public boolean waitGone(By locator) {
         try {
-            WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
+            WebDriverWait wait = new WebDriverWait(driver, longTimeout());
             return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
         } catch (TimeoutException e) {
             log.warn("Timeout waiting for element to disappear: {}", locator);
@@ -512,6 +513,14 @@ public class ActionsApp implements MobileActions {
 
     private Path resolveScreenshotBaseDir() {
         return ActionLoggingSupport.resolveScreenshotBaseDir();
+    }
+
+    private Duration defaultTimeout() {
+        return ToolkitTimeouts.actionTimeout(DEFAULT_TIMEOUT);
+    }
+
+    private Duration longTimeout() {
+        return ToolkitTimeouts.longActionTimeout(LONG_TIMEOUT);
     }
 
     private String uniqueScreenshotFileName(String prefix) {

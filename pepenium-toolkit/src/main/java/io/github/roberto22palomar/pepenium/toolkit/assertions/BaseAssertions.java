@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.toolkit.assertions;
 
+import io.github.roberto22palomar.pepenium.toolkit.support.ToolkitTimeouts;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -138,7 +139,7 @@ abstract class BaseAssertions {
     }
 
     protected WebDriverWait assertionWait() {
-        return new WebDriverWait(driver, DEFAULT_TIMEOUT);
+        return new WebDriverWait(driver, ToolkitTimeouts.assertionTimeout(DEFAULT_TIMEOUT));
     }
 
     protected AssertionError assertion(String message, Object target) {

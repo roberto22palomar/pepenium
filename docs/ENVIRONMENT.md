@@ -284,6 +284,30 @@ Notes:
 - Purpose: Legacy compatibility alias for screenshot output, still honored for AWS Device Farm and existing setups
 - Recommendation: Prefer `PEPENIUM_SCREENSHOT_PATH` in new local or shared `.env` files
 
+## Toolkit Wait Tuning
+
+These variables and equivalent Java system properties tune Pepenium toolkit waits without changing test code.
+
+### `pepenium.action.timeout.seconds` / `PEPENIUM_ACTION_TIMEOUT_SECONDS`
+
+- Required: No
+- Default: helper-specific short action timeout
+- Purpose: Controls short action waits such as visibility, clickability and quick optional checks
+
+### `pepenium.action.long-timeout.seconds` / `PEPENIUM_ACTION_LONG_TIMEOUT_SECONDS`
+
+- Required: No
+- Default: helper-specific long action timeout
+- Purpose: Controls long action waits such as presence checks and disappearance waits
+
+### `pepenium.assertion.timeout.seconds` / `PEPENIUM_ASSERTION_TIMEOUT_SECONDS`
+
+- Required: No
+- Default: `6`
+- Purpose: Controls waits used by toolkit assertions before they fail
+
+Values must be positive integer seconds. Java system properties win over environment variables.
+
 ## Observability
 
 ### `pepenium.detail.logging`
@@ -438,6 +462,8 @@ PEPENIUM_WEB_CAPABILITIES=custom:flag=true;custom:retries=3
 ```text
 PEPENIUM_DETAIL_LOGGING=true
 PEPENIUM_STEP_TRACKER_LIMIT=20
+PEPENIUM_ACTION_TIMEOUT_SECONDS=10
+PEPENIUM_ASSERTION_TIMEOUT_SECONDS=10
 ```
 
 ### Local Android With Extra Appium Tuning

@@ -3,6 +3,7 @@ package io.github.roberto22palomar.pepenium.toolkit.actions;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import io.github.roberto22palomar.pepenium.toolkit.support.ActionLoggingSupport;
+import io.github.roberto22palomar.pepenium.toolkit.support.ToolkitTimeouts;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class ActionsWeb implements WebActions {
 
     @Override
     public void waitForOpenOverlay() {
-        new WebDriverWait(driver, DEFAULT_TIMEOUT)
+        new WebDriverWait(driver, defaultTimeout())
                 .until(ExpectedConditions.visibilityOfElementLocated(openOverlay));
     }
 
@@ -67,14 +68,14 @@ public class ActionsWeb implements WebActions {
             } catch (Exception ignore) {
                 new Actions(driver).sendKeys(Keys.ESCAPE).perform();
             }
-            new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            new WebDriverWait(driver, defaultTimeout())
                     .until(d -> d.findElements(openOverlay).isEmpty());
         }
     }
 
     @Override
     public void waitForAtLeastNElements(By locator, int n) {
-        new WebDriverWait(driver, DEFAULT_TIMEOUT)
+        new WebDriverWait(driver, defaultTimeout())
                 .until(d -> d.findElements(locator).size() >= n);
     }
 
@@ -82,7 +83,7 @@ public class ActionsWeb implements WebActions {
     public WebElement waitToBeVisible(By locator) {
         ActionLoggingSupport.recordWait("Wait for visible " + locator);
         try {
-            return new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            return new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.visibilityOfElementLocated(locator));
         } catch (TimeoutException e) {
             ActionLoggingSupport.logTimeout(log, "visibility wait", locator, e);
@@ -97,7 +98,7 @@ public class ActionsWeb implements WebActions {
     public WebElement waitToBeVisible(WebElement element) {
         ActionLoggingSupport.recordWait("Wait for visible element");
         try {
-            return new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            return new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.visibilityOf(element));
         } catch (TimeoutException e) {
             ActionLoggingSupport.logTimeout(log, "visibility wait", element, e);
@@ -112,7 +113,7 @@ public class ActionsWeb implements WebActions {
     public WebElement waitToBePresent(By locator) {
         ActionLoggingSupport.recordWait("Wait for present " + locator);
         try {
-            return new WebDriverWait(driver, LONG_TIMEOUT)
+            return new WebDriverWait(driver, longTimeout())
                     .until(ExpectedConditions.presenceOfElementLocated(locator));
         } catch (TimeoutException e) {
             ActionLoggingSupport.logTimeout(log, "presence wait", locator, e);
@@ -126,7 +127,7 @@ public class ActionsWeb implements WebActions {
     @Override
     public boolean waitForElementText(By locator, String expectedText) {
         try {
-            return new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            return new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.textToBe(locator, expectedText));
         } catch (TimeoutException e) {
             log.warn("Timeout waiting for text '{}' on element: {}", expectedText, locator);
@@ -147,7 +148,7 @@ public class ActionsWeb implements WebActions {
     @Override
     public boolean isElementVisible(By locator) {
         try {
-            new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.visibilityOfElementLocated(locator));
             return true;
         } catch (TimeoutException e) {
@@ -159,7 +160,7 @@ public class ActionsWeb implements WebActions {
     @Override
     public boolean isElementVisible(WebElement element) {
         try {
-            new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.visibilityOf(element));
             return true;
         } catch (TimeoutException e) {
@@ -195,7 +196,7 @@ public class ActionsWeb implements WebActions {
         StepTracker.record("Click " + locator);
         ActionLoggingSupport.recordAction("Click " + locator);
         try {
-            WebElement element = new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            WebElement element = new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.elementToBeClickable(locator));
             element.click();
             waitForPostActionSettle();
@@ -214,7 +215,7 @@ public class ActionsWeb implements WebActions {
         StepTracker.record("Click element");
         ActionLoggingSupport.recordAction("Click element");
         try {
-            WebElement clickableElement = new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            WebElement clickableElement = new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.elementToBeClickable(element));
             clickableElement.click();
             waitForPostActionSettle();
@@ -285,7 +286,7 @@ public class ActionsWeb implements WebActions {
         StepTracker.record("Wait until hidden " + locator);
         ActionLoggingSupport.recordWait("Wait until hidden " + locator);
         try {
-            WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
+            WebDriverWait wait = new WebDriverWait(driver, longTimeout());
             return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
         } catch (TimeoutException e) {
             ActionLoggingSupport.logTimeout(log, "hidden wait", locator, e);
@@ -409,6 +410,14 @@ public class ActionsWeb implements WebActions {
 
     private Path resolveScreenshotBaseDir() {
         return ActionLoggingSupport.resolveScreenshotBaseDir();
+    }
+
+    private Duration defaultTimeout() {
+        return ToolkitTimeouts.actionTimeout(DEFAULT_TIMEOUT);
+    }
+
+    private Duration longTimeout() {
+        return ToolkitTimeouts.longActionTimeout(LONG_TIMEOUT);
     }
 
     private String uniqueScreenshotFileName(String prefix) {
