@@ -36,6 +36,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -339,9 +340,6 @@ class ActionsAppIOSTest {
 
     @Test
     void waitUntilHiddenThrowsWhenElementStaysVisible() {
-        when(driver.findElement(LOCATOR)).thenReturn(element);
-        when(element.isDisplayed()).thenReturn(true);
-
         ActionsAppIOS actions = new ActionsAppIOS(driver) {
             @Override
             public boolean waitGone(By locator) {
@@ -353,6 +351,20 @@ class ActionsAppIOSTest {
                 () -> actions.waitUntilHidden(LOCATOR));
 
         assertTrue(error.getMessage().contains("Element stayed visible"));
+    }
+
+    @Test
+    void waitUntilHiddenReturnsWithoutWaitingForLoaderToAppear() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver) {
+            @Override
+            public boolean waitGone(By locator) {
+                return true;
+            }
+        };
+
+        actions.waitUntilHidden(LOCATOR);
+
+        verifyNoInteractions(driver);
     }
 
     @Test

@@ -206,11 +206,6 @@ public class ActionsAppIOS implements MobileActions {
     public void waitUntilHidden(By loadingLocator) {
         StepTracker.record("Wait until hidden " + loadingLocator);
         ActionLoggingSupport.recordWait("Wait until hidden " + loadingLocator);
-        try {
-            untilLong(ExpectedConditions.visibilityOfElementLocated(loadingLocator));
-        } catch (TimeoutException e) {
-            log.warn("Loader did not appear (may be OK): {}", loadingLocator);
-        }
         if (!waitGone(loadingLocator)) {
             TimeoutException e = new TimeoutException("Element stayed visible: " + loadingLocator);
             ActionLoggingSupport.logTimeout(log, "hidden wait", loadingLocator, e);
