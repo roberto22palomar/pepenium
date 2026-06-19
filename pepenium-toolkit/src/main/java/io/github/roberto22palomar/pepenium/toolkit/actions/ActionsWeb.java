@@ -131,6 +131,7 @@ public class ActionsWeb implements WebActions {
 
     @Override
     public boolean waitForElementText(By locator, String expectedText) {
+        Objects.requireNonNull(expectedText, "expectedText must not be null");
         try {
             return new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.textToBe(locator, expectedText));
@@ -253,6 +254,7 @@ public class ActionsWeb implements WebActions {
 
     @Override
     public void type(By locator, String text) {
+        Objects.requireNonNull(text, "text must not be null");
         StepTracker.record("Type into " + locator);
         ActionLoggingSupport.recordAction("Type into " + locator);
         try {
@@ -267,6 +269,7 @@ public class ActionsWeb implements WebActions {
 
     @Override
     public void type(WebElement element, String text) {
+        Objects.requireNonNull(text, "text must not be null");
         StepTracker.record("Type into element");
         ActionLoggingSupport.recordAction("Type into element");
         try {

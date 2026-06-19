@@ -117,6 +117,28 @@ class ActionsAppIOSTest {
     }
 
     @Test
+    void typeRejectsNullTextBeforeTouchingDriver() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.type(LOCATOR, null));
+
+        assertEquals("text must not be null", error.getMessage());
+        verifyNoInteractions(driver);
+    }
+
+    @Test
+    void waitForElementTextRejectsNullExpectedTextBeforeTouchingDriver() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.waitForElementText(LOCATOR, null));
+
+        assertEquals("expectedText must not be null", error.getMessage());
+        verifyNoInteractions(driver);
+    }
+
+    @Test
     void clickFallsBackToW3cTapWhenClickIsIntercepted() {
         when(element.getRect()).thenReturn(new Rectangle(10, 20, 30, 40));
         doThrow(new ElementClickInterceptedException("busy")).when(element).click();

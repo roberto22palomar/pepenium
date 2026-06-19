@@ -192,6 +192,28 @@ class ActionsWebTest {
     }
 
     @Test
+    void typeRejectsNullTextBeforeTouchingDriver() {
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.type(LOCATOR, null));
+
+        assertEquals("text must not be null", error.getMessage());
+        verifyNoInteractions(driver);
+    }
+
+    @Test
+    void typeElementRejectsNullTextBeforeTouchingElement() {
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.type(element, null));
+
+        assertEquals("text must not be null", error.getMessage());
+        verifyNoInteractions(driver, element);
+    }
+
+    @Test
     void waitForElementTextReturnsTrueWhenElementMatches() {
         when(driver.findElement(LOCATOR)).thenReturn(element);
         when(element.getText()).thenReturn("ready");
@@ -199,6 +221,17 @@ class ActionsWebTest {
         ActionsWeb actions = new ActionsWeb(driver);
 
         assertTrue(actions.waitForElementText(LOCATOR, "ready"));
+    }
+
+    @Test
+    void waitForElementTextRejectsNullExpectedTextBeforeTouchingDriver() {
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.waitForElementText(LOCATOR, null));
+
+        assertEquals("expectedText must not be null", error.getMessage());
+        verifyNoInteractions(driver);
     }
 
     @Test

@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -118,6 +119,28 @@ class ActionsAppTest {
 
         verify(element).clear();
         verify(element).sendKeys("android");
+    }
+
+    @Test
+    void typeRejectsNullTextBeforeTouchingDriver() {
+        ActionsApp actions = new ActionsApp(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.type(LOCATOR, null));
+
+        assertEquals("text must not be null", error.getMessage());
+        verifyNoInteractions(driver);
+    }
+
+    @Test
+    void waitForElementTextRejectsNullExpectedTextBeforeTouchingDriver() {
+        ActionsApp actions = new ActionsApp(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.waitForElementText(LOCATOR, null));
+
+        assertEquals("expectedText must not be null", error.getMessage());
+        verifyNoInteractions(driver);
     }
 
     @Test
