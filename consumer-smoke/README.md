@@ -30,6 +30,7 @@ The smoke sources intentionally model the expected user-facing workflow:
 
 - extending `BaseTest`
 - or using `@PepeniumTest` with `@PepeniumInject`
+- using `@PepeniumPage` page objects initialized through Selenium `PageFactory`
 - declaring a `TestTarget`
 - building page objects and flows with `Actions*`
 - compiling against shared `WebActions`, `MobileActions`, `WebAssertions` and `MobileAssertions` contracts
