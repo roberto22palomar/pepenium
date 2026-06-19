@@ -115,9 +115,10 @@ Use this mode only if:
 If you want to know whether Pepenium is usable from another Maven project, run the consumer smoke.
 
 ```text
-mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -U -f consumer-smoke/pom.xml clean test-compile
+.\scripts\Test-ConsumerSmoke.ps1
 ```
+
+On Bash-compatible shells, use `./scripts/test-consumer-smoke.sh`.
 
 ## 6. Check The Native Reports
 

@@ -34,6 +34,7 @@ Keep framework features in `pepenium-core` or `pepenium-toolkit`, not in `pepeni
 | `docs/es/` | Spanish mirrors for user-facing guides when available |
 | `docs/assets/` | Documentation images and diagrams |
 | `config/` | Repository-level build/configuration files that should not clutter the root |
+| `scripts/` | Local helper commands for repeatable contributor workflows |
 | `.github/` | GitHub Actions workflows, issue templates and repository automation |
 
 Generated local output should stay out of source control. The root `.gitignore` already covers `target/`, `tmp/`, `artifacts/`, `logs/`, local `*.env` files and local `*.log` files.
@@ -46,6 +47,7 @@ Generated local output should stay out of source control. The root `.gitignore` 
 - Put external-consumer compatibility checks in `consumer-smoke`.
 - Put environment templates in `docs/env`.
 - Put build-tool configuration in `config`.
+- Put repeatable local helper commands in `scripts`.
 - Update [API.md](API.md) when a change affects the documented public API surface.
 - Update [ENVIRONMENT.md](ENVIRONMENT.md) when a change adds or changes a supported environment variable or system property.
 - Update [REPORTING.md](REPORTING.md) when a change affects report files, report paths or report behavior.

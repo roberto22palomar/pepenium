@@ -301,6 +301,7 @@ That smoke project is intentionally outside the main Maven reactor so it behaves
 Typical validation flow:
 
 ```bash
-mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -f consumer-smoke/pom.xml clean test-compile
+./scripts/test-consumer-smoke.sh
 ```
+
+On Windows PowerShell, use `.\scripts\Test-ConsumerSmoke.ps1`.
