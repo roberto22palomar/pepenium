@@ -199,7 +199,7 @@
                             <goal>check</goal>
                         </goals>
                         <configuration>
-                            <configLocation>${maven.multiModuleProjectDirectory}/checkstyle.xml</configLocation>
+                            <configLocation>${maven.multiModuleProjectDirectory}/config/checkstyle/checkstyle.xml</configLocation>
                             <includeTestSourceDirectory>false</includeTestSourceDirectory>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
