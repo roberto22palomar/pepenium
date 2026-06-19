@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -137,6 +138,17 @@ class ActionsWebTest {
         actions.waitForAtLeastNElements(LOCATOR, 2);
 
         verify(driver).findElements(LOCATOR);
+    }
+
+    @Test
+    void waitForAtLeastNElementsRejectsInvalidCount() {
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> actions.waitForAtLeastNElements(LOCATOR, 0));
+
+        assertTrue(error.getMessage().contains("at least 1"));
+        verifyNoInteractions(driver);
     }
 
     @Test

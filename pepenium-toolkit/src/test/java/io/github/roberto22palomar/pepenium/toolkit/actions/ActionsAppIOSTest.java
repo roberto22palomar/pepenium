@@ -241,6 +241,16 @@ class ActionsAppIOSTest {
     }
 
     @Test
+    void scrollToElementRejectsInvalidMaxSwipesBeforeTouchingDriver() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver);
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> actions.scrollToElement(LOCATOR, 0));
+
+        assertTrue(error.getMessage().contains("maxSwipes"));
+    }
+
+    @Test
     void tapCenterUsesViewportCenterPoint() {
         when(driver.manage()).thenReturn(options);
         when(options.window()).thenReturn(window);

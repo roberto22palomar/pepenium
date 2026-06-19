@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -75,6 +76,10 @@ public class ActionsWeb implements WebActions {
 
     @Override
     public void waitForAtLeastNElements(By locator, int n) {
+        Objects.requireNonNull(locator, "locator must not be null");
+        if (n < 1) {
+            throw new IllegalArgumentException("Element count must be at least 1");
+        }
         new WebDriverWait(driver, defaultTimeout())
                 .until(d -> d.findElements(locator).size() >= n);
     }

@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -309,6 +310,7 @@ public class ActionsApp implements MobileActions {
 
     @Override
     public WebElement scrollToElement(By locator, int maxSwipes) {
+        validateScrollToElementArguments(locator, maxSwipes);
         StepTracker.record("Scroll to " + locator);
         ActionLoggingSupport.recordAction("Scroll to " + locator);
         int attempts = 0;
@@ -326,6 +328,13 @@ public class ActionsApp implements MobileActions {
             attempts++;
         }
         throw new NoSuchElementException("Element not found after " + maxSwipes + " swipes: " + locator);
+    }
+
+    private void validateScrollToElementArguments(By locator, int maxSwipes) {
+        Objects.requireNonNull(locator, "locator must not be null");
+        if (maxSwipes < 1) {
+            throw new IllegalArgumentException("maxSwipes must be at least 1");
+        }
     }
 
     public void swipeAtElement(By locator,
