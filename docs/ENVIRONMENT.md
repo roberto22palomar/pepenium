@@ -181,6 +181,7 @@ Notes:
 - unprefixed keys are applied as `appium:*` capabilities, so `appWaitDuration=30000` becomes `appium:appWaitDuration=30000`
 - W3C keys such as `platformName` and `browserName`, and vendor-prefixed keys such as `bstack:options`, are kept as written
 - scalar values are typed automatically: `true` / `false` become booleans, integer values become longs and decimal values become doubles
+- equivalent Java system properties are supported by lowercasing the variable and replacing `_` with `.`, for example `-Dappium.no.reset=true` or `-Dpepenium.appium.capabilities=appWaitDuration=30000`
 ## Local Web and Mobile Web
 
 ### `PEPENIUM_BASE_URL`

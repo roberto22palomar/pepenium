@@ -2,6 +2,7 @@ package io.github.roberto22palomar.pepenium.core.config.validation;
 
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.ios.options.XCUITestOptions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -10,6 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AppiumCapabilityOverridesTest {
+
+    @AfterEach
+    void clearSystemProperties() {
+        System.clearProperty("appium.no.reset");
+        System.clearProperty("pepenium.appium.capabilities");
+    }
 
     @Test
     void applyAndroidSupportsGenericTypedCapabilities() {
@@ -38,6 +45,21 @@ class AppiumCapabilityOverridesTest {
         assertEquals("IOS", String.valueOf(options.getCapability("platformName")));
         assertEquals("Safari", options.getCapability("browserName"));
         assertEquals(Boolean.TRUE, options.getCapability("appium:includeSafariInWebviews"));
+    }
+
+    @Test
+    void systemPropertiesWinOverEnvironmentValues() {
+        System.setProperty("appium.no.reset", "true");
+        System.setProperty("pepenium.appium.capabilities", "customRetries=5");
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        AppiumCapabilityOverrides.applyAndroid(Map.of(
+                "APPIUM_NO_RESET", "false",
+                "PEPENIUM_APPIUM_CAPABILITIES", "customRetries=1"
+        )::get, options);
+
+        assertEquals(Boolean.TRUE, options.getCapability("appium:noReset"));
+        assertEquals(5L, options.getCapability("appium:customRetries"));
     }
 
     @Test
