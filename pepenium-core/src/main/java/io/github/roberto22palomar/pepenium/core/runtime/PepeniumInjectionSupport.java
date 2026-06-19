@@ -29,6 +29,22 @@ final class PepeniumInjectionSupport {
     private static final String ASSERTIONS_APP_IOS = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS";
     private static final String MOBILE_ACTIONS = "io.github.roberto22palomar.pepenium.toolkit.actions.MobileActions";
     private static final String MOBILE_ASSERTIONS = "io.github.roberto22palomar.pepenium.toolkit.assertions.MobileAssertions";
+    private static final String SUPPORTED_DIRECT_TARGETS = String.join(", ",
+            "WebDriver",
+            "DriverSession",
+            "AppiumDriver",
+            "PepeniumSteps",
+            "ActionsWeb",
+            "WebActions",
+            "AssertionsWeb",
+            "WebAssertions",
+            "ActionsApp",
+            "ActionsAppIOS",
+            "MobileActions",
+            "AssertionsApp",
+            "AssertionsAppIOS",
+            "MobileAssertions"
+    );
 
     static final class CacheState {
         private final Map<Class<?>, Object> components = new HashMap<>();
@@ -120,7 +136,7 @@ final class PepeniumInjectionSupport {
         }
 
         if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
-            throw new IllegalStateException("Unsupported Pepenium injection target: " + type.getName());
+            throw unsupportedInjectionTarget(type);
         }
 
         Object cached = cache.get(type);
@@ -226,7 +242,30 @@ final class PepeniumInjectionSupport {
         if (type == PepeniumSteps.class) {
             return (PepeniumSteps) StepTracker::record;
         }
-        throw new IllegalStateException("Unsupported direct Pepenium injection type: " + type.getName());
+        throw unsupportedDirectInjectionType(type);
+    }
+
+    private IllegalStateException unsupportedInjectionTarget(Class<?> type) {
+        StringBuilder message = new StringBuilder("Unsupported Pepenium injection target: ")
+                .append(type.getName())
+                .append(". ");
+        if (type.isInterface()) {
+            message.append("Interfaces cannot be created automatically. ");
+        } else if (Modifier.isAbstract(type.getModifiers())) {
+            message.append("Abstract classes cannot be created automatically. ");
+        }
+        message.append("Supported direct targets are: ")
+                .append(SUPPORTED_DIRECT_TARGETS)
+                .append(". For custom pages, flows or fixtures, inject a concrete class with a single constructor")
+                .append(" or annotate the intended constructor with @PepeniumInject.");
+        return new IllegalStateException(message.toString());
+    }
+
+    private IllegalStateException unsupportedDirectInjectionType(Class<?> type) {
+        return new IllegalStateException(
+                "Unsupported direct Pepenium injection type: " + type.getName()
+                        + ". Supported direct targets are: " + SUPPORTED_DIRECT_TARGETS + "."
+        );
     }
 
     private Class<?> resolveMobileActionsImplementation() {

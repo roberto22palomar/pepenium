@@ -91,6 +91,7 @@ That path currently includes:
 - `PepeniumSteps` for direct step recording without inheritance
 - when `automaticLifecycle = false`, driver-bound annotation injection is completed after user-managed setup has initialized the session
 - if a component declares multiple constructors, the intended injected constructor must be marked with `@PepeniumInject`
+- custom pages, flows and fixtures must be concrete classes; interfaces and abstract classes are rejected with diagnostics that list the supported direct injection targets
 
 Current intent:
 
