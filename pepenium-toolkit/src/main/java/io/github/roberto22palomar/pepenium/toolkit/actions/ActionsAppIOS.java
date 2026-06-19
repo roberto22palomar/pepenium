@@ -211,7 +211,11 @@ public class ActionsAppIOS implements MobileActions {
         } catch (TimeoutException e) {
             log.warn("Loader did not appear (may be OK): {}", loadingLocator);
         }
-        waitGone(loadingLocator);
+        if (!waitGone(loadingLocator)) {
+            TimeoutException e = new TimeoutException("Element stayed visible: " + loadingLocator);
+            ActionLoggingSupport.logTimeout(log, "hidden wait", loadingLocator, e);
+            throw e;
+        }
     }
 
     @Override

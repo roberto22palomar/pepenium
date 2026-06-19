@@ -15,6 +15,7 @@ import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -334,6 +335,24 @@ class ActionsAppIOSTest {
         };
 
         assertFalse(actions.clickIfVisible(LOCATOR));
+    }
+
+    @Test
+    void waitUntilHiddenThrowsWhenElementStaysVisible() {
+        when(driver.findElement(LOCATOR)).thenReturn(element);
+        when(element.isDisplayed()).thenReturn(true);
+
+        ActionsAppIOS actions = new ActionsAppIOS(driver) {
+            @Override
+            public boolean waitGone(By locator) {
+                return false;
+            }
+        };
+
+        TimeoutException error = assertThrows(TimeoutException.class,
+                () -> actions.waitUntilHidden(LOCATOR));
+
+        assertTrue(error.getMessage().contains("Element stayed visible"));
     }
 
     @Test

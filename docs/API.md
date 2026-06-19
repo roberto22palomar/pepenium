@@ -174,6 +174,8 @@ For native mobile flows that should compile against both Android and iOS helpers
 
 For assertion-heavy flows, prefer `WebAssertions` on web and `MobileAssertions` on native mobile. `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` remain the concrete helpers and implement those contracts.
 
+For shared action flows, `waitUntilHidden(...)` is a strict synchronization point: Android and iOS helpers should both fail when the element is still visible after the wait instead of continuing silently.
+
 For native mobile locators, prefer `PepeniumBy.accessibilityId(...)` for controls that have the same accessibility identifier on Android and iOS. `PepeniumBy.text(...)` and `PepeniumBy.textContains(...)` are convenience fallbacks that match common Android text and iOS label/name/value attributes when a stable accessibility id is not available.
 
 The shared assertion surface should stay aligned around `assertVisible(...)`, `assertNotVisible(...)`, `assertPresent(...)`, `assertTextEquals(...)` and `assertTextContains(...)`, while web-only assertions should be reserved for browser-specific concerns such as URL, title and input-value checks.
