@@ -1,6 +1,7 @@
 package io.github.roberto22palomar.pepenium.toolkit.support;
 
 import io.appium.java_client.AppiumDriver;
+import io.github.roberto22palomar.pepenium.toolkit.locators.PepeniumBy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -110,6 +111,36 @@ class ScrollUtilsTest {
 
         when(driver.findElements(textLocator)).thenReturn(List.of());
         when(driver.findElement(argThat(by -> by.toString().contains("textContains(\"Pepenium\")"))))
+                .thenReturn(element);
+
+        ScrollUtils scrollUtils = new ScrollUtils(driver);
+
+        assertSame(element, scrollUtils.scrollToElement(textLocator, 3));
+    }
+
+    @Test
+    void scrollToElementUsesUiScrollableForPepeniumTextLocator() {
+        stubDriverState();
+        capabilities.setCapability("platformName", "android");
+        By textLocator = PepeniumBy.text("Ready");
+
+        when(driver.findElements(textLocator)).thenReturn(List.of());
+        when(driver.findElement(argThat(by -> by.toString().contains("text(\"Ready\")"))))
+                .thenReturn(element);
+
+        ScrollUtils scrollUtils = new ScrollUtils(driver);
+
+        assertSame(element, scrollUtils.scrollToElement(textLocator, 3));
+    }
+
+    @Test
+    void scrollToElementEscapesUiSelectorTextValues() {
+        stubDriverState();
+        capabilities.setCapability("platformName", "android");
+        By textLocator = PepeniumBy.textContains("Say \"hi\"");
+
+        when(driver.findElements(textLocator)).thenReturn(List.of());
+        when(driver.findElement(argThat(by -> by.toString().contains("textContains(\"Say \\\"hi\\\"\")"))))
                 .thenReturn(element);
 
         ScrollUtils scrollUtils = new ScrollUtils(driver);

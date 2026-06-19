@@ -15,6 +15,7 @@ import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -28,12 +29,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -111,6 +114,28 @@ class ActionsAppIOSTest {
 
         verify(element).clear();
         verify(element).sendKeys("ios");
+    }
+
+    @Test
+    void typeRejectsNullTextBeforeTouchingDriver() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.type(LOCATOR, null));
+
+        assertEquals("text must not be null", error.getMessage());
+        verifyNoInteractions(driver);
+    }
+
+    @Test
+    void waitForElementTextRejectsNullExpectedTextBeforeTouchingDriver() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.waitForElementText(LOCATOR, null));
+
+        assertEquals("expectedText must not be null", error.getMessage());
+        verifyNoInteractions(driver);
     }
 
     @Test
@@ -240,6 +265,16 @@ class ActionsAppIOSTest {
     }
 
     @Test
+    void scrollToElementRejectsInvalidMaxSwipesBeforeTouchingDriver() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver);
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> actions.scrollToElement(LOCATOR, 0));
+
+        assertTrue(error.getMessage().contains("maxSwipes"));
+    }
+
+    @Test
     void tapCenterUsesViewportCenterPoint() {
         when(driver.manage()).thenReturn(options);
         when(options.window()).thenReturn(window);
@@ -276,6 +311,44 @@ class ActionsAppIOSTest {
     }
 
     @Test
+    void implementsSharedMobileActionsContract() {
+        when(element.getRect()).thenReturn(new Rectangle(10, 10, 20, 20));
+        when(driver.manage()).thenReturn(options);
+        when(options.window()).thenReturn(window);
+        when(window.getSize()).thenReturn(new Dimension(200, 400));
+
+        MobileActions actions = new ActionsAppIOS(driver) {
+            @Override
+            public boolean waitStableScreen() {
+                return true;
+            }
+
+            @Override
+            public WebElement waitToBeVisible(By locator) {
+                return element;
+            }
+        };
+
+        assertSame(driver, actions.getDriver());
+        actions.tapCenter();
+        actions.swipeAtElement(LOCATOR, SwipeDirection.DOWN, 1, 0.5, 150);
+
+        verify(driver, times(2)).perform(anyList());
+    }
+
+    @Test
+    void swipeAtElementRejectsInvalidArgumentsBeforeTouchingDriver() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> actions.swipeAtElement(LOCATOR, (ActionsAppIOS.Direction) null, 1, 0.5, 150));
+        assertThrows(IllegalArgumentException.class,
+                () -> actions.swipeAtElement(LOCATOR, ActionsAppIOS.Direction.UP, 1, 1.5, 150));
+        assertThrows(IllegalArgumentException.class,
+                () -> actions.swipeAtElement(LOCATOR, ActionsAppIOS.Direction.UP, 1, 0.5, 0));
+    }
+
+    @Test
     void clickIfVisibleReturnsFalseWhenElementIsHidden() {
         ActionsAppIOS actions = new ActionsAppIOS(driver) {
             @Override
@@ -285,6 +358,35 @@ class ActionsAppIOSTest {
         };
 
         assertFalse(actions.clickIfVisible(LOCATOR));
+    }
+
+    @Test
+    void waitUntilHiddenThrowsWhenElementStaysVisible() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver) {
+            @Override
+            public boolean waitGone(By locator) {
+                return false;
+            }
+        };
+
+        TimeoutException error = assertThrows(TimeoutException.class,
+                () -> actions.waitUntilHidden(LOCATOR));
+
+        assertTrue(error.getMessage().contains("Element stayed visible"));
+    }
+
+    @Test
+    void waitUntilHiddenReturnsWithoutWaitingForLoaderToAppear() {
+        ActionsAppIOS actions = new ActionsAppIOS(driver) {
+            @Override
+            public boolean waitGone(By locator) {
+                return true;
+            }
+        };
+
+        actions.waitUntilHidden(LOCATOR);
+
+        verifyNoInteractions(driver);
     }
 
     @Test

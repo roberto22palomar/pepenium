@@ -66,9 +66,10 @@ Some features require specific execution profiles or provider credentials, espec
 When validating public API compatibility, `mvn verify` now runs the automatic binary/source compatibility check for the documented public API. Also run:
 
 ```bash
-mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -U -f consumer-smoke/pom.xml clean test-compile
+./scripts/test-consumer-smoke.sh
 ```
+
+On Windows PowerShell, use `.\scripts\Test-ConsumerSmoke.ps1`.
 
 ---
 
@@ -99,6 +100,8 @@ High-level structure:
 - `pepenium-core/` - framework runtime, execution model and provider/config infrastructure
 - `pepenium-toolkit/` - reusable test-author helpers such as actions and assertions
 - `pepenium-examples/` - repository-only showcase tests, flows and page objects
+- `consumer-smoke/` - standalone Maven consumer that proves public API usage outside the reactor
+- `scripts/` - local helper commands for repeatable contributor workflows
 
 Please respect the existing module boundaries and avoid adding project-specific logic to `pepenium-core` unless it benefits all users of the framework.
 
@@ -110,7 +113,7 @@ When deciding where to place a change:
 
 `pepenium-examples` should stay focused on runnable examples that consume the framework from inside this repository. It is not a published artifact surface and should not become a second home for reusable framework features.
 
-For public-vs-internal API expectations, see [API.md](docs/API.md).
+For the full placement guide, see [REPOSITORY.md](docs/REPOSITORY.md). For public-vs-internal API expectations, see [API.md](docs/API.md).
 
 ---
 

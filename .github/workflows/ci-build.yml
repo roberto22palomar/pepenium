@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: ["main"]
 
+concurrency:
+  group: ci-build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -73,8 +77,5 @@ jobs:
           java-version: "11"
           cache: maven
 
-      - name: Install framework artifacts for smoke consumer
-        run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit -am install -DskipTests "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true" "-Djapicmp.skip=true"
-
       - name: Validate standalone public API consumer
-        run: mvn -B -ntp -U -f consumer-smoke/pom.xml clean test-compile
+        run: ./scripts/test-consumer-smoke.sh

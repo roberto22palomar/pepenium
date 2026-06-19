@@ -36,6 +36,14 @@ class ExecutionProfilesTest {
     }
 
     @Test
+    void trimsProfileIdsForDirectLookups() {
+        ExecutionProfile profile = ExecutionProfiles.get("  local-web  ");
+
+        assertEquals("local-web", profile.getId());
+        assertTrue(ExecutionProfiles.exists("  local-web  "));
+    }
+
+    @Test
     void rejectsProfileDefinitionsWithoutConfigKey() {
         ExecutionProfiles.ProfileDefinition definition = new ExecutionProfiles.ProfileDefinition();
         definition.setId("broken-profile");

@@ -69,7 +69,7 @@ Arranca tu emulador Android de la forma habitual en tu maquina.
 
 ### 3.3 Usa Estos Valores De Entorno
 
-Fichero ejemplo: [`.env.android.host-emulator.example`](../../.env.android.host-emulator.example)
+Fichero ejemplo: [`.env.android.host-emulator.example`](../env/.env.android.host-emulator.example)
 
 ```text
 APPIUM_URL=http://localhost:4723
@@ -91,7 +91,7 @@ Arranque:
 docker compose -f docker-compose.yaml -f docker-compose.emulator.yaml up -d
 ```
 
-Fichero ejemplo: [`.env.android.docker-emulator.example`](../../.env.android.docker-emulator.example)
+Fichero ejemplo: [`.env.android.docker-emulator.example`](../env/.env.android.docker-emulator.example)
 
 ```text
 APPIUM_URL=http://localhost:4723
@@ -115,9 +115,10 @@ Usa este modo solo si:
 Si quieres saber si Pepenium es utilizable desde otro proyecto Maven, ejecuta consumer smoke.
 
 ```text
-mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -U -f consumer-smoke/pom.xml clean test-compile
+.\scripts\Test-ConsumerSmoke.ps1
 ```
+
+En shells compatibles con Bash, usa `./scripts/test-consumer-smoke.sh`.
 
 ## 6. Revisa Los Reportes Nativos
 

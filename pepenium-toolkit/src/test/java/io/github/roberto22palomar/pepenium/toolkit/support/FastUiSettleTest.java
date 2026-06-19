@@ -105,4 +105,20 @@ class FastUiSettleTest {
 
         assertTrue(settle.waitBriefly());
     }
+
+    @Test
+    void waitBrieflyStopsWhenThreadIsInterrupted() {
+        Thread.currentThread().interrupt();
+        try {
+            FastUiSettle settle = new FastUiSettle(driver,
+                    Duration.ofMillis(20),
+                    Duration.ofMillis(1),
+                    Duration.ofMillis(1));
+
+            assertFalse(settle.waitBriefly());
+            assertTrue(Thread.currentThread().isInterrupted());
+        } finally {
+            Thread.interrupted();
+        }
+    }
 }

@@ -22,7 +22,7 @@ public final class ScreenshotPathResolver {
         if (isBlank(baseDir)) {
             baseDir = System.getProperty("java.io.tmpdir");
         }
-        return Path.of(baseDir);
+        return Path.of(baseDir.trim());
     }
 
     private static boolean isBlank(String value) {

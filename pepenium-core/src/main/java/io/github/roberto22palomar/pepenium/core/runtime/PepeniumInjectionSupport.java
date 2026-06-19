@@ -1,6 +1,8 @@
 package io.github.roberto22palomar.pepenium.core.runtime;
 
 import io.appium.java_client.AppiumDriver;
+import io.github.roberto22palomar.pepenium.core.execution.DriverType;
+import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
@@ -18,11 +20,31 @@ import java.util.Set;
 final class PepeniumInjectionSupport {
 
     private static final String ACTIONS_WEB = "io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb";
+    private static final String WEB_ACTIONS = "io.github.roberto22palomar.pepenium.toolkit.actions.WebActions";
     private static final String ASSERTIONS_WEB = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb";
+    private static final String WEB_ASSERTIONS = "io.github.roberto22palomar.pepenium.toolkit.assertions.WebAssertions";
     private static final String ACTIONS_APP = "io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp";
     private static final String ASSERTIONS_APP = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp";
     private static final String ACTIONS_APP_IOS = "io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS";
     private static final String ASSERTIONS_APP_IOS = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS";
+    private static final String MOBILE_ACTIONS = "io.github.roberto22palomar.pepenium.toolkit.actions.MobileActions";
+    private static final String MOBILE_ASSERTIONS = "io.github.roberto22palomar.pepenium.toolkit.assertions.MobileAssertions";
+    private static final String SUPPORTED_DIRECT_TARGETS = String.join(", ",
+            "WebDriver",
+            "DriverSession",
+            "AppiumDriver",
+            "PepeniumSteps",
+            "ActionsWeb",
+            "WebActions",
+            "AssertionsWeb",
+            "WebAssertions",
+            "ActionsApp",
+            "ActionsAppIOS",
+            "MobileActions",
+            "AssertionsApp",
+            "AssertionsAppIOS",
+            "MobileAssertions"
+    );
 
     static final class CacheState {
         private final Map<Class<?>, Object> components = new HashMap<>();
@@ -65,11 +87,15 @@ final class PepeniumInjectionSupport {
                 || type == DriverSession.class
                 || type == AppiumDriver.class
                 || type.getName().equals(ACTIONS_WEB)
+                || type.getName().equals(WEB_ACTIONS)
                 || type.getName().equals(ASSERTIONS_WEB)
+                || type.getName().equals(WEB_ASSERTIONS)
                 || type.getName().equals(ACTIONS_APP)
                 || type.getName().equals(ASSERTIONS_APP)
                 || type.getName().equals(ACTIONS_APP_IOS)
                 || type.getName().equals(ASSERTIONS_APP_IOS)
+                || type.getName().equals(MOBILE_ACTIONS)
+                || type.getName().equals(MOBILE_ASSERTIONS)
                 || type == PepeniumSteps.class;
     }
 
@@ -110,7 +136,7 @@ final class PepeniumInjectionSupport {
         }
 
         if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
-            throw new IllegalStateException("Unsupported Pepenium injection target: " + type.getName());
+            throw unsupportedInjectionTarget(type);
         }
 
         Object cached = cache.get(type);
@@ -186,8 +212,14 @@ final class PepeniumInjectionSupport {
         if (type.getName().equals(ACTIONS_WEB)) {
             return instantiateToolkitType(type, requireWebDriver(type));
         }
+        if (type.getName().equals(WEB_ACTIONS)) {
+            return instantiateToolkitType(loadToolkitType(ACTIONS_WEB), requireWebDriver(type));
+        }
         if (type.getName().equals(ASSERTIONS_WEB)) {
             return instantiateToolkitType(type, requireWebDriver(type));
+        }
+        if (type.getName().equals(WEB_ASSERTIONS)) {
+            return instantiateToolkitType(loadToolkitType(ASSERTIONS_WEB), requireWebDriver(type));
         }
         if (type.getName().equals(ACTIONS_APP)) {
             return instantiateToolkitType(type, requireAppiumDriver(type));
@@ -201,10 +233,73 @@ final class PepeniumInjectionSupport {
         if (type.getName().equals(ASSERTIONS_APP_IOS)) {
             return instantiateToolkitType(type, requireAppiumDriver(type));
         }
+        if (type.getName().equals(MOBILE_ACTIONS)) {
+            return instantiateToolkitType(resolveMobileActionsImplementation(), requireAppiumDriver(type));
+        }
+        if (type.getName().equals(MOBILE_ASSERTIONS)) {
+            return instantiateToolkitType(resolveMobileAssertionsImplementation(), requireAppiumDriver(type));
+        }
         if (type == PepeniumSteps.class) {
             return (PepeniumSteps) StepTracker::record;
         }
-        throw new IllegalStateException("Unsupported direct Pepenium injection type: " + type.getName());
+        throw unsupportedDirectInjectionType(type);
+    }
+
+    private IllegalStateException unsupportedInjectionTarget(Class<?> type) {
+        StringBuilder message = new StringBuilder("Unsupported Pepenium injection target: ")
+                .append(type.getName())
+                .append(". ");
+        if (type.isInterface()) {
+            message.append("Interfaces cannot be created automatically. ");
+        } else if (Modifier.isAbstract(type.getModifiers())) {
+            message.append("Abstract classes cannot be created automatically. ");
+        }
+        message.append("Supported direct targets are: ")
+                .append(SUPPORTED_DIRECT_TARGETS)
+                .append(". For custom pages, flows or fixtures, inject a concrete class with a single constructor")
+                .append(" or annotate the intended constructor with @PepeniumInject.");
+        return new IllegalStateException(message.toString());
+    }
+
+    private IllegalStateException unsupportedDirectInjectionType(Class<?> type) {
+        return new IllegalStateException(
+                "Unsupported direct Pepenium injection type: " + type.getName()
+                        + ". Supported direct targets are: " + SUPPORTED_DIRECT_TARGETS + "."
+        );
+    }
+
+    private Class<?> resolveMobileActionsImplementation() {
+        DriverSession session = requireSession(MOBILE_ACTIONS);
+        TestTarget target = session.getRequest() == null ? null : session.getRequest().getTarget();
+        DriverType driverType = session.getRequest() == null ? null : session.getRequest().getDriverType();
+        String implementation = isIosTarget(target, driverType) ? ACTIONS_APP_IOS : ACTIONS_APP;
+        try {
+            return Class.forName(implementation);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("MobileActions implementation is not available: " + implementation, e);
+        }
+    }
+
+    private Class<?> resolveMobileAssertionsImplementation() {
+        DriverSession session = requireSession(MOBILE_ASSERTIONS);
+        TestTarget target = session.getRequest() == null ? null : session.getRequest().getTarget();
+        DriverType driverType = session.getRequest() == null ? null : session.getRequest().getDriverType();
+        String implementation = isIosTarget(target, driverType) ? ASSERTIONS_APP_IOS : ASSERTIONS_APP;
+        return loadToolkitType(implementation);
+    }
+
+    private Class<?> loadToolkitType(String typeName) {
+        try {
+            return Class.forName(typeName);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Toolkit helper is not available: " + typeName, e);
+        }
+    }
+
+    private boolean isIosTarget(TestTarget target, DriverType driverType) {
+        return target == TestTarget.IOS_NATIVE
+                || target == TestTarget.IOS_WEB
+                || driverType == DriverType.IOS_APPIUM;
     }
 
     private WebDriver requireWebDriver(Object target) {

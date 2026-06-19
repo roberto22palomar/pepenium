@@ -91,6 +91,7 @@ That path currently includes:
 - `PepeniumSteps` for direct step recording without inheritance
 - when `automaticLifecycle = false`, driver-bound annotation injection is completed after user-managed setup has initialized the session
 - if a component declares multiple constructors, the intended injected constructor must be marked with `@PepeniumInject`
+- custom pages, flows and fixtures must be concrete classes; interfaces and abstract classes are rejected with diagnostics that list the supported direct injection targets
 
 Current intent:
 
@@ -134,7 +135,7 @@ The ids above are contract. The internal wiring behind them is not. The `configK
 
 ### `Actions*` and `Assertions*` stay the stable authoring surface
 
-The documented `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` types are now the intended stable authoring surface for `1.0.0`.
+The documented `WebActions`, `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `SwipeDirection`, `WebAssertions`, `MobileAssertions`, `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS` and `PepeniumBy` types are now the intended stable authoring surface for `1.0.0`.
 
 That means public methods on those classes should follow the existing deprecation-first policy instead of being renamed or removed directly.
 
@@ -151,17 +152,33 @@ Current decision:
 ### Toolkit authoring API
 
 - [ActionsWeb](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsWeb.java)
+- [WebActions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/WebActions.java)
 - [ActionsApp](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsApp.java)
 - [ActionsAppIOS](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsAppIOS.java)
+- [MobileActions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/MobileActions.java)
+- [SwipeDirection](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/SwipeDirection.java)
+- [WebAssertions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/WebAssertions.java)
+- [MobileAssertions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/MobileAssertions.java)
 - [AssertionsWeb](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsWeb.java)
 - [AssertionsApp](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsApp.java)
 - [AssertionsAppIOS](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsAppIOS.java)
+- [PepeniumBy](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/locators/PepeniumBy.java)
 
 These are intended as the reusable building blocks for writing tests, flows and page objects.
 
 For cross-platform consistency, the supported cross-platform action surface should converge on the same core verbs across web, Android and iOS, especially `click(...)`, `clickIfVisible(...)`, `type(...)` and `waitUntilHidden(...)`.
 
-The shared assertion surface should likewise stay aligned around `assertVisible(...)`, `assertNotVisible(...)`, `assertPresent(...)`, `assertTextEquals(...)` and `assertTextContains(...)`, while web-only assertions should be reserved for browser-specific concerns such as URL, title and input-value checks.
+For web flows that should depend on a stable contract instead of a concrete helper, prefer `WebActions`. `ActionsWeb` remains the concrete helper and implements that contract.
+
+For native mobile flows that should compile against both Android and iOS helpers, prefer `MobileActions` plus `SwipeDirection`. `ActionsApp` and `ActionsAppIOS` remain the concrete helpers for platform-specific flows and continue to expose their existing nested `Direction` enums for compatibility.
+
+For assertion-heavy flows, prefer `WebAssertions` on web and `MobileAssertions` on native mobile. `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` remain the concrete helpers and implement those contracts.
+
+For shared action flows, `waitUntilHidden(...)` is a strict synchronization point: Android and iOS helpers should both return quickly when the element is already hidden or absent, and fail when the element is still visible after the wait instead of continuing silently.
+
+For native mobile locators, prefer `PepeniumBy.accessibilityId(...)` for controls that have the same accessibility identifier on Android and iOS. `PepeniumBy.text(...)` and `PepeniumBy.textContains(...)` are convenience fallbacks that match common Android text and iOS label/name/value attributes when a stable accessibility id is not available.
+
+The shared assertion surface should stay aligned around `assertVisible(...)`, `assertNotVisible(...)`, `assertPresent(...)`, `assertTextEquals(...)` and `assertTextContains(...)`, while web-only assertions should be reserved for browser-specific concerns such as URL, title and input-value checks.
 
 ## Advanced / Evolving API
 
@@ -241,7 +258,7 @@ Pepenium now runs an automatic `japicmp` comparison during `verify` for the rele
 That build-time compatibility gate is intentionally scoped to the documented public API surface:
 
 - `pepenium-core`: `PepeniumTest`, `PepeniumInject`, `PepeniumPage`, `PepeniumSteps`, `BaseTest` and `TestTarget`
-- `pepenium-toolkit`: the documented `Actions*` and `Assertions*` authoring types
+- `pepenium-toolkit`: the documented `Actions*`, `WebActions`, `MobileActions`, `SwipeDirection`, `WebAssertions`, `MobileAssertions` and `Assertions*` authoring types
 
 This keeps the compatibility check focused on what normal external users are expected to import directly, while semantic contract details such as lifecycle defaults, target defaults and built-in profile ids are protected by dedicated tests and docs.
 
@@ -284,6 +301,7 @@ That smoke project is intentionally outside the main Maven reactor so it behaves
 Typical validation flow:
 
 ```bash
-mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -f consumer-smoke/pom.xml clean test-compile
+./scripts/test-consumer-smoke.sh
 ```
+
+On Windows PowerShell, use `.\scripts\Test-ConsumerSmoke.ps1`.

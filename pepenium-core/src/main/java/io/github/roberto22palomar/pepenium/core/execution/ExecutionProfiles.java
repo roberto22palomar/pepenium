@@ -5,6 +5,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,8 @@ public final class ExecutionProfiles {
     }
 
     public static ExecutionProfile get(String profileId) {
-        ExecutionProfile profile = PROFILES.get(profileId);
+        String normalizedProfileId = normalizeProfileId(profileId);
+        ExecutionProfile profile = PROFILES.get(normalizedProfileId);
         if (profile == null) {
             throw new IllegalArgumentException(
                     "Unknown Pepenium execution profile: " + profileId
@@ -31,7 +33,8 @@ public final class ExecutionProfiles {
     }
 
     public static boolean exists(String profileId) {
-        return profileId != null && PROFILES.containsKey(profileId);
+        String normalizedProfileId = normalizeProfileId(profileId);
+        return normalizedProfileId != null && PROFILES.containsKey(normalizedProfileId);
     }
 
     public static List<ExecutionProfile> list() {
@@ -59,11 +62,25 @@ public final class ExecutionProfiles {
 
     public static void validateCompatibility(ExecutionProfile profile, TestTarget target) {
         if (profile.getTarget() != target) {
+            String closestProfiles = closestCompatibleProfileIdsMultiline(profile, target);
+            String closestMessage = closestProfiles.isBlank()
+                    ? ""
+                    : System.lineSeparator() + System.lineSeparator()
+                            + "Closest compatible profiles:"
+                            + System.lineSeparator()
+                            + closestProfiles;
             throw new IllegalStateException(
                     "Execution profile '" + profile.getId() + "' targets " + profile.getTarget()
                             + " but the test targets " + target
-                            + ". Description: " + profile.getDescription()
-                            + ". Compatible profiles for " + target + ": " + compatibleProfileIds(target)
+                            + "." + System.lineSeparator()
+                            + "Profile description: " + profile.getDescription()
+                            + System.lineSeparator()
+                            + "Use a profile that targets " + target + "."
+                            + closestMessage
+                            + System.lineSeparator() + System.lineSeparator()
+                            + "Compatible profiles for " + target + ":"
+                            + System.lineSeparator()
+                            + compatibleProfileIdsMultiline(target)
             );
         }
     }
@@ -79,6 +96,48 @@ public final class ExecutionProfiles {
         return list().stream()
                 .filter(profile -> profile.getTarget() == target)
                 .map(ExecutionProfile::getId)
+                .map(profileId -> "- " + profileId)
+                .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    private static String closestCompatibleProfileIdsMultiline(ExecutionProfile incompatibleProfile,
+                                                               TestTarget target) {
+        String requestedPrefix = backendPrefix(incompatibleProfile.getId());
+        if (requestedPrefix.isBlank()) {
+            return "";
+        }
+        return list().stream()
+                .filter(profile -> profile.getTarget() == target)
+                .map(ExecutionProfile::getId)
+                .filter(profileId -> backendPrefix(profileId).equals(requestedPrefix))
+                .map(profileId -> "- " + profileId)
+                .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    private static String backendPrefix(String profileId) {
+        if (isBlank(profileId)) {
+            return "";
+        }
+        int separatorIndex = profileId.indexOf('-');
+        return separatorIndex < 0 ? profileId : profileId.substring(0, separatorIndex);
+    }
+
+    public static String suggestedProfileIdsMultiline(String requestedProfileId, TestTarget target) {
+        if (isBlank(requestedProfileId)) {
+            return "";
+        }
+        String requested = requestedProfileId.trim();
+        int maximumDistance = Math.max(2, requested.length() / 3);
+        return list().stream()
+                .filter(profile -> target == null || profile.getTarget() == target)
+                .map(ExecutionProfile::getId)
+                .map(profileId -> new ProfileSuggestion(profileId, levenshteinDistance(requested, profileId)))
+                .filter(suggestion -> suggestion.distance <= maximumDistance)
+                .sorted(Comparator
+                        .comparingInt(ProfileSuggestion::distance)
+                        .thenComparing(ProfileSuggestion::profileId))
+                .limit(3)
+                .map(ProfileSuggestion::profileId)
                 .map(profileId -> "- " + profileId)
                 .collect(Collectors.joining(System.lineSeparator()));
     }
@@ -145,6 +204,50 @@ public final class ExecutionProfiles {
 
     private static boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private static String normalizeProfileId(String profileId) {
+        return profileId == null ? null : profileId.trim();
+    }
+
+    private static int levenshteinDistance(String left, String right) {
+        int[] previous = new int[right.length() + 1];
+        int[] current = new int[right.length() + 1];
+        for (int j = 0; j <= right.length(); j++) {
+            previous[j] = j;
+        }
+        for (int i = 1; i <= left.length(); i++) {
+            current[0] = i;
+            for (int j = 1; j <= right.length(); j++) {
+                int cost = left.charAt(i - 1) == right.charAt(j - 1) ? 0 : 1;
+                current[j] = Math.min(
+                        Math.min(current[j - 1] + 1, previous[j] + 1),
+                        previous[j - 1] + cost
+                );
+            }
+            int[] swap = previous;
+            previous = current;
+            current = swap;
+        }
+        return previous[right.length()];
+    }
+
+    private static final class ProfileSuggestion {
+        private final String profileId;
+        private final int distance;
+
+        private ProfileSuggestion(String profileId, int distance) {
+            this.profileId = profileId;
+            this.distance = distance;
+        }
+
+        private String profileId() {
+            return profileId;
+        }
+
+        private int distance() {
+            return distance;
+        }
     }
 
     public static class ProfilesFile {

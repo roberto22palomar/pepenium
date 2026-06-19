@@ -4,24 +4,24 @@ This document lists the environment variables and system properties currently us
 
 It is intended to be the single reference point for configuring local runs, remote executions and observability features.
 
-Ready-to-copy examples for common local setups:
+Ready-to-copy examples for common local setups live in [docs/env](env/README.md):
 
-- [`.env.web.example`](../.env.web.example)
-- [`.env.android.local.example`](../.env.android.local.example)
-- [`.env.web.capabilities.example`](../.env.web.capabilities.example)
-- [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
-- [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
-- [`.env.mobile.capabilities.example`](../.env.mobile.capabilities.example)
+- [`.env.web.example`](env/.env.web.example)
+- [`.env.android.local.example`](env/.env.android.local.example)
+- [`.env.web.capabilities.example`](env/.env.web.capabilities.example)
+- [`.env.android.host-emulator.example`](env/.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](env/.env.android.docker-emulator.example)
+- [`.env.mobile.capabilities.example`](env/.env.mobile.capabilities.example)
 
 ## How To Choose A Config Starting Point
 
 Use this quick rule:
 
-- `WEB_DESKTOP` on your machine: start from [`.env.web.example`](../.env.web.example)
-- `ANDROID_NATIVE` with local Appium: start from [`.env.android.local.example`](../.env.android.local.example)
-- `ANDROID_NATIVE` with Dockerized Appium and host emulator: start from [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
-- `ANDROID_NATIVE` with Dockerized Appium and Dockerized emulator: start from [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
-- Any Appium-backed mobile profile that needs extra tuning: copy the relevant keys from [`.env.mobile.capabilities.example`](../.env.mobile.capabilities.example)
+- `WEB_DESKTOP` on your machine: start from [`.env.web.example`](env/.env.web.example)
+- `ANDROID_NATIVE` with local Appium: start from [`.env.android.local.example`](env/.env.android.local.example)
+- `ANDROID_NATIVE` with Dockerized Appium and host emulator: start from [`.env.android.host-emulator.example`](env/.env.android.host-emulator.example)
+- `ANDROID_NATIVE` with Dockerized Appium and Dockerized emulator: start from [`.env.android.docker-emulator.example`](env/.env.android.docker-emulator.example)
+- Any Appium-backed mobile profile that needs extra tuning: copy the relevant keys from [`.env.mobile.capabilities.example`](env/.env.mobile.capabilities.example)
 
 ## Configuration Precedence In Practice
 
@@ -171,8 +171,17 @@ These optional environment variables are supported by the Appium-backed built-in
 - `APPIUM_ANDROID_INSTALL_TIMEOUT`
 - `APP_WAIT_PACKAGE`
 - `APP_WAIT_ACTIVITY`
+- `PEPENIUM_APPIUM_CAPABILITIES`
 
 They are intended for advanced mobile runs when the default Appium option sets need to be tuned without forking the framework.
+
+Notes:
+
+- `PEPENIUM_APPIUM_CAPABILITIES` uses `;` separators and `key=value` entries, for example `appWaitDuration=30000;vendor:flag=true`
+- unprefixed keys are applied as `appium:*` capabilities, so `appWaitDuration=30000` becomes `appium:appWaitDuration=30000`
+- W3C keys such as `platformName` and `browserName`, and vendor-prefixed keys such as `bstack:options`, are kept as written
+- scalar values are typed automatically: `true` / `false` become booleans, integer values become longs and decimal values become doubles
+- equivalent Java system properties are supported by lowercasing the variable and replacing `_` with `.`, for example `-Dappium.no.reset=true` or `-Dpepenium.appium.capabilities=appWaitDuration=30000`
 ## Local Web and Mobile Web
 
 ### `PEPENIUM_BASE_URL`
@@ -275,6 +284,34 @@ Notes:
 - Required: No
 - Purpose: Legacy compatibility alias for screenshot output, still honored for AWS Device Farm and existing setups
 - Recommendation: Prefer `PEPENIUM_SCREENSHOT_PATH` in new local or shared `.env` files
+
+## Toolkit Wait Tuning
+
+These variables and equivalent Java system properties tune Pepenium toolkit waits without changing test code.
+
+### `pepenium.action.timeout.seconds` / `PEPENIUM_ACTION_TIMEOUT_SECONDS`
+
+- Required: No
+- Values: positive duration; plain numbers are seconds, and explicit values such as `500ms`, `2s`, `1m` and `PT2S` are also supported
+- Default: helper-specific short action timeout
+- Purpose: Controls short action waits such as visibility, clickability and quick optional checks
+
+### `pepenium.action.long-timeout.seconds` / `PEPENIUM_ACTION_LONG_TIMEOUT_SECONDS`
+
+- Required: No
+- Values: positive duration; plain numbers are seconds, and explicit values such as `500ms`, `2s`, `1m` and `PT2S` are also supported
+- Default: helper-specific long action timeout
+- Purpose: Controls long action waits such as presence checks and disappearance waits
+
+### `pepenium.assertion.timeout.seconds` / `PEPENIUM_ASSERTION_TIMEOUT_SECONDS`
+
+- Required: No
+- Values: positive duration; plain numbers are seconds, and explicit values such as `500ms`, `2s`, `1m` and `PT2S` are also supported
+- Default: `6`
+- Purpose: Controls waits used by toolkit assertions before they fail
+
+Java system properties win over environment variables. The existing property and environment variable names keep the
+`seconds` suffix for compatibility even when an explicit duration unit is used.
 
 ## Observability
 
@@ -430,6 +467,8 @@ PEPENIUM_WEB_CAPABILITIES=custom:flag=true;custom:retries=3
 ```text
 PEPENIUM_DETAIL_LOGGING=true
 PEPENIUM_STEP_TRACKER_LIMIT=20
+PEPENIUM_ACTION_TIMEOUT_SECONDS=750ms
+PEPENIUM_ASSERTION_TIMEOUT_SECONDS=10
 ```
 
 ### Local Android With Extra Appium Tuning
@@ -443,6 +482,7 @@ APP_PACKAGE=com.example.app
 APP_ACTIVITY=.MainActivity
 APPIUM_NO_RESET=true
 APPIUM_NEW_COMMAND_TIMEOUT=300
+PEPENIUM_APPIUM_CAPABILITIES=appWaitDuration=30000;customRetries=3
 PEPENIUM_SCREENSHOT_PATH=C:\temp\pepenium-screenshots
 ```
 

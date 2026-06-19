@@ -6,22 +6,26 @@ Its purpose is to validate that Pepenium can be consumed from a separate project
 
 ## Typical Validation Flow
 
-Install the local framework artifacts first:
+Use the repository helper script from the root:
 
-```bash
-mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
+```powershell
+.\scripts\Test-ConsumerSmoke.ps1
 ```
 
-Then compile the smoke consumer:
+On Bash-compatible shells:
 
 ```bash
-mvn -q -f consumer-smoke/pom.xml clean test-compile
+./scripts/test-consumer-smoke.sh
 ```
 
 If needed, the consumed version can be overridden:
 
+```powershell
+.\scripts\Test-ConsumerSmoke.ps1 -PepeniumVersion 0.9.7
+```
+
 ```bash
-mvn -q -f consumer-smoke/pom.xml clean test-compile -Dpepenium.version=0.9.7
+./scripts/test-consumer-smoke.sh --version 0.9.7
 ```
 
 ## What It Covers
@@ -30,8 +34,11 @@ The smoke sources intentionally model the expected user-facing workflow:
 
 - extending `BaseTest`
 - or using `@PepeniumTest` with `@PepeniumInject`
+- using `@PepeniumPage` page objects initialized through Selenium `PageFactory`
 - declaring a `TestTarget`
 - building page objects and flows with `Actions*`
+- compiling against shared `WebActions`, `MobileActions`, `WebAssertions` and `MobileAssertions` contracts
+- compiling against `PepeniumBy` mobile locators for Android/iOS-compatible page objects
 - using `Assertions*`
 - enriching steps with `step("...")` or `PepeniumSteps`
 

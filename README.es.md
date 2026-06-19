@@ -12,7 +12,7 @@
     <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
   </a>
   <img alt="Java" src="https://img.shields.io/badge/Java-11-blue.svg" />
-  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.x-orange.svg" />
+  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.9%2B-orange.svg" />
   <img alt="JUnit" src="https://img.shields.io/badge/JUnit-5-purple.svg" />
   <img alt="Selenium" src="https://img.shields.io/badge/Selenium-4-43B02A.svg" />
   <img alt="Appium Client" src="https://img.shields.io/badge/Appium%20Client-10-00BFFF.svg" />
@@ -22,7 +22,7 @@
 
 <p align="center">
   <a href="README.md">English</a> |
-  <strong>Espanol</strong>
+  <strong>Español</strong>
 </p>
 
 Pepenium es un framework de automatizacion en Java para Android, iOS y Web construido sobre Appium, Selenium y JUnit 5.
@@ -39,26 +39,27 @@ Primeros pasos recomendados:
 2. Ejecuta el showcase web desktop para tener tu primer exito real
 3. Pasa a Android solo cuando la ruta web ya funcione
 
-Ficheros de entorno listos para copiar:
+Los ficheros de entorno listos para copiar estan en [docs/env](docs/env/README.md):
 
-- [`.env.web.example`](.env.web.example)
-- [`.env.android.local.example`](.env.android.local.example)
-- [`.env.web.capabilities.example`](.env.web.capabilities.example)
-- [`.env.android.host-emulator.example`](.env.android.host-emulator.example)
-- [`.env.android.docker-emulator.example`](.env.android.docker-emulator.example)
-- [`.env.mobile.capabilities.example`](.env.mobile.capabilities.example)
+- [`.env.web.example`](docs/env/.env.web.example)
+- [`.env.android.local.example`](docs/env/.env.android.local.example)
+- [`.env.web.capabilities.example`](docs/env/.env.web.capabilities.example)
+- [`.env.android.host-emulator.example`](docs/env/.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](docs/env/.env.android.docker-emulator.example)
+- [`.env.mobile.capabilities.example`](docs/env/.env.mobile.capabilities.example)
 
 ## Por Que Pepenium
 
 - Un test por target funcional, no un test por proveedor
 - Un modelo de ejecucion compartido para local, BrowserStack y AWS Device Farm
 - Lifecycle de driver y sesion centralizado en una unica factoria
-- Helpers reutilizables `Actions*` para Web, Android e iOS
+- Helpers reutilizables `Actions*` y `Assertions*` para Web, Android e iOS, mas contratos compartidos para flows portables
 - Capturas pensadas para flujos rapidos sin screenshots borrosos
 - Logs mas limpios con contexto automatico y evidencia de fallo
 
 Consulta [START-HERE.es.md](docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
 Usa [ENVIRONMENT.md](docs/ENVIRONMENT.md) como referencia central de variables de entorno, reglas de precedencia, properties de runtime y patrones de override de capabilities.
+Usa [REPOSITORY.md](docs/REPOSITORY.md) como mapa del repositorio y reglas para colocar cambios nuevos.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 Usa [consumer-smoke/README.md](consumer-smoke/README.md) si quieres validar el consumo de la API publica desde un proyecto Maven separado.
 
@@ -92,7 +93,7 @@ Dependencia tipica de consumo:
 Por que `pepenium-toolkit` suele ser el punto de entrada correcto:
 
 - es el artefacto contra el que la mayoria de usuarios externos querran construir
-- te da `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `AssertionsWeb`, `AssertionsApp` y `AssertionsAppIOS`
+- te da `ActionsWeb`, `WebActions`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS`, `MobileAssertions` y `PepeniumBy`
 - arrastra transitivamente el core/runtime, asi que sigues teniendo `BaseTest` y `TestTarget` sin cablear ambas capas a mano
 
 Si quieres un ejemplo concreto de consumidor, mira [consumer-smoke/README.md](consumer-smoke/README.md).
@@ -213,8 +214,10 @@ Los builders de request especificos de proveedor viven actualmente en:
 
 Bloques reutilizables:
 
-- `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
-- `toolkit/assertions`: `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS`
+- `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `WebActions`
+- `toolkit/actions`: `MobileActions` y `SwipeDirection` para flows compatibles Android/iOS
+- `toolkit/assertions`: `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS`, `MobileAssertions`
+- `toolkit/locators`: `PepeniumBy` para localizadores nativos compatibles Android/iOS
 - `toolkit/support`: helpers reutilizables de settle y scroll
 
 ### `examples`
