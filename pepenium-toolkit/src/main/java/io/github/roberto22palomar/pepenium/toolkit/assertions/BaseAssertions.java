@@ -2,6 +2,8 @@ package io.github.roberto22palomar.pepenium.toolkit.assertions;
 
 import io.github.roberto22palomar.pepenium.toolkit.support.ToolkitTimeouts;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -70,8 +72,11 @@ abstract class BaseAssertions {
 
     protected void assertPresent(WebElement element) {
         try {
-            assertionWait().until(d -> element != null);
-        } catch (TimeoutException e) {
+            if (element == null) {
+                throw assertion("Expected present element but it was not found", null);
+            }
+            element.getTagName();
+        } catch (NoSuchElementException | StaleElementReferenceException e) {
             throw assertion("Expected present element but it was not found", element);
         }
     }

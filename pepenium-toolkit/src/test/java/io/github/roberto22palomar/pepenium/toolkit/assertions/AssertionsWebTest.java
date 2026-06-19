@@ -7,12 +7,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -109,5 +111,19 @@ class AssertionsWebTest {
 
         assertTrue(StepTracker.snapshot().getSteps().stream()
                 .anyMatch(step -> step.contains("Assert input value on " + LOCATOR)));
+    }
+
+    @Test
+    void assertPresentRejectsStaleElementReference() {
+        doThrow(new StaleElementReferenceException("detached")).when(element).getTagName();
+
+        AssertionsWeb assertions = new AssertionsWeb(driver);
+
+        AssertionError error = assertThrows(AssertionError.class,
+                () -> assertions.assertPresent(element));
+
+        assertTrue(error.getMessage().contains("Expected present element but it was not found"));
+        assertTrue(StepTracker.snapshot().getSteps().stream()
+                .anyMatch(step -> step.contains("Assert present element")));
     }
 }
