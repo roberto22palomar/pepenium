@@ -1,6 +1,8 @@
 package io.github.roberto22palomar.pepenium.toolkit.support;
 
 import java.time.Duration;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
 
 public final class ToolkitTimeouts {
 
@@ -37,14 +39,41 @@ public final class ToolkitTimeouts {
             return defaultValue;
         }
         String value = rawValue.trim();
-        try {
-            long seconds = Long.parseLong(value);
-            if (seconds < 1L) {
-                throw new IllegalStateException(source + " must be at least 1 second.");
-            }
-            return Duration.ofSeconds(seconds);
-        } catch (NumberFormatException e) {
-            throw new IllegalStateException(source + " must be a positive integer number of seconds.", e);
+        Duration parsed = parseDuration(source, value);
+        if (parsed.isZero() || parsed.isNegative()) {
+            throw new IllegalStateException(source + " must be greater than 0.");
         }
+        return parsed;
+    }
+
+    private static Duration parseDuration(String source, String value) {
+        try {
+            return Duration.ofSeconds(Long.parseLong(value));
+        } catch (NumberFormatException e) {
+            return parseDurationWithUnit(source, value, e);
+        }
+    }
+
+    private static Duration parseDurationWithUnit(String source, String value, NumberFormatException cause) {
+        String normalized = value.toLowerCase(Locale.ROOT);
+        try {
+            if (normalized.startsWith("p")) {
+                return Duration.parse(value);
+            }
+            if (normalized.endsWith("ms")) {
+                return Duration.ofMillis(Long.parseLong(normalized.substring(0, normalized.length() - 2).trim()));
+            }
+            if (normalized.endsWith("s")) {
+                return Duration.ofSeconds(Long.parseLong(normalized.substring(0, normalized.length() - 1).trim()));
+            }
+            if (normalized.endsWith("m")) {
+                return Duration.ofMinutes(Long.parseLong(normalized.substring(0, normalized.length() - 1).trim()));
+            }
+        } catch (NumberFormatException | DateTimeParseException e) {
+            cause.addSuppressed(e);
+        }
+        throw new IllegalStateException(source
+                + " must be a positive duration. Use plain seconds or values like 500ms, 2s, 1m or PT2S.",
+                cause);
     }
 }

@@ -292,22 +292,26 @@ These variables and equivalent Java system properties tune Pepenium toolkit wait
 ### `pepenium.action.timeout.seconds` / `PEPENIUM_ACTION_TIMEOUT_SECONDS`
 
 - Required: No
+- Values: positive duration; plain numbers are seconds, and explicit values such as `500ms`, `2s`, `1m` and `PT2S` are also supported
 - Default: helper-specific short action timeout
 - Purpose: Controls short action waits such as visibility, clickability and quick optional checks
 
 ### `pepenium.action.long-timeout.seconds` / `PEPENIUM_ACTION_LONG_TIMEOUT_SECONDS`
 
 - Required: No
+- Values: positive duration; plain numbers are seconds, and explicit values such as `500ms`, `2s`, `1m` and `PT2S` are also supported
 - Default: helper-specific long action timeout
 - Purpose: Controls long action waits such as presence checks and disappearance waits
 
 ### `pepenium.assertion.timeout.seconds` / `PEPENIUM_ASSERTION_TIMEOUT_SECONDS`
 
 - Required: No
+- Values: positive duration; plain numbers are seconds, and explicit values such as `500ms`, `2s`, `1m` and `PT2S` are also supported
 - Default: `6`
 - Purpose: Controls waits used by toolkit assertions before they fail
 
-Values must be positive integer seconds. Java system properties win over environment variables.
+Java system properties win over environment variables. The existing property and environment variable names keep the
+`seconds` suffix for compatibility even when an explicit duration unit is used.
 
 ## Observability
 
@@ -463,7 +467,7 @@ PEPENIUM_WEB_CAPABILITIES=custom:flag=true;custom:retries=3
 ```text
 PEPENIUM_DETAIL_LOGGING=true
 PEPENIUM_STEP_TRACKER_LIMIT=20
-PEPENIUM_ACTION_TIMEOUT_SECONDS=10
+PEPENIUM_ACTION_TIMEOUT_SECONDS=750ms
 PEPENIUM_ASSERTION_TIMEOUT_SECONDS=10
 ```
 

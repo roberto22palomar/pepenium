@@ -30,6 +30,31 @@ class ToolkitTimeoutsTest {
     }
 
     @Test
+    void actionTimeoutAcceptsExplicitMilliseconds() {
+        System.setProperty(ToolkitTimeouts.ACTION_TIMEOUT_PROPERTY, "750ms");
+
+        assertEquals(Duration.ofMillis(750), ToolkitTimeouts.actionTimeout(Duration.ofSeconds(6)));
+    }
+
+    @Test
+    void longActionTimeoutAcceptsExplicitSecondsAndMinutes() {
+        System.setProperty(ToolkitTimeouts.LONG_ACTION_TIMEOUT_PROPERTY, "2m");
+
+        assertEquals(Duration.ofMinutes(2), ToolkitTimeouts.longActionTimeout(Duration.ofSeconds(120)));
+
+        System.setProperty(ToolkitTimeouts.LONG_ACTION_TIMEOUT_PROPERTY, "90s");
+
+        assertEquals(Duration.ofSeconds(90), ToolkitTimeouts.longActionTimeout(Duration.ofSeconds(120)));
+    }
+
+    @Test
+    void assertionTimeoutAcceptsIsoDuration() {
+        System.setProperty(ToolkitTimeouts.ASSERTION_TIMEOUT_PROPERTY, "PT1.5S");
+
+        assertEquals(Duration.ofMillis(1500), ToolkitTimeouts.assertionTimeout(Duration.ofSeconds(6)));
+    }
+
+    @Test
     void longActionTimeoutRejectsNonPositiveValues() {
         System.setProperty(ToolkitTimeouts.LONG_ACTION_TIMEOUT_PROPERTY, "0");
 
@@ -39,7 +64,7 @@ class ToolkitTimeoutsTest {
         );
 
         assertEquals(
-                ToolkitTimeouts.LONG_ACTION_TIMEOUT_PROPERTY + " must be at least 1 second.",
+                ToolkitTimeouts.LONG_ACTION_TIMEOUT_PROPERTY + " must be greater than 0.",
                 error.getMessage()
         );
     }
@@ -54,7 +79,8 @@ class ToolkitTimeoutsTest {
         );
 
         assertEquals(
-                ToolkitTimeouts.ASSERTION_TIMEOUT_PROPERTY + " must be a positive integer number of seconds.",
+                ToolkitTimeouts.ASSERTION_TIMEOUT_PROPERTY
+                        + " must be a positive duration. Use plain seconds or values like 500ms, 2s, 1m or PT2S.",
                 error.getMessage()
         );
     }
