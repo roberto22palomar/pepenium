@@ -22,11 +22,13 @@ final class PepeniumInjectionSupport {
     private static final String ACTIONS_WEB = "io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb";
     private static final String WEB_ACTIONS = "io.github.roberto22palomar.pepenium.toolkit.actions.WebActions";
     private static final String ASSERTIONS_WEB = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb";
+    private static final String WEB_ASSERTIONS = "io.github.roberto22palomar.pepenium.toolkit.assertions.WebAssertions";
     private static final String ACTIONS_APP = "io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp";
     private static final String ASSERTIONS_APP = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp";
     private static final String ACTIONS_APP_IOS = "io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS";
     private static final String ASSERTIONS_APP_IOS = "io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS";
     private static final String MOBILE_ACTIONS = "io.github.roberto22palomar.pepenium.toolkit.actions.MobileActions";
+    private static final String MOBILE_ASSERTIONS = "io.github.roberto22palomar.pepenium.toolkit.assertions.MobileAssertions";
 
     static final class CacheState {
         private final Map<Class<?>, Object> components = new HashMap<>();
@@ -71,11 +73,13 @@ final class PepeniumInjectionSupport {
                 || type.getName().equals(ACTIONS_WEB)
                 || type.getName().equals(WEB_ACTIONS)
                 || type.getName().equals(ASSERTIONS_WEB)
+                || type.getName().equals(WEB_ASSERTIONS)
                 || type.getName().equals(ACTIONS_APP)
                 || type.getName().equals(ASSERTIONS_APP)
                 || type.getName().equals(ACTIONS_APP_IOS)
                 || type.getName().equals(ASSERTIONS_APP_IOS)
                 || type.getName().equals(MOBILE_ACTIONS)
+                || type.getName().equals(MOBILE_ASSERTIONS)
                 || type == PepeniumSteps.class;
     }
 
@@ -198,6 +202,9 @@ final class PepeniumInjectionSupport {
         if (type.getName().equals(ASSERTIONS_WEB)) {
             return instantiateToolkitType(type, requireWebDriver(type));
         }
+        if (type.getName().equals(WEB_ASSERTIONS)) {
+            return instantiateToolkitType(loadToolkitType(ASSERTIONS_WEB), requireWebDriver(type));
+        }
         if (type.getName().equals(ACTIONS_APP)) {
             return instantiateToolkitType(type, requireAppiumDriver(type));
         }
@@ -212,6 +219,9 @@ final class PepeniumInjectionSupport {
         }
         if (type.getName().equals(MOBILE_ACTIONS)) {
             return instantiateToolkitType(resolveMobileActionsImplementation(), requireAppiumDriver(type));
+        }
+        if (type.getName().equals(MOBILE_ASSERTIONS)) {
+            return instantiateToolkitType(resolveMobileAssertionsImplementation(), requireAppiumDriver(type));
         }
         if (type == PepeniumSteps.class) {
             return (PepeniumSteps) StepTracker::record;
@@ -229,6 +239,14 @@ final class PepeniumInjectionSupport {
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("MobileActions implementation is not available: " + implementation, e);
         }
+    }
+
+    private Class<?> resolveMobileAssertionsImplementation() {
+        DriverSession session = requireSession(MOBILE_ASSERTIONS);
+        TestTarget target = session.getRequest() == null ? null : session.getRequest().getTarget();
+        DriverType driverType = session.getRequest() == null ? null : session.getRequest().getDriverType();
+        String implementation = isIosTarget(target, driverType) ? ASSERTIONS_APP_IOS : ASSERTIONS_APP;
+        return loadToolkitType(implementation);
     }
 
     private Class<?> loadToolkitType(String typeName) {

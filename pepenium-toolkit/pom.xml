@@ -111,6 +111,8 @@
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS.Direction</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.MobileActions</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.SwipeDirection</include>
+                                    <include>io.github.roberto22palomar.pepenium.toolkit.assertions.WebAssertions</include>
+                                    <include>io.github.roberto22palomar.pepenium.toolkit.assertions.MobileAssertions</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS</include>

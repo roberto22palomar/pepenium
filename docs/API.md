@@ -134,7 +134,7 @@ The ids above are contract. The internal wiring behind them is not. The `configK
 
 ### `Actions*` and `Assertions*` stay the stable authoring surface
 
-The documented `WebActions`, `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `SwipeDirection`, `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` types are now the intended stable authoring surface for `1.0.0`.
+The documented `WebActions`, `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `SwipeDirection`, `WebAssertions`, `MobileAssertions`, `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` types are now the intended stable authoring surface for `1.0.0`.
 
 That means public methods on those classes should follow the existing deprecation-first policy instead of being renamed or removed directly.
 
@@ -156,6 +156,8 @@ Current decision:
 - [ActionsAppIOS](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsAppIOS.java)
 - [MobileActions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/MobileActions.java)
 - [SwipeDirection](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/SwipeDirection.java)
+- [WebAssertions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/WebAssertions.java)
+- [MobileAssertions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/MobileAssertions.java)
 - [AssertionsWeb](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsWeb.java)
 - [AssertionsApp](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsApp.java)
 - [AssertionsAppIOS](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsAppIOS.java)
@@ -168,7 +170,9 @@ For web flows that should depend on a stable contract instead of a concrete help
 
 For native mobile flows that should compile against both Android and iOS helpers, prefer `MobileActions` plus `SwipeDirection`. `ActionsApp` and `ActionsAppIOS` remain the concrete helpers for platform-specific flows and continue to expose their existing nested `Direction` enums for compatibility.
 
-The shared assertion surface should likewise stay aligned around `assertVisible(...)`, `assertNotVisible(...)`, `assertPresent(...)`, `assertTextEquals(...)` and `assertTextContains(...)`, while web-only assertions should be reserved for browser-specific concerns such as URL, title and input-value checks.
+For assertion-heavy flows, prefer `WebAssertions` on web and `MobileAssertions` on native mobile. `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` remain the concrete helpers and implement those contracts.
+
+The shared assertion surface should stay aligned around `assertVisible(...)`, `assertNotVisible(...)`, `assertPresent(...)`, `assertTextEquals(...)` and `assertTextContains(...)`, while web-only assertions should be reserved for browser-specific concerns such as URL, title and input-value checks.
 
 ## Advanced / Evolving API
 
@@ -248,7 +252,7 @@ Pepenium now runs an automatic `japicmp` comparison during `verify` for the rele
 That build-time compatibility gate is intentionally scoped to the documented public API surface:
 
 - `pepenium-core`: `PepeniumTest`, `PepeniumInject`, `PepeniumPage`, `PepeniumSteps`, `BaseTest` and `TestTarget`
-- `pepenium-toolkit`: the documented `Actions*`, `WebActions`, `MobileActions`, `SwipeDirection` and `Assertions*` authoring types
+- `pepenium-toolkit`: the documented `Actions*`, `WebActions`, `MobileActions`, `SwipeDirection`, `WebAssertions`, `MobileAssertions` and `Assertions*` authoring types
 
 This keeps the compatibility check focused on what normal external users are expected to import directly, while semantic contract details such as lifecycle defaults, target defaults and built-in profile ids are protected by dedicated tests and docs.
 

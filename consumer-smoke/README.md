@@ -32,7 +32,7 @@ The smoke sources intentionally model the expected user-facing workflow:
 - or using `@PepeniumTest` with `@PepeniumInject`
 - declaring a `TestTarget`
 - building page objects and flows with `Actions*`
-- compiling against shared `WebActions` and `MobileActions` contracts
+- compiling against shared `WebActions`, `MobileActions`, `WebAssertions` and `MobileAssertions` contracts
 - using `Assertions*`
 - enriching steps with `step("...")` or `PepeniumSteps`
 

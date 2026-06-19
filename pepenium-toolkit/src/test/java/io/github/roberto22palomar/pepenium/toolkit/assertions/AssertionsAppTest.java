@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +28,13 @@ class AssertionsAppTest {
     @AfterEach
     void tearDown() {
         StepTracker.clear();
+    }
+
+    @Test
+    void implementsSharedMobileAssertionsContract() {
+        MobileAssertions assertions = new AssertionsApp(driver);
+
+        assertSame(driver, assertions.getDriver());
     }
 
     @Test

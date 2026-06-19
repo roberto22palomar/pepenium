@@ -53,7 +53,7 @@ Ficheros de entorno listos para copiar:
 - Un test por target funcional, no un test por proveedor
 - Un modelo de ejecucion compartido para local, BrowserStack y AWS Device Farm
 - Lifecycle de driver y sesion centralizado en una unica factoria
-- Helpers reutilizables `Actions*` para Web, Android e iOS, mas contratos `WebActions` y `MobileActions` para flows compartidos
+- Helpers reutilizables `Actions*` y `Assertions*` para Web, Android e iOS, mas contratos compartidos para flows portables
 - Capturas pensadas para flujos rapidos sin screenshots borrosos
 - Logs mas limpios con contexto automatico y evidencia de fallo
 
@@ -92,7 +92,7 @@ Dependencia tipica de consumo:
 Por que `pepenium-toolkit` suele ser el punto de entrada correcto:
 
 - es el artefacto contra el que la mayoria de usuarios externos querran construir
-- te da `ActionsWeb`, `WebActions`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `AssertionsApp` y `AssertionsAppIOS`
+- te da `ActionsWeb`, `WebActions`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS` y `MobileAssertions`
 - arrastra transitivamente el core/runtime, asi que sigues teniendo `BaseTest` y `TestTarget` sin cablear ambas capas a mano
 
 Si quieres un ejemplo concreto de consumidor, mira [consumer-smoke/README.md](consumer-smoke/README.md).
@@ -215,7 +215,7 @@ Bloques reutilizables:
 
 - `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `WebActions`
 - `toolkit/actions`: `MobileActions` y `SwipeDirection` para flows compatibles Android/iOS
-- `toolkit/assertions`: `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS`
+- `toolkit/assertions`: `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS`, `MobileAssertions`
 - `toolkit/support`: helpers reutilizables de settle y scroll
 
 ### `examples`

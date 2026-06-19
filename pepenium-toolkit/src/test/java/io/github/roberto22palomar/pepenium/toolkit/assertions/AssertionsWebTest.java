@@ -10,6 +10,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,13 @@ class AssertionsWebTest {
     @AfterEach
     void tearDown() {
         StepTracker.clear();
+    }
+
+    @Test
+    void implementsSharedWebAssertionsContract() {
+        WebAssertions assertions = new AssertionsWeb(driver);
+
+        assertSame(driver, assertions.getDriver());
     }
 
     @Test
