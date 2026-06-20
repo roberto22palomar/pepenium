@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Expanded `pepenium.yml` to cover base URLs, reporting and screenshot paths, detailed logging, retained-step limits and toolkit timeouts while preserving the existing profile launch and BrowserStack YAML workflows.
 - Made the standalone consumer smoke depend only on `pepenium-toolkit` with Maven `test` scope, proving that the recommended single dependency exposes the core runtime transitively without leaking test tooling into production classpaths.
 - Updated the security policy to match the current `0.9.x` release line and provide an actionable private vulnerability-reporting route.
 - Moved copyable `.env.*.example` files from the repository root into `docs/env/` and updated README, onboarding and environment docs to point at the grouped location.

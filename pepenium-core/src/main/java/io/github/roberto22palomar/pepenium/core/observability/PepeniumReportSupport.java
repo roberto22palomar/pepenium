@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.observability;
 
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
@@ -188,10 +189,7 @@ final class PepeniumReportSupport {
     }
 
     static Path resolveReportDir() {
-        String override = System.getProperty("pepenium.report.dir");
-        if (override == null || override.isBlank()) {
-            override = System.getenv("PEPENIUM_REPORT_DIR");
-        }
+        String override = PepeniumConfig.get("PEPENIUM_REPORT_DIR");
         if (override != null) {
             override = override.trim();
         }

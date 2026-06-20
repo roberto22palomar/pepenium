@@ -19,8 +19,14 @@ class PepeniumConfigTest {
     @Test
     void resolvesStructuredProfileValuesAndCollections() throws Exception {
         Path config = writeConfig("defaultProfile: local-web\n"
+                + "reporting:\n"
+                + "  directory: target/reports\n"
+                + "timeouts:\n"
+                + "  action: 2s\n"
                 + "profiles:\n"
                 + "  local-web:\n"
+                + "    timeouts:\n"
+                + "      action: 750ms\n"
                 + "    browser:\n"
                 + "      headless: true\n"
                 + "      arguments: [--incognito, '--window-size=1280,720']\n"
@@ -31,6 +37,9 @@ class PepeniumConfigTest {
         PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(config, true, key -> null);
 
         assertEquals("local-web", resolved.defaultProfile());
+        assertEquals("target/reports", resolved.value("local-web", "PEPENIUM_REPORT_DIR"));
+        assertEquals("750ms", resolved.value("local-web", "PEPENIUM_ACTION_TIMEOUT_SECONDS"));
+        assertEquals("2s", resolved.value("other-profile", "PEPENIUM_ACTION_TIMEOUT_SECONDS"));
         assertEquals("true", resolved.value("local-web", "PEPENIUM_WEB_HEADLESS"));
         assertEquals("--incognito;--window-size=1280,720",
                 resolved.value("local-web", "PEPENIUM_WEB_ARGS"));

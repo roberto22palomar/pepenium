@@ -1,5 +1,20 @@
 defaultProfile: local-android
 
+baseUrl: https://example.com
+
+reporting:
+  directory: target/pepenium-reports
+  screenshotPath: target/pepenium-screenshots
+
+logging:
+  detailed: false
+  stepLimit: 20
+
+timeouts:
+  action: 750ms
+  longAction: 30s
+  assertion: 10s
+
 profiles:
   local-android:
     serverUrl: http://127.0.0.1:4723
@@ -26,3 +41,5 @@ profiles:
       arguments:
         - --incognito
         - --window-size=1440,900
+    capabilities:
+      custom:flag: true

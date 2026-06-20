@@ -49,6 +49,11 @@ public final class PepeniumConfig {
         return Holder.CONFIG.value(ACTIVE_PROFILE.get(), key);
     }
 
+    public static String getOrDefault(String key, String defaultValue) {
+        String value = get(key);
+        return isBlank(value) ? defaultValue : value;
+    }
+
     public static String getDefaultProfile() {
         return Holder.CONFIG.defaultProfile();
     }
@@ -97,6 +102,16 @@ public final class PepeniumConfig {
         paths.put("PEPENIUM_WEB_BROWSER_VERSION", "browser.version");
         paths.put("PEPENIUM_WEB_BINARY_PATH", "browser.binary");
         paths.put("PEPENIUM_WEB_ARGS", "browser.arguments");
+        paths.put("PEPENIUM_BASE_URL", "baseUrl");
+        paths.put("PEPENIUM_WEB_USERNAME", "credentials.username");
+        paths.put("PEPENIUM_WEB_PASSWORD", "credentials.password");
+        paths.put("PEPENIUM_REPORT_DIR", "reporting.directory");
+        paths.put("PEPENIUM_SCREENSHOT_PATH", "reporting.screenshotPath");
+        paths.put("PEPENIUM_DETAIL_LOGGING", "logging.detailed");
+        paths.put("PEPENIUM_STEP_TRACKER_LIMIT", "logging.stepLimit");
+        paths.put("PEPENIUM_ACTION_TIMEOUT_SECONDS", "timeouts.action");
+        paths.put("PEPENIUM_ACTION_LONG_TIMEOUT_SECONDS", "timeouts.longAction");
+        paths.put("PEPENIUM_ASSERTION_TIMEOUT_SECONDS", "timeouts.assertion");
         return Collections.unmodifiableMap(paths);
     }
 
@@ -122,22 +137,31 @@ public final class PepeniumConfig {
 
     static final class ResolvedConfig {
         private final String defaultProfile;
+        private final Map<String, Object> global;
         private final Map<String, Map<String, Object>> profiles;
         private final Function<String, String> environment;
         private final Path source;
 
         private ResolvedConfig(String defaultProfile,
+                               Map<String, Object> global,
                                Map<String, Map<String, Object>> profiles,
                                Function<String, String> environment,
                                Path source) {
             this.defaultProfile = defaultProfile;
+            this.global = global;
             this.profiles = profiles;
             this.environment = environment;
             this.source = source;
         }
 
         static ResolvedConfig empty(Function<String, String> environment) {
-            return new ResolvedConfig(null, Collections.emptyMap(), environment, Path.of(DEFAULT_FILE));
+            return new ResolvedConfig(
+                    null,
+                    Collections.emptyMap(),
+                    Collections.emptyMap(),
+                    environment,
+                    Path.of(DEFAULT_FILE)
+            );
         }
 
         static ResolvedConfig from(Map<?, ?> document, Function<String, String> environment, Path source) {
@@ -155,7 +179,13 @@ public final class PepeniumConfig {
                     profiles.put(String.valueOf(id), copyMap((Map<?, ?>) value));
                 });
             }
-            return new ResolvedConfig(defaultProfile, Collections.unmodifiableMap(profiles), environment, source);
+            return new ResolvedConfig(
+                    defaultProfile,
+                    copyMap(document),
+                    Collections.unmodifiableMap(profiles),
+                    environment,
+                    source
+            );
         }
 
         String value(String profileId, String key) {
@@ -163,16 +193,21 @@ public final class PepeniumConfig {
                 profileId = defaultProfile;
             }
             Map<String, Object> profile = profiles.get(profileId);
-            if (profile == null) {
-                return null;
-            }
             String path = KEY_PATHS.getOrDefault(key, key.toLowerCase(Locale.ROOT).replace('_', '.'));
-            Object value = nestedValue(profile, path);
+            Object value = profile == null ? null : nestedValue(profile, path);
+            boolean fromProfile = value != null;
             if (value == null && ("PEPENIUM_WEB_CAPABILITIES".equals(key)
                     || "PEPENIUM_APPIUM_CAPABILITIES".equals(key))) {
-                value = profile.get("capabilities");
+                value = profile == null ? null : profile.get("capabilities");
+                fromProfile = value != null;
             }
-            return render(value, "profiles." + profileId + "." + path);
+            if (value == null) {
+                value = nestedValue(global, path);
+            }
+            String sourcePath = fromProfile
+                    ? "profiles." + profileId + "." + path
+                    : path;
+            return render(value, sourcePath);
         }
 
         String defaultProfile() {

@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.tests.myProjectExample.web;
 
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject;
 import io.github.roberto22palomar.pepenium.core.runtime.PepeniumTest;
@@ -22,9 +23,10 @@ public class ExampleDesktopWebTest {
 
     @Test
     void basicNavigationFlow_shouldRun() {
-        String baseUrl = System.getenv().getOrDefault("PEPENIUM_BASE_URL", "https://the-internet.herokuapp.com/login");
-        String username = System.getenv().getOrDefault("PEPENIUM_WEB_USERNAME", "tomsmith");
-        String password = System.getenv().getOrDefault("PEPENIUM_WEB_PASSWORD", "SuperSecretPassword!");
+        String baseUrl = PepeniumConfig.getOrDefault(
+                "PEPENIUM_BASE_URL", "https://the-internet.herokuapp.com/login");
+        String username = PepeniumConfig.getOrDefault("PEPENIUM_WEB_USERNAME", "tomsmith");
+        String password = PepeniumConfig.getOrDefault("PEPENIUM_WEB_PASSWORD", "SuperSecretPassword!");
         driver.get(baseUrl);
         flow.runSuccessfulLoginAndDropdownSelection(baseUrl, username, password);
         log.info("Example desktop web flow finished");
