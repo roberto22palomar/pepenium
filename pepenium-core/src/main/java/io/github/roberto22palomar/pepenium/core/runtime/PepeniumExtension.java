@@ -49,8 +49,11 @@ public class PepeniumExtension implements BeforeAllCallback, BeforeEachCallback,
     @Override
     public void afterEach(ExtensionContext context) {
         PepeniumRuntime runtime = getRuntime(context);
-        runtime.writeTestReport(context.getDisplayName(), context.getExecutionException().orElse(null));
-        runtime.clearPerTestState();
+        try {
+            runtime.writeTestReport(context.getDisplayName(), context.getExecutionException().orElse(null));
+        } finally {
+            runtime.clearPerTestState();
+        }
     }
 
     @Override

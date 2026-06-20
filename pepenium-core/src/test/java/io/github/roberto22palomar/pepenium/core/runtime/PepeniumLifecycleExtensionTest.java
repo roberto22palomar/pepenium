@@ -19,6 +19,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 
 @org.junit.jupiter.api.extension.ExtendWith(MockitoExtension.class)
 class PepeniumLifecycleExtensionTest {
@@ -130,6 +131,21 @@ class PepeniumLifecycleExtensionTest {
 
         inOrder.verify(runtime).writeTestReport("contract test", failure);
         inOrder.verify(runtime).clearPerTestState();
+    }
+
+    @Test
+    void afterEachClearsStateWhenReportGenerationFails() throws Exception {
+        AutomaticFixture owner = new AutomaticFixture();
+        attachRuntime(owner, runtime);
+        PepeniumLifecycleExtension extension = new PepeniumLifecycleExtension(owner, runtime);
+        when(context.getDisplayName()).thenReturn("broken report");
+        when(context.getExecutionException()).thenReturn(Optional.empty());
+        doThrow(new IllegalStateException("report failure"))
+                .when(runtime).writeTestReport("broken report", null);
+
+        assertThrows(IllegalStateException.class, () -> extension.afterEach(context));
+
+        verify(runtime).clearPerTestState();
     }
 
     @Test
