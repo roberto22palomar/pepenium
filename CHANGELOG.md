@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added `pepenium-maven-plugin` with a `validate-config` goal that validates a selected YAML profile during Maven's `validate` phase without opening a driver session.
 - Added a session-free configuration preflight API and CLI, plus an editor-compatible JSON Schema for `pepenium.yml`.
 - Added a documented 1.0 compatibility policy covering Java 11/17/21, operating systems, public API and provider validation levels.
 - Added native structured YAML capabilities with nested maps/lists, deep global/profile merging, placeholder resolution and strict schema validation with actionable paths.
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Extended the standalone consumer smoke and release publication flow to install, execute and publish the configuration plugin as a first-class artifact.
 - Expanded CI and release preflight with Java 11/17/21 runtime checks and Linux, Windows and macOS portability coverage.
 - Switched compilation to `--release 11` so newer build JDKs cannot accidentally leak newer Java APIs into published artifacts.
 - Added versioned semantic validation for `pepenium.yml`, including URLs, durations, booleans, provider-owned sections and consistent common capabilities across local, AWS and BrowserStack desktop/mobile runs.

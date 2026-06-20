@@ -22,7 +22,12 @@ if ($projectVersion -ne $normalizedVersion) {
     throw "pom.xml version '$projectVersion' does not match requested release version '$normalizedVersion'."
 }
 
-$modulePoms = @("pepenium-core/pom.xml", "pepenium-toolkit/pom.xml", "pepenium-examples/pom.xml")
+$modulePoms = @(
+    "pepenium-core/pom.xml",
+    "pepenium-toolkit/pom.xml",
+    "pepenium-maven-plugin/pom.xml",
+    "pepenium-examples/pom.xml"
+)
 foreach ($modulePom in $modulePoms) {
     [xml]$module = Get-Content -LiteralPath $modulePom
     $parentVersion = $module.project.parent.version

@@ -32,4 +32,25 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.github.roberto22palomar</groupId>
+                <artifactId>pepenium-maven-plugin</artifactId>
+                <version>${pepenium.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>validate-config</goal>
+                        </goals>
+                        <configuration>
+                            <configFile>${project.basedir}/pepenium.yml</configFile>
+                            <profileId>consumer-local-web</profileId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

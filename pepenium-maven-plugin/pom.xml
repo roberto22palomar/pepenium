@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.roberto22palomar</groupId>
+        <artifactId>pepenium-parent</artifactId>
+        <version>0.9.7</version>
+    </parent>
+
+    <artifactId>pepenium-maven-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
+    <name>Pepenium Maven Plugin</name>
+    <description>Maven goals for validating Pepenium projects before test execution.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.roberto22palomar</groupId>
+            <artifactId>pepenium</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>${maven.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>${maven.plugin.annotations.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>${maven.plugin.plugin.version}</version>
+                <configuration>
+                    <goalPrefix>pepenium</goalPrefix>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

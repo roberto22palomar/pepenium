@@ -38,6 +38,7 @@
     <modules>
         <module>pepenium-core</module>
         <module>pepenium-toolkit</module>
+        <module>pepenium-maven-plugin</module>
         <module>pepenium-examples</module>
     </modules>
 
@@ -67,6 +68,9 @@
         <maven.javadoc.plugin.version>3.8.0</maven.javadoc.plugin.version>
         <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
         <maven.gpg.plugin.version>3.2.7</maven.gpg.plugin.version>
+        <maven.plugin.plugin.version>3.15.1</maven.plugin.plugin.version>
+        <maven.plugin.annotations.version>3.15.1</maven.plugin.annotations.version>
+        <maven.api.version>3.9.9</maven.api.version>
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
         <japicmp.maven.plugin.version>0.25.4</japicmp.maven.plugin.version>
         <public.api.compatibility.baseline.version>0.9.6</public.api.compatibility.baseline.version>

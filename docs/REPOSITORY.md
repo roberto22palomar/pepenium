@@ -20,6 +20,7 @@ Avoid adding new one-off setup files to the root. Prefer one of the grouped dire
 | --- | --- |
 | `pepenium-core/` | Runtime, execution profiles, session lifecycle, provider configuration and JUnit integration |
 | `pepenium-toolkit/` | User-facing actions, assertions, locator helpers and reusable authoring contracts |
+| `pepenium-maven-plugin/` | Build-time `pepenium.yml` validation for consumer Maven projects |
 | `pepenium-examples/` | Repository-only runnable showcases and templates built on top of the framework |
 | `consumer-smoke/` | Standalone Maven consumer used to prove public API consumption outside the reactor |
 

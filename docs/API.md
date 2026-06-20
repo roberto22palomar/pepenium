@@ -29,6 +29,7 @@ The versioned compatibility and runtime matrix is defined in [COMPATIBILITY.md](
 - `PepeniumConfig.validate(Path)` validates structure and the configured default profile.
 - `PepeniumConfig.validate(Path, String)` validates a selected local, AWS or BrowserStack profile.
 - `PepeniumConfigCli` exposes the same validation as a command-line preflight without creating a driver.
+- `pepenium-maven-plugin:validate-config` exposes the preflight as a Maven `validate` goal for consumer builds.
 
 These APIs are part of the supported `1.0.0` surface.
 

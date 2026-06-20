@@ -184,6 +184,7 @@ Repository modules:
 
 - `pepenium-core`: framework engine, runtime, execution and provider configuration
 - `pepenium-toolkit`: reusable test-author helpers such as actions and support utilities
+- `pepenium-maven-plugin`: build-time `pepenium.yml` validation without driver startup
 - `pepenium-examples`: repository-only example tests, flows and page objects built on top of `pepenium` and `pepenium-toolkit`
 
 ### `core`

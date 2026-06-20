@@ -16,7 +16,27 @@ Configuration can be validated without opening Selenium/Appium or contacting a p
 PepeniumConfig.validate(Path.of("pepenium.yml"), "local-web");
 ```
 
-The command-line entry point uses exit code `0` for valid configuration and `2` for invalid arguments or configuration:
+For Maven projects, declare the versioned plugin once:
+
+```xml
+<plugin>
+    <groupId>io.github.roberto22palomar</groupId>
+    <artifactId>pepenium-maven-plugin</artifactId>
+    <version>${pepenium.version}</version>
+</plugin>
+```
+
+Then validate the selected profile directly:
+
+```text
+mvn pepenium:validate-config -Dpepenium.profile=local-web
+```
+
+The goal uses `pepenium.yml` in the project root by default. Override it with `-Dpepenium.config=path/to/file.yml`
+or skip an intentional validation binding with `-Dpepenium.config.skip=true`.
+
+The lower-level command-line entry point remains available and uses exit code `0` for valid configuration and `2` for
+invalid arguments or configuration:
 
 ```text
 mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java -Dexec.classpathScope=test -Dexec.mainClass=io.github.roberto22palomar.pepenium.core.config.PepeniumConfigCli -Dexec.args="--config pepenium.yml --profile local-web"

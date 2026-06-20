@@ -30,7 +30,7 @@ cd "$ROOT_DIR"
 
 if [[ "$SKIP_INSTALL" -eq 0 ]]; then
   mvn -B -ntp \
-    -pl pepenium-core,pepenium-toolkit \
+    -pl pepenium-core,pepenium-toolkit,pepenium-maven-plugin \
     -am install \
     -DskipTests \
     -Djacoco.skip=true \

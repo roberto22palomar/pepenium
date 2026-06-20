@@ -23,7 +23,7 @@ try {
             "-B",
             "-ntp",
             "-pl",
-            "pepenium-core,pepenium-toolkit",
+            "pepenium-core,pepenium-toolkit,pepenium-maven-plugin",
             "-am",
             "install",
             "-DskipTests",
