@@ -1,3 +1,4 @@
+schemaVersion: 1
 defaultProfile: local-android
 
 baseUrl: https://example.com
@@ -57,3 +58,14 @@ profiles:
     capabilities:
       vendor:options:
         browser: chrome
+
+  # AWS receives device/app details from Device Farm. Only common settings and
+  # additional capabilities belong here.
+  aws-android:
+    capabilities:
+      newCommandTimeout: 300
+
+  # Credentials, platforms and bstack:options remain in BrowserStack's own YAML.
+  browserstack-windows-web:
+    capabilities:
+      acceptInsecureCerts: true

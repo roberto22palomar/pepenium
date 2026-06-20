@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Added versioned semantic validation for `pepenium.yml`, including URLs, durations, booleans, provider-owned sections and consistent common capabilities across local, AWS and BrowserStack desktop/mobile runs.
 - Hardened managed driver lifecycle with same-thread execution, idempotent teardown, partial-session cleanup and guaranteed per-test state clearing after reporting failures.
 - Expanded `pepenium.yml` to cover base URLs, reporting and screenshot paths, detailed logging, retained-step limits and toolkit timeouts while preserving the existing profile launch and BrowserStack YAML workflows.
 - Made the standalone consumer smoke depend only on `pepenium-toolkit` with Maven `test` scope, proving that the recommended single dependency exposes the core runtime transitively without leaking test tooling into production classpaths.

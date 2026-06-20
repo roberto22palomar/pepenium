@@ -59,6 +59,7 @@ public class ExecutionProfileResolver {
             );
         }
         ExecutionProfiles.validateCompatibility(profile, target);
+        PepeniumConfig.validateProfile(profile.getId());
         PepeniumConfig.activateProfile(profile.getId());
         return profile;
     }

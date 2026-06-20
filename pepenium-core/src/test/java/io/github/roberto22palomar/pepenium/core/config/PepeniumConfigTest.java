@@ -153,6 +153,86 @@ class PepeniumConfigTest {
         assertTrue(error.getMessage().contains("must be a YAML object"));
     }
 
+    @Test
+    void rejectsUnsupportedSchemaVersions() throws Exception {
+        Path config = writeConfig("schemaVersion: 2\nprofiles: {}\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("schemaVersion"));
+        assertTrue(error.getMessage().contains("integer 1"));
+    }
+
+    @Test
+    void rejectsInvalidUrlsAndTimeoutsAtLoadTime() throws Exception {
+        Path invalidUrl = writeConfig("baseUrl: ftp://example.com\nprofiles: {}\n");
+        IllegalStateException urlError = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(invalidUrl, true, key -> null)
+        );
+        assertTrue(urlError.getMessage().contains("baseUrl"));
+
+        Path invalidTimeout = writeConfig("timeouts:\n  action: eventually\nprofiles: {}\n");
+        IllegalStateException timeoutError = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(invalidTimeout, true, key -> null)
+        );
+        assertTrue(timeoutError.getMessage().contains("timeouts.action"));
+    }
+
+    @Test
+    void rejectsAmbiguousBrowserTypesAtLoadTime() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    browser:\n"
+                + "      headless: 'yes'\n"
+                + "      arguments: --incognito\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("profiles.local-web.browser.headless"));
+    }
+
+    @Test
+    void rejectsProviderOwnedSettingsInPepeniumYaml() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  browserstack-android:\n"
+                + "    serverUrl: https://hub-cloud.browserstack.com/wd/hub\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(config, true, key -> null);
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> resolved.validateProfile("browserstack-android")
+        );
+
+        assertTrue(error.getMessage().contains("provider-owned"));
+        assertTrue(error.getMessage().contains("existing YAML"));
+    }
+
+    @Test
+    void rejectsBrowserStackOwnedCapabilityNamespaces() throws Exception {
+        Path config = writeConfig("capabilities:\n"
+                + "  bstack:options:\n"
+                + "    projectName: Pepenium\n"
+                + "profiles:\n"
+                + "  browserstack-android: {}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(config, true, key -> null);
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> resolved.validateProfile("browserstack-android")
+        );
+
+        assertTrue(error.getMessage().contains("bstack:options"));
+        assertTrue(error.getMessage().contains("BrowserStack YAML"));
+    }
+
     private Path writeConfig(String content) throws Exception {
         Path config = tempDir.resolve("pepenium.yml");
         Files.writeString(config, content);
