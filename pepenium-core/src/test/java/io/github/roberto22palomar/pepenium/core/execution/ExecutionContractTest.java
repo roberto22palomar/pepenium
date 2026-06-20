@@ -51,7 +51,7 @@ class ExecutionContractTest {
         expectedProfiles.put("browserstack-windows-web", TestTarget.WEB_DESKTOP);
         expectedProfiles.put("browserstack-mac-web", TestTarget.WEB_DESKTOP);
 
-        Map<String, TestTarget> actualProfiles = ExecutionProfiles.list().stream()
+        Map<String, TestTarget> actualProfiles = ExecutionProfiles.builtInList().stream()
                 .collect(Collectors.toMap(
                         ExecutionProfile::getId,
                         ExecutionProfile::getTarget,

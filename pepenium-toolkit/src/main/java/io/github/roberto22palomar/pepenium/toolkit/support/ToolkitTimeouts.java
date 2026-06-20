@@ -1,5 +1,7 @@
 package io.github.roberto22palomar.pepenium.toolkit.support;
 
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
+
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
@@ -32,7 +34,7 @@ public final class ToolkitTimeouts {
         String rawValue = System.getProperty(systemProperty);
         String source = systemProperty;
         if (rawValue == null || rawValue.isBlank()) {
-            rawValue = System.getenv(envKey);
+            rawValue = PepeniumConfig.get(envKey);
             source = envKey;
         }
         if (rawValue == null || rawValue.isBlank()) {

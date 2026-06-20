@@ -1,0 +1,45 @@
+defaultProfile: local-android
+
+baseUrl: https://example.com
+
+reporting:
+  directory: target/pepenium-reports
+  screenshotPath: target/pepenium-screenshots
+
+logging:
+  detailed: false
+  stepLimit: 20
+
+timeouts:
+  action: 750ms
+  longAction: 30s
+  assertion: 10s
+
+profiles:
+  local-android:
+    serverUrl: http://127.0.0.1:4723
+    device:
+      udid: emulator-5554
+      name: Android Emulator
+    app:
+      path: ${APP_BINARY}
+    capabilities:
+      noReset: false
+      autoGrantPermissions: true
+
+  local-android-web:
+    serverUrl: http://127.0.0.1:4723
+    device:
+      udid: emulator-5554
+      name: Android Emulator
+
+  local-web:
+    browser:
+      headless: false
+      acceptInsecureCerts: false
+      pageLoadStrategy: normal
+      arguments:
+        - --incognito
+        - --window-size=1440,900
+    capabilities:
+      custom:flag: true

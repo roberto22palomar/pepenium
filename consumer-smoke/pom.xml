@@ -19,14 +19,9 @@
     <dependencies>
         <dependency>
             <groupId>io.github.roberto22palomar</groupId>
-            <artifactId>pepenium</artifactId>
-            <version>${pepenium.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.github.roberto22palomar</groupId>
             <artifactId>pepenium-toolkit</artifactId>
             <version>${pepenium.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

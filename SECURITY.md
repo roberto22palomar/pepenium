@@ -6,9 +6,11 @@ Pepenium is currently maintained on the latest released version and the default 
 
 | Version | Supported |
 | --- | --- |
-| `0.8.x` | Yes |
+| Latest `0.9.x` release | Yes |
 | `main` | Yes |
-| `< 0.8.0` | No |
+| `< 0.9.0` | No |
+
+Older `0.9.x` releases may receive guidance, but fixes are delivered in the latest patch release. Consumers should upgrade to the newest available `0.9.x` version before reporting an issue that may already be resolved.
 
 ## Reporting a Vulnerability
 
@@ -16,8 +18,8 @@ Please do not open a public GitHub issue for security-sensitive reports.
 
 Instead, report potential vulnerabilities privately through one of these channels:
 
-- GitHub Security Advisories for this repository, if enabled
-- Direct contact with the maintainer
+- [Open a private GitHub Security Advisory](https://github.com/roberto22palomar/pepenium/security/advisories/new)
+- If private advisories are unavailable, use a private contact method listed on the [maintainer's GitHub profile](https://github.com/roberto22palomar) and do not include sensitive details in a public issue
 
 When reporting, please include:
 

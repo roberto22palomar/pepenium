@@ -1,12 +1,20 @@
 package io.github.roberto22palomar.pepenium.core.execution;
 
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
+
 public class ExecutionProfileResolver {
 
     public ExecutionProfile resolve(TestTarget target, String defaultProfileId) {
         String profileId = readOverride();
         String overrideSource = profileId != null && !profileId.isBlank() ? overrideSource() : null;
         if (profileId == null || profileId.isBlank()) {
-            profileId = defaultProfileId != null ? defaultProfileId : target.getDefaultProfileId();
+            profileId = defaultProfileId;
+        }
+        if (profileId == null || profileId.isBlank()) {
+            profileId = PepeniumConfig.getDefaultProfile();
+        }
+        if (profileId == null || profileId.isBlank()) {
+            profileId = target.getDefaultProfileId();
         }
 
         if (profileId == null || profileId.isBlank()) {
@@ -51,6 +59,7 @@ public class ExecutionProfileResolver {
             );
         }
         ExecutionProfiles.validateCompatibility(profile, target);
+        PepeniumConfig.activateProfile(profile.getId());
         return profile;
     }
 

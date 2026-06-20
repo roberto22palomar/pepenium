@@ -4,6 +4,57 @@ This document lists the environment variables and system properties currently us
 
 It is intended to be the single reference point for configuring local runs, remote executions and observability features.
 
+## Recommended Configuration: `pepenium.yml`
+
+New projects can keep ordinary profile settings in one optional `pepenium.yml` file at the project root. Copy [the complete example](env/pepenium.yml.example) as a starting point.
+
+```yaml
+defaultProfile: local-android
+
+baseUrl: https://example.com
+
+reporting:
+  directory: target/pepenium-reports
+  screenshotPath: target/pepenium-screenshots
+
+logging:
+  detailed: false
+  stepLimit: 20
+
+timeouts:
+  action: 750ms
+  longAction: 30s
+  assertion: 10s
+
+profiles:
+  local-android:
+    serverUrl: http://127.0.0.1:4723
+    device:
+      udid: emulator-5554
+      name: Android Emulator
+    app:
+      path: ${APP_BINARY}
+    capabilities:
+      noReset: false
+```
+
+The file is optional. Existing projects using environment variables continue to work unchanged.
+
+Resolution order is:
+
+1. Java system property
+2. Environment variable
+3. Selected profile in `pepenium.yml`
+4. Built-in default
+
+Use `${ENV_VAR}` placeholders for secrets or machine-specific values. Pepenium resolves placeholders only when the selected profile requests that value, and reports the exact YAML path when a referenced variable is missing.
+
+Set `-Dpepenium.config=path/to/config.yml` or `PEPENIUM_CONFIG=path/to/config.yml` to use a different file. An explicitly configured missing file fails early; an absent default `pepenium.yml` is simply ignored.
+
+The YAML surface covers profile selection, local Android connection/app settings, common local Web browser settings, generic capability maps, base URLs, reporting paths, screenshot paths, logging and toolkit timeouts. Existing environment variables remain compatible and continue to override YAML values.
+
+Profile selection still works exactly as before through `-Dpepenium.profile=...` or `PEPENIUM_PROFILE`. BrowserStack keeps using its existing provider-specific YAML files for now; `pepenium.yml` does not replace them.
+
 Ready-to-copy examples for common local setups live in [docs/env](env/README.md):
 
 - [`.env.web.example`](env/.env.web.example)
@@ -29,7 +80,8 @@ The precedence order is:
 
 1. Java system property
 2. Environment variable
-3. Built-in default
+3. Selected `pepenium.yml` profile
+4. Built-in default
 
 Practical examples:
 
@@ -40,11 +92,12 @@ Practical examples:
 
 ## Resolution Order
 
-When a setting supports both a Java system property and an environment variable, Pepenium resolves them in this order:
+When a setting supports YAML, a Java system property and an environment variable, Pepenium resolves them in this order:
 
 1. Java system property
 2. Environment variable
-3. Built-in default, if one exists
+3. Selected `pepenium.yml` profile
+4. Built-in default, if one exists
 
 ## Execution Selection
 
