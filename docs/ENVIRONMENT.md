@@ -26,6 +26,15 @@ For Maven projects, declare the versioned plugin once:
 </plugin>
 ```
 
+For a new project, generate a schema-linked starter file:
+
+```text
+mvn pepenium:init-config -Dpepenium.init.template=local-web
+```
+
+Supported templates are `local-web`, `local-android` and `browserstack-web`. Generation refuses to overwrite an
+existing file by default.
+
 Then validate the selected profile directly:
 
 ```text

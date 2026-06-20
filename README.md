@@ -97,6 +97,15 @@ Typical consumer dependency:
 </dependency>
 ```
 
+With `pepenium-maven-plugin` declared under `<build><plugins>`, create a safe starter configuration in one command:
+
+```text
+mvn pepenium:init-config -Dpepenium.init.template=local-web
+```
+
+The goal also supports `local-android` and `browserstack-web`, and never replaces an existing `pepenium.yml` unless
+`-Dpepenium.init.force=true` is supplied explicitly.
+
 Why `pepenium-toolkit` is usually the right entry point:
 
 - it is the artifact most external users actually want to build against
