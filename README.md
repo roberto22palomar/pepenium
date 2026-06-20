@@ -62,6 +62,7 @@ Ready-to-copy environment examples live in [docs/env](docs/env/README.md):
 See [START-HERE.md](docs/START-HERE.md) for the fastest first-run path, [QUICK-START.md](docs/QUICK-START.md) for the fuller walkthrough and [CHANGELOG.md](CHANGELOG.md) for release history.
 Use [ENVIRONMENT.md](docs/ENVIRONMENT.md) as the central reference for environment variables, precedence rules, runtime properties and capability override patterns.
 Use [API.md](docs/API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
+Use [COMPATIBILITY.md](docs/COMPATIBILITY.md) for the Java, operating-system, configuration and API stability contract.
 Use [ADAPTING.md](docs/ADAPTING.md) to add consumer-owned execution profiles for private grids, device labs or additional providers without forking Pepenium.
 Use [HISTORY.md](docs/HISTORY.md) for the project evolution and current open-source direction.
 Use [REPOSITORY.md](docs/REPOSITORY.md) for the repository map and placement rules.

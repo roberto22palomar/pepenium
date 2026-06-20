@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -80,7 +81,30 @@ public final class PepeniumConfig {
     }
 
     public static void validateProfile(String profileId) {
-        Holder.CONFIG.validateProfile(profileId);
+        Holder.CONFIG.validateResolvedProfile(profileId);
+    }
+
+    /**
+     * Validates a configuration file without creating a driver session.
+     *
+     * @param path configuration file to validate
+     * @param profileId profile whose placeholders and provider rules must be resolved; when blank, the configured
+     *                  default profile is used
+     */
+    public static void validate(Path path, String profileId) {
+        Objects.requireNonNull(path, "Configuration path must not be null");
+        ResolvedConfig config = load(path, true, System::getenv);
+        String selectedProfile = isBlank(profileId) ? config.defaultProfile() : profileId.trim();
+        config.validateResolvedProfile(selectedProfile);
+    }
+
+    /**
+     * Validates a configuration file and its default profile without creating a driver session.
+     *
+     * @param path configuration file to validate
+     */
+    public static void validate(Path path) {
+        validate(path, null);
     }
 
     static ResolvedConfig load(Path path, boolean explicit, Function<String, String> environment) {
@@ -274,6 +298,14 @@ public final class PepeniumConfig {
                         "profiles." + profileId + ".capabilities"
                 );
             }
+        }
+
+        void validateResolvedProfile(String profileId) {
+            validateProfile(profileId);
+            for (String key : KEY_PATHS.keySet()) {
+                value(profileId, key);
+            }
+            capabilities(profileId);
         }
 
         String defaultProfile() {

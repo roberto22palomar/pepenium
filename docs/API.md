@@ -22,6 +22,16 @@ That means some areas may still evolve quickly, but not every package should be 
 
 These are the main classes Pepenium users are expected to import and rely on directly.
 
+The versioned compatibility and runtime matrix is defined in [COMPATIBILITY.md](COMPATIBILITY.md).
+
+### Configuration preflight API
+
+- `PepeniumConfig.validate(Path)` validates structure and the configured default profile.
+- `PepeniumConfig.validate(Path, String)` validates a selected local, AWS or BrowserStack profile.
+- `PepeniumConfigCli` exposes the same validation as a command-line preflight without creating a driver.
+
+These APIs are part of the supported `1.0.0` surface.
+
 ### Core test author API
 
 - [BaseTest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)

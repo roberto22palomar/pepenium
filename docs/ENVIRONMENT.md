@@ -4,6 +4,27 @@ This document lists the environment variables and system properties currently us
 
 It is intended to be the single reference point for configuring local runs, remote executions and observability features.
 
+The canonical editor schema is [schema/pepenium.schema.json](schema/pepenium.schema.json). The distributed example
+contains a YAML language-server directive, so compatible editors provide completion and report unknown keys before a
+test starts.
+
+## Validate before running
+
+Configuration can be validated without opening Selenium/Appium or contacting a provider:
+
+```java
+PepeniumConfig.validate(Path.of("pepenium.yml"), "local-web");
+```
+
+The command-line entry point uses exit code `0` for valid configuration and `2` for invalid arguments or configuration:
+
+```text
+mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java -Dexec.classpathScope=test -Dexec.mainClass=io.github.roberto22palomar.pepenium.core.config.PepeniumConfigCli -Dexec.args="--config pepenium.yml --profile local-web"
+```
+
+The preflight resolves placeholders for the selected profile and enforces provider ownership rules. It never creates a
+driver session.
+
 ## Recommended Configuration: `pepenium.yml`
 
 New projects can keep ordinary profile settings in one optional `pepenium.yml` file at the project root. Copy [the complete example](env/pepenium.yml.example) as a starting point.

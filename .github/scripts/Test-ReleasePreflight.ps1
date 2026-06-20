@@ -22,6 +22,19 @@ if ($projectVersion -ne $normalizedVersion) {
     throw "pom.xml version '$projectVersion' does not match requested release version '$normalizedVersion'."
 }
 
+$modulePoms = @("pepenium-core/pom.xml", "pepenium-toolkit/pom.xml", "pepenium-examples/pom.xml")
+foreach ($modulePom in $modulePoms) {
+    [xml]$module = Get-Content -LiteralPath $modulePom
+    $parentVersion = $module.project.parent.version
+    if ($parentVersion -ne $normalizedVersion) {
+        throw "$modulePom parent version '$parentVersion' does not match release version '$normalizedVersion'."
+    }
+}
+
+if ($normalizedVersion -match '-') {
+    throw "Release version '$normalizedVersion' must not be a snapshot or prerelease version."
+}
+
 $changelogPattern = '^## \[' + [regex]::Escape($normalizedVersion) + '\]( - \d{4}-\d{2}-\d{2})?$'
 $changelogLines = Get-Content -LiteralPath "CHANGELOG.md"
 
