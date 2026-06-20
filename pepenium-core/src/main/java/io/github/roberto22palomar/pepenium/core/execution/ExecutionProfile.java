@@ -1,8 +1,14 @@
 package io.github.roberto22palomar.pepenium.core.execution;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.util.Objects;
 import java.util.function.Supplier;
 
+@SuppressFBWarnings(
+        value = "CT_CONSTRUCTOR_THROW",
+        justification = "Constructor validation is intentional; the profile owns no resources and defines no finalizer."
+)
 public class ExecutionProfile {
     private final String id;
     private final TestTarget target;

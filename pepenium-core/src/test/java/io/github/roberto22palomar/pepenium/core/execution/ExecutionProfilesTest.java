@@ -50,6 +50,8 @@ class ExecutionProfilesTest {
 
         assertEquals(TestTarget.WEB_DESKTOP, profile.getTarget());
         assertEquals("Profile loaded from a test ServiceLoader provider", profile.getDescription());
+        assertTrue(ExecutionProfiles.builtInList().stream()
+                .noneMatch(builtIn -> builtIn.getId().equals(profile.getId())));
     }
 
     @Test

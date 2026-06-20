@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 public final class ExecutionProfiles {
 
     private static final String PROFILES_RESOURCE = "execution-profiles.yml";
+    private static final Map<String, ExecutionProfile> BUILT_IN_PROFILES =
+            Collections.unmodifiableMap(loadBuiltInProfiles());
     private static final Map<String, ExecutionProfile> PROFILES = loadProfiles();
 
     private ExecutionProfiles() {
@@ -42,6 +44,10 @@ public final class ExecutionProfiles {
 
     public static List<ExecutionProfile> list() {
         return Collections.unmodifiableList(new ArrayList<>(PROFILES.values()));
+    }
+
+    public static List<ExecutionProfile> builtInList() {
+        return Collections.unmodifiableList(new ArrayList<>(BUILT_IN_PROFILES.values()));
     }
 
     public static String availableProfileIds() {
@@ -146,7 +152,7 @@ public final class ExecutionProfiles {
     }
 
     private static Map<String, ExecutionProfile> loadProfiles() {
-        Map<String, ExecutionProfile> profiles = new LinkedHashMap<>(loadBuiltInProfiles());
+        Map<String, ExecutionProfile> profiles = new LinkedHashMap<>(BUILT_IN_PROFILES);
         try {
             mergeProviderProfiles(profiles, ServiceLoader.load(ExecutionProfileProvider.class));
         } catch (ServiceConfigurationError error) {
