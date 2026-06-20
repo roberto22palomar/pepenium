@@ -59,6 +59,7 @@ Los ficheros de entorno listos para copiar estan en [docs/env](docs/env/README.m
 
 Consulta [START-HERE.es.md](docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
 Usa [ENVIRONMENT.md](docs/ENVIRONMENT.md) como referencia central de variables de entorno, reglas de precedencia, properties de runtime y patrones de override de capabilities.
+Usa [ADAPTING.es.md](docs/es/ADAPTING.es.md) para anadir perfiles propios para grids privados, device labs o proveedores adicionales sin hacer fork de Pepenium.
 Usa [HISTORY.es.md](docs/es/HISTORY.es.md) para entender la evolucion del proyecto y su direccion open source actual.
 Usa [REPOSITORY.md](docs/REPOSITORY.md) como mapa del repositorio y reglas para colocar cambios nuevos.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
@@ -288,6 +289,8 @@ El catalogo de perfiles incluido se define en:
 - `pepenium-core/src/main/resources/execution-profiles.yml`
 
 Los ids de perfil forman parte del contrato soportado de lanzamiento. Los valores internos de `configKey` que hay detras de ese catalogo siguen siendo detalles internos del framework y pueden evolucionar antes de `1.0.0`.
+
+Los proyectos consumidores pueden aportar perfiles adicionales mediante el mecanismo `ServiceLoader` de Java. Consulta [ADAPTING.es.md](docs/es/ADAPTING.es.md) para ver el provider, descriptor de servicio y `DriverRequest` personalizado completos.
 
 ## Tests de Ejemplo
 

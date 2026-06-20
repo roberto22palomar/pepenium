@@ -4,11 +4,14 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -143,6 +146,16 @@ public final class ExecutionProfiles {
     }
 
     private static Map<String, ExecutionProfile> loadProfiles() {
+        Map<String, ExecutionProfile> profiles = new LinkedHashMap<>(loadBuiltInProfiles());
+        try {
+            mergeProviderProfiles(profiles, ServiceLoader.load(ExecutionProfileProvider.class));
+        } catch (ServiceConfigurationError error) {
+            throw new IllegalStateException("Failed to load Pepenium execution profile providers", error);
+        }
+        return Collections.unmodifiableMap(profiles);
+    }
+
+    private static Map<String, ExecutionProfile> loadBuiltInProfiles() {
         try (InputStream input = ExecutionProfiles.class.getClassLoader().getResourceAsStream(PROFILES_RESOURCE)) {
             if (input == null) {
                 throw new IllegalStateException("Missing required resource: " + PROFILES_RESOURCE);
@@ -247,6 +260,43 @@ public final class ExecutionProfiles {
 
         private int distance() {
             return distance;
+        }
+    }
+
+    static void mergeProviderProfiles(Map<String, ExecutionProfile> profiles,
+                                      Iterable<ExecutionProfileProvider> providers) {
+        for (ExecutionProfileProvider provider : providers) {
+            if (provider == null) {
+                throw new IllegalStateException("Found a null Pepenium execution profile provider");
+            }
+            String providerName = provider.getClass().getName();
+            Collection<ExecutionProfile> providedProfiles;
+            try {
+                providedProfiles = provider.profiles();
+            } catch (RuntimeException error) {
+                throw new IllegalStateException(
+                        "Execution profile provider '" + providerName + "' failed while creating profiles",
+                        error
+                );
+            }
+            if (providedProfiles == null) {
+                throw new IllegalStateException(
+                        "Execution profile provider '" + providerName + "' returned a null profile collection"
+                );
+            }
+            for (ExecutionProfile profile : providedProfiles) {
+                if (profile == null) {
+                    throw new IllegalStateException(
+                            "Execution profile provider '" + providerName + "' returned a null profile"
+                    );
+                }
+                if (profiles.putIfAbsent(profile.getId(), profile) != null) {
+                    throw new IllegalStateException(
+                            "Duplicate execution profile id '" + profile.getId()
+                                    + "' from provider '" + providerName + "'"
+                    );
+                }
+            }
         }
     }
 

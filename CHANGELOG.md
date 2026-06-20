@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added `ExecutionProfileProvider` discovery through Java `ServiceLoader`, allowing consumers to contribute private-grid, device-lab or provider-specific execution profiles without modifying or forking Pepenium.
+- Added bilingual adaptation guides with a complete custom `DriverConfig`, service descriptor and profile-selection flow.
 - Added shared public toolkit contracts for portable authoring: `WebActions`, `MobileActions`, `WebAssertions`, `MobileAssertions` and `SwipeDirection`.
 - Added `PepeniumBy` mobile locator helpers for Android/iOS-compatible native page objects, including accessibility-id and text-based convenience locators.
 - Added explicit toolkit timeout configuration through Java system properties and environment variables, with support for plain seconds, `ms`, `s`, `m` and ISO-8601 duration values.
@@ -30,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Made BrowserStack YAML path resolution trim accidental whitespace while rejecting null or blank paths with clearer messages.
 
 ### Fixed
+- Added early validation for consumer-provided execution profile metadata, duplicate IDs, provider failures and null lazy configs.
 - Made Android and iOS mobile hidden-wait behavior consistent: `waitUntilHidden(...)` now fails when an element remains visible instead of silently continuing.
 - Avoided unnecessary iOS hidden-wait delays when an element is already hidden or absent.
 - Rejected null action text and null expected assertion text before touching drivers or waits, producing clearer failures.

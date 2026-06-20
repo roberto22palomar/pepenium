@@ -133,6 +133,20 @@ The built-in execution profile ids defined in `execution-profiles.yml` are now t
 
 The ids above are contract. The internal wiring behind them is not. The `configKey` values in `execution-profiles.yml` and the concrete `DriverConfig` implementations remain internal framework details.
 
+### Consumer-owned execution profiles are a supported extension point
+
+Consumers may add profiles through [ExecutionProfileProvider](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfileProvider.java) and Java `ServiceLoader` registration.
+
+The supported extension contract includes:
+
+- [ExecutionProfile](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfile.java) for profile metadata and lazy config creation
+- [DriverConfig](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverConfig.java) for consumer-owned request construction
+- [DriverRequest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverRequest.java) and [DriverType](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverType.java) as the neutral driver/session request model
+- unique profile IDs across built-in and consumer providers
+- lazy provider configuration, with no driver creation during profile discovery
+
+See [ADAPTING.md](ADAPTING.md) for a complete external-provider example.
+
 ### `Actions*` and `Assertions*` stay the stable authoring surface
 
 The documented `WebActions`, `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `SwipeDirection`, `WebAssertions`, `MobileAssertions`, `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS` and `PepeniumBy` types are now the intended stable authoring surface for `1.0.0`.
@@ -190,12 +204,8 @@ The `pepenium-examples` module is repository-only showcase material built on top
 
 Its tests, flows and page objects are useful learning material, but they are not published consumer artifacts and they are not protected by the public API compatibility contract.
 
-### Execution and configuration types
+### Other execution and configuration types
 
-- [DriverConfig](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverConfig.java)
-- [DriverRequest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverRequest.java)
-- [DriverType](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverType.java)
-- [ExecutionProfile](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfile.java)
 - [ExecutionProfileResolver](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfileResolver.java)
 - [ExecutionProfiles](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfiles.java)
 - [DriverSession](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/DriverSession.java)
@@ -257,7 +267,7 @@ Pepenium now runs an automatic `japicmp` comparison during `verify` for the rele
 
 That build-time compatibility gate is intentionally scoped to the documented public API surface:
 
-- `pepenium-core`: `PepeniumTest`, `PepeniumInject`, `PepeniumPage`, `PepeniumSteps`, `BaseTest` and `TestTarget`
+- `pepenium-core`: authoring types plus `ExecutionProfileProvider`, `ExecutionProfile`, `DriverConfig`, `DriverRequest` and `DriverType` for consumer extension
 - `pepenium-toolkit`: the documented `Actions*`, `WebActions`, `MobileActions`, `SwipeDirection`, `WebAssertions`, `MobileAssertions` and `Assertions*` authoring types
 
 This keeps the compatibility check focused on what normal external users are expected to import directly, while semantic contract details such as lifecycle defaults, target defaults and built-in profile ids are protected by dedicated tests and docs.

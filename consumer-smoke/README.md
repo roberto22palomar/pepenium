@@ -42,6 +42,7 @@ The smoke sources intentionally model the expected user-facing workflow:
 - compiling against shared `WebActions`, `MobileActions`, `WebAssertions` and `MobileAssertions` contracts
 - compiling against `PepeniumBy` mobile locators for Android/iOS-compatible page objects
 - reaching core runtime APIs transitively through the single `pepenium-toolkit` dependency
+- contributing a consumer-owned `team-grid-web` profile through `ExecutionProfileProvider` and `META-INF/services`
 - using `Assertions*`
 - enriching steps with `step("...")` or `PepeniumSteps`
 

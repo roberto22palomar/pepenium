@@ -45,6 +45,7 @@ Generated local output should stay out of source control. The root `.gitignore` 
 - Put provider/session/runtime wiring in `pepenium-core`.
 - Put runnable examples and templates in `pepenium-examples`.
 - Put external-consumer compatibility checks in `consumer-smoke`.
+- Put consumer adaptation guidance in `docs/ADAPTING.md` and prove extension APIs from `consumer-smoke`.
 - Put environment templates in `docs/env`.
 - Put build-tool configuration in `config`.
 - Put repeatable local helper commands in `scripts`.
