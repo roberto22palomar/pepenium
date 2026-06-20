@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Added shared public toolkit contracts for portable authoring: `WebActions`, `MobileActions`, `WebAssertions`, `MobileAssertions` and `SwipeDirection`.
+- Added `PepeniumBy` mobile locator helpers for Android/iOS-compatible native page objects, including accessibility-id and text-based convenience locators.
+- Added explicit toolkit timeout configuration through Java system properties and environment variables, with support for plain seconds, `ms`, `s`, `m` and ISO-8601 duration values.
+- Added Appium capability override support through Java system properties, matching the existing environment-variable override model while keeping system properties higher priority.
+- Added helper scripts under `scripts/` to run the standalone consumer smoke flow consistently from PowerShell or Bash.
+- Added `docs/REPOSITORY.md` and grouped repository-level configuration under `config/` so contributors have clearer placement rules.
+- Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
+
+### Changed
+- Moved copyable `.env.*.example` files from the repository root into `docs/env/` and updated README, onboarding and environment docs to point at the grouped location.
+- Moved `checkstyle.xml` into `config/checkstyle/checkstyle.xml` and updated Maven configuration accordingly.
+- Updated CI and release-preflight workflows to use the new consumer-smoke helper script instead of duplicating long Maven command lines.
+- Expanded the standalone `consumer-smoke` project to validate `@PepeniumPage`, Selenium `@FindBy` page objects and the shared Web/Mobile contracts from outside the reactor.
+- Improved the examples documentation so the live web showcase and native mobile templates explain what they prove.
+- Made direct execution-profile lookups tolerant of accidental surrounding whitespace.
+- Made BrowserStack YAML path resolution trim accidental whitespace while rejecting null or blank paths with clearer messages.
+
+### Fixed
+- Made Android and iOS mobile hidden-wait behavior consistent: `waitUntilHidden(...)` now fails when an element remains visible instead of silently continuing.
+- Avoided unnecessary iOS hidden-wait delays when an element is already hidden or absent.
+- Rejected null action text and null expected assertion text before touching drivers or waits, producing clearer failures.
+- Rejected stale element references in present assertions so detached elements are not treated as present.
+- Validated action-helper arguments earlier, especially swipe/scroll inputs, before driver interaction.
+- Hardened screenshot/report path handling by trimming configured output paths and preserving clearer report links.
+- Improved unsupported injection diagnostics so interface/abstract injection mistakes explain the supported direct injection targets.
+- Improved incompatible profile diagnostics with closer compatible-profile suggestions.
+
 ## [0.9.7] - 2026-04-07
 
 ### Added

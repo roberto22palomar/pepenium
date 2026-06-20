@@ -140,5 +140,6 @@ The console also prints direct `file:///...` links to the per-test report and th
 - Use [README.md](../README.md) for the project overview.
 - Use [QUICK-START.md](QUICK-START.md) for the fuller walkthrough.
 - Use [ENVIRONMENT.md](ENVIRONMENT.md) for every supported variable.
+- Use [HISTORY.md](HISTORY.md) for the project evolution and current direction.
 - Use [API.md](API.md) to understand what is public vs internal.
 - Use [REPORTING.md](REPORTING.md) for the reporting-specific details.

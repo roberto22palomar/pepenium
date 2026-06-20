@@ -59,6 +59,7 @@ Los ficheros de entorno listos para copiar estan en [docs/env](docs/env/README.m
 
 Consulta [START-HERE.es.md](docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
 Usa [ENVIRONMENT.md](docs/ENVIRONMENT.md) como referencia central de variables de entorno, reglas de precedencia, properties de runtime y patrones de override de capabilities.
+Usa [HISTORY.es.md](docs/es/HISTORY.es.md) para entender la evolucion del proyecto y su direccion open source actual.
 Usa [REPOSITORY.md](docs/REPOSITORY.md) como mapa del repositorio y reglas para colocar cambios nuevos.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 Usa [consumer-smoke/README.md](consumer-smoke/README.md) si quieres validar el consumo de la API publica desde un proyecto Maven separado.

@@ -140,5 +140,6 @@ La consola tambien imprime enlaces directos `file:///...` al reporte individual 
 - Usa [README.es.md](../../README.es.md) para la vision general del proyecto.
 - Usa [QUICK-START.es.md](QUICK-START.es.md) para la guia mas completa.
 - Usa [ENVIRONMENT.md](../ENVIRONMENT.md) para todas las variables soportadas.
+- Usa [HISTORY.es.md](HISTORY.es.md) para entender la evolucion y direccion actual del proyecto.
 - Usa [API.md](../API.md) para entender que es publico y que es interno.
 - Usa [REPORTING.es.md](REPORTING.es.md) para los detalles especificos de reporting.
