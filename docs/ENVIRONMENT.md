@@ -26,6 +26,12 @@ timeouts:
   longAction: 30s
   assertion: 10s
 
+capabilities:
+  acceptInsecureCerts: false
+  vendor:options:
+    project: Pepenium
+    tags: [smoke, local]
+
 profiles:
   local-android:
     serverUrl: http://127.0.0.1:4723
@@ -54,6 +60,30 @@ Set `-Dpepenium.config=path/to/config.yml` or `PEPENIUM_CONFIG=path/to/config.ym
 The YAML surface covers profile selection, local Android connection/app settings, common local Web browser settings, generic capability maps, base URLs, reporting paths, screenshot paths, logging and toolkit timeouts. Existing environment variables remain compatible and continue to override YAML values.
 
 Profile selection still works exactly as before through `-Dpepenium.profile=...` or `PEPENIUM_PROFILE`. BrowserStack keeps using its existing provider-specific YAML files for now; `pepenium.yml` does not replace them.
+
+### YAML schema and structured capabilities
+
+Pepenium validates known configuration sections when the file is loaded. Unknown keys, malformed sections and non-object `capabilities` fail early with the exact YAML path instead of being silently ignored.
+
+Capability values preserve native YAML types, including booleans, numbers, lists and nested objects. Global capabilities are merged with the selected profile, and profile values win recursively:
+
+```yaml
+capabilities:
+  vendor:options:
+    project: Pepenium
+    tags: [regression]
+
+profiles:
+  local-android:
+    capabilities:
+      noReset: false
+      settings:
+        ignoreUnimportantViews: true
+      vendor:options:
+        build: ${BUILD_NUMBER}
+```
+
+For Appium, unprefixed top-level capability names receive the `appium:` prefix; W3C names and explicitly namespaced keys remain unchanged. Existing `PEPENIUM_WEB_CAPABILITIES` and `PEPENIUM_APPIUM_CAPABILITIES` strings remain supported and override YAML, but structured YAML is recommended for new projects.
 
 Ready-to-copy examples for common local setups live in [docs/env](env/README.md):
 

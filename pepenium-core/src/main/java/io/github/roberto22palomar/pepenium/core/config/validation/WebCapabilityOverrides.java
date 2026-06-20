@@ -92,9 +92,19 @@ public final class WebCapabilityOverrides {
 
     private static void applyGenericCapabilities(Function<String, String> env, AbstractDriverOptions<?> options) {
         String value = envValue(env, "PEPENIUM_WEB_CAPABILITIES");
-        if (value == null) {
+        if (value != null) {
+            applyLegacyCapabilities(value, options);
             return;
         }
+        applyStructuredCapabilities(PepeniumConfig.getCapabilities(), options);
+    }
+
+    static void applyStructuredCapabilities(java.util.Map<String, Object> capabilities,
+                                            AbstractDriverOptions<?> options) {
+        capabilities.forEach(options::setCapability);
+    }
+
+    private static void applyLegacyCapabilities(String value, AbstractDriverOptions<?> options) {
         for (String rawEntry : value.split(";")) {
             String entry = rawEntry == null ? null : rawEntry.trim();
             if (entry == null || entry.isBlank()) {

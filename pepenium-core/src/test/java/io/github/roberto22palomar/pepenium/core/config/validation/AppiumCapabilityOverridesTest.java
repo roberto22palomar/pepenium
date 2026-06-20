@@ -5,6 +5,7 @@ import io.appium.java_client.ios.options.XCUITestOptions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -78,5 +79,23 @@ class AppiumCapabilityOverridesTest {
                 "PEPENIUM_APPIUM_CAPABILITIES entries must follow key=value format and be separated with ';'.",
                 error.getMessage()
         );
+    }
+
+    @Test
+    void appliesNestedStructuredCapabilitiesAndNormalizesAppiumKeys() {
+        UiAutomator2Options options = new UiAutomator2Options();
+        Map<String, Object> settings = Map.of(
+                "ignoreUnimportantViews", true,
+                "mjpegScalingFactor", 25,
+                "tags", List.of("android", "smoke")
+        );
+
+        AppiumCapabilityOverrides.applyStructuredCapabilities(
+                Map.of("settings", settings, "vendor:options", Map.of("build", "main")),
+                options
+        );
+
+        assertEquals(settings, options.getCapability("appium:settings"));
+        assertEquals(Map.of("build", "main"), options.getCapability("vendor:options"));
     }
 }

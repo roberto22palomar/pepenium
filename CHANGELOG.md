@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added native structured YAML capabilities with nested maps/lists, deep global/profile merging, placeholder resolution and strict schema validation with actionable paths.
 - Added optional root `pepenium.yml` configuration with per-profile sections, environment placeholder expansion, structured browser/Appium capabilities and compatible property/environment overrides.
 - Added `ExecutionProfileProvider` discovery through Java `ServiceLoader`, allowing consumers to contribute private-grid, device-lab or provider-specific execution profiles without modifying or forking Pepenium.
 - Added bilingual adaptation guides with a complete custom `DriverConfig`, service descriptor and profile-selection flow.

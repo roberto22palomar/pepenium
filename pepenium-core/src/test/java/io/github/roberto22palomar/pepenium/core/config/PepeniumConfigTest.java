@@ -6,6 +6,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,8 +44,10 @@ class PepeniumConfigTest {
         assertEquals("true", resolved.value("local-web", "PEPENIUM_WEB_HEADLESS"));
         assertEquals("--incognito;--window-size=1280,720",
                 resolved.value("local-web", "PEPENIUM_WEB_ARGS"));
-        assertEquals("custom:flag=true;custom:retries=3",
-                resolved.value("local-web", "PEPENIUM_WEB_CAPABILITIES"));
+        assertEquals(
+                Map.of("custom:flag", true, "custom:retries", 3),
+                resolved.capabilities("local-web")
+        );
     }
 
     @Test
@@ -87,6 +90,67 @@ class PepeniumConfigTest {
         );
 
         assertTrue(error.getMessage().contains("Configuration file does not exist"));
+    }
+
+    @Test
+    void preservesAndDeepMergesStructuredCapabilities() throws Exception {
+        Path config = writeConfig("defaultProfile: local-web\n"
+                + "capabilities:\n"
+                + "  vendor:options:\n"
+                + "    project: Pepenium\n"
+                + "    retries: 2\n"
+                + "  acceptInsecureCerts: false\n"
+                + "profiles:\n"
+                + "  local-web:\n"
+                + "    capabilities:\n"
+                + "      vendor:options:\n"
+                + "        retries: 4\n"
+                + "        tags: [smoke, '${RUN_TAG}']\n"
+                + "      acceptInsecureCerts: true\n");
+
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of("RUN_TAG", "chrome")::get
+        );
+
+        Map<String, Object> capabilities = resolved.capabilities("local-web");
+        assertEquals(true, capabilities.get("acceptInsecureCerts"));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> vendorOptions = (Map<String, Object>) capabilities.get("vendor:options");
+        assertEquals("Pepenium", vendorOptions.get("project"));
+        assertEquals(4, vendorOptions.get("retries"));
+        assertEquals(List.of("smoke", "chrome"), vendorOptions.get("tags"));
+    }
+
+    @Test
+    void rejectsUnknownKeysWithTheirYamlPath() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    browser:\n"
+                + "      typoHeadles: true\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("profiles.local-web.browser.typoHeadles"));
+    }
+
+    @Test
+    void rejectsCapabilitiesThatAreNotObjects() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    capabilities: [invalid]\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("profiles.local-web.capabilities"));
+        assertTrue(error.getMessage().contains("must be a YAML object"));
     }
 
     private Path writeConfig(String content) throws Exception {

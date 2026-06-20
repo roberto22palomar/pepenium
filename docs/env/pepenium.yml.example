@@ -15,6 +15,16 @@ timeouts:
   longAction: 30s
   assertion: 10s
 
+# Global capabilities apply to every selected profile. Profile capabilities
+# override matching values and merge nested vendor objects recursively.
+capabilities:
+  acceptInsecureCerts: false
+  vendor:options:
+    project: Pepenium
+    tags:
+      - smoke
+      - local
+
 profiles:
   local-android:
     serverUrl: http://127.0.0.1:4723
@@ -26,6 +36,9 @@ profiles:
     capabilities:
       noReset: false
       autoGrantPermissions: true
+      settings:
+        ignoreUnimportantViews: true
+        mjpegScalingFactor: 25
 
   local-android-web:
     serverUrl: http://127.0.0.1:4723
@@ -42,4 +55,5 @@ profiles:
         - --incognito
         - --window-size=1440,900
     capabilities:
-      custom:flag: true
+      vendor:options:
+        browser: chrome
