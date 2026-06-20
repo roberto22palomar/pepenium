@@ -89,6 +89,7 @@ Typical consumer dependency:
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-toolkit</artifactId>
     <version>0.9.7</version>
+    <scope>test</scope>
 </dependency>
 ```
 
@@ -97,6 +98,7 @@ Why `pepenium-toolkit` is usually the right entry point:
 - it is the artifact most external users actually want to build against
 - it gives you `ActionsWeb`, `WebActions`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS`, `MobileAssertions` and `PepeniumBy`
 - it pulls in the core runtime transitively, so you still get `BaseTest` and `TestTarget` without wiring both layers manually
+- `test` scope keeps Selenium, Appium and Pepenium out of your production runtime classpath
 
 If you want a concrete consumer example, see [consumer-smoke/README.md](consumer-smoke/README.md).
 
