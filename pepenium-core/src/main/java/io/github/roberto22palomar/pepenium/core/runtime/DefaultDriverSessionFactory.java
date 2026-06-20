@@ -35,36 +35,45 @@ public class DefaultDriverSessionFactory implements DriverSessionFactory {
             log.info("Driver server: {}", sanitizeServerUrl(request.getServerUrl()));
         }
         log.info("Effective capabilities: {}", CapabilitiesSummary.describe(request.getCapabilities()));
-        WebDriver driver;
+        try {
+            WebDriver driver;
+            switch (request.getDriverType()) {
+                case ANDROID_APPIUM:
+                    driver = new AndroidDriver(requireServerUrl(request), requireCapabilities(request));
+                    break;
+                case IOS_APPIUM:
+                    driver = new IOSDriver(requireServerUrl(request), requireCapabilities(request));
+                    break;
+                case REMOTE_WEB:
+                    driver = new RemoteWebDriver(requireServerUrl(request), requireCapabilities(request));
+                    break;
+                case LOCAL_CHROME:
+                    driver = new ChromeDriver(resolveChromeOptions(request.getCapabilities()));
+                    break;
+                case LOCAL_FIREFOX:
+                    driver = new FirefoxDriver(resolveFirefoxOptions(request.getCapabilities()));
+                    break;
+                case LOCAL_EDGE:
+                    driver = new EdgeDriver(resolveEdgeOptions(request.getCapabilities()));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported driver type: " + request.getDriverType());
+            }
 
-        switch (request.getDriverType()) {
-            case ANDROID_APPIUM:
-                driver = new AndroidDriver(requireServerUrl(request), requireCapabilities(request));
-                break;
-            case IOS_APPIUM:
-                driver = new IOSDriver(requireServerUrl(request), requireCapabilities(request));
-                break;
-            case REMOTE_WEB:
-                driver = new RemoteWebDriver(requireServerUrl(request), requireCapabilities(request));
-                break;
-            case LOCAL_CHROME:
-                driver = new ChromeDriver(resolveChromeOptions(request.getCapabilities()));
-                break;
-            case LOCAL_FIREFOX:
-                driver = new FirefoxDriver(resolveFirefoxOptions(request.getCapabilities()));
-                break;
-            case LOCAL_EDGE:
-                driver = new EdgeDriver(resolveEdgeOptions(request.getCapabilities()));
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported driver type: " + request.getDriverType());
+            String sessionId = String.valueOf(((RemoteWebDriver) driver).getSessionId());
+            LoggingContext.setSessionId(sessionId);
+            log.info("Driver session created successfully");
+            return new DriverSession(driver, request);
+        } catch (Exception error) {
+            if (request.getOwnedService() != null) {
+                try {
+                    request.getOwnedService().stop();
+                } catch (RuntimeException stopError) {
+                    error.addSuppressed(stopError);
+                }
+            }
+            throw error;
         }
-
-        String sessionId = String.valueOf(((RemoteWebDriver) driver).getSessionId());
-        LoggingContext.setSessionId(sessionId);
-        log.info("Driver session created successfully");
-
-        return new DriverSession(driver, request);
     }
 
     private String sanitizeServerUrl(URL url) {

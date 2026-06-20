@@ -4,14 +4,19 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +27,14 @@ public final class PepeniumConfig {
     private static final Pattern PLACEHOLDER = Pattern.compile("\\$\\{([A-Za-z_][A-Za-z0-9_]*)}");
     private static final ThreadLocal<String> ACTIVE_PROFILE = new ThreadLocal<>();
     private static final Map<String, String> KEY_PATHS = createKeyPaths();
+    private static final Set<String> ROOT_KEYS = Set.of(
+            "schemaVersion", "defaultProfile", "baseUrl", "credentials", "reporting", "logging", "timeouts",
+            "capabilities", "profiles"
+    );
+    private static final Set<String> PROFILE_KEYS = Set.of(
+            "serverUrl", "device", "app", "browser", "baseUrl", "credentials", "reporting",
+            "logging", "timeouts", "capabilities"
+    );
 
     private PepeniumConfig() {
     }
@@ -32,6 +45,10 @@ public final class PepeniumConfig {
         } else {
             ACTIVE_PROFILE.set(profileId.trim());
         }
+    }
+
+    public static void clearActiveProfile() {
+        ACTIVE_PROFILE.remove();
     }
 
     public static String get(String key) {
@@ -56,6 +73,14 @@ public final class PepeniumConfig {
 
     public static String getDefaultProfile() {
         return Holder.CONFIG.defaultProfile();
+    }
+
+    public static Map<String, Object> getCapabilities() {
+        return Holder.CONFIG.capabilities(ACTIVE_PROFILE.get());
+    }
+
+    public static void validateProfile(String profileId) {
+        Holder.CONFIG.validateProfile(profileId);
     }
 
     static ResolvedConfig load(Path path, boolean explicit, Function<String, String> environment) {
@@ -165,6 +190,7 @@ public final class PepeniumConfig {
         }
 
         static ResolvedConfig from(Map<?, ?> document, Function<String, String> environment, Path source) {
+            validateDocument(document, source);
             String defaultProfile = scalar(document.get("defaultProfile"), "defaultProfile", environment, source);
             Map<String, Map<String, Object>> profiles = new LinkedHashMap<>();
             Object rawProfiles = document.get("profiles");
@@ -196,10 +222,9 @@ public final class PepeniumConfig {
             String path = KEY_PATHS.getOrDefault(key, key.toLowerCase(Locale.ROOT).replace('_', '.'));
             Object value = profile == null ? null : nestedValue(profile, path);
             boolean fromProfile = value != null;
-            if (value == null && ("PEPENIUM_WEB_CAPABILITIES".equals(key)
-                    || "PEPENIUM_APPIUM_CAPABILITIES".equals(key))) {
-                value = profile == null ? null : profile.get("capabilities");
-                fromProfile = value != null;
+            if ("PEPENIUM_WEB_CAPABILITIES".equals(key)
+                    || "PEPENIUM_APPIUM_CAPABILITIES".equals(key)) {
+                return null;
             }
             if (value == null) {
                 value = nestedValue(global, path);
@@ -208,6 +233,47 @@ public final class PepeniumConfig {
                     ? "profiles." + profileId + "." + path
                     : path;
             return render(value, sourcePath);
+        }
+
+        Map<String, Object> capabilities(String profileId) {
+            if (isBlank(profileId)) {
+                profileId = defaultProfile;
+            }
+            Map<String, Object> merged = new LinkedHashMap<>();
+            mergeMaps(merged, mapValue(global.get("capabilities")));
+            Map<String, Object> profile = profiles.get(profileId);
+            if (profile != null) {
+                mergeMaps(merged, mapValue(profile.get("capabilities")));
+            }
+            @SuppressWarnings("unchecked")
+            Map<String, Object> resolved = (Map<String, Object>) resolveNode(
+                    merged,
+                    isBlank(profileId) ? "capabilities" : "profiles." + profileId + ".capabilities"
+            );
+            return resolved;
+        }
+
+        void validateProfile(String profileId) {
+            Map<String, Object> profile = profiles.get(profileId);
+            if (profile == null) {
+                return;
+            }
+            if (profileId.startsWith("aws-") || profileId.startsWith("browserstack-")) {
+                for (String providerOwnedSection : List.of("serverUrl", "device", "app", "browser")) {
+                    if (profile.containsKey(providerOwnedSection)) {
+                        throw invalid("'profiles." + profileId + "." + providerOwnedSection
+                                + "' is provider-owned and cannot be configured in pepenium.yml. "
+                                + providerHint(profileId));
+                    }
+                }
+            }
+            if (profileId.startsWith("browserstack-")) {
+                rejectBrowserStackOwnedCapabilities(mapValue(global.get("capabilities")), "capabilities");
+                rejectBrowserStackOwnedCapabilities(
+                        mapValue(profile.get("capabilities")),
+                        "profiles." + profileId + ".capabilities"
+                );
+            }
         }
 
         String defaultProfile() {
@@ -235,10 +301,56 @@ public final class PepeniumConfig {
             return resolvePlaceholders(String.valueOf(value), environment, source, path);
         }
 
+        private Object resolveNode(Object value, String path) {
+            if (value instanceof Map) {
+                Map<String, Object> resolved = new LinkedHashMap<>();
+                ((Map<?, ?>) value).forEach((key, item) -> resolved.put(
+                        String.valueOf(key),
+                        resolveNode(item, path + "." + key)
+                ));
+                return Collections.unmodifiableMap(resolved);
+            }
+            if (value instanceof List) {
+                List<Object> resolved = new ArrayList<>();
+                List<?> values = (List<?>) value;
+                for (int index = 0; index < values.size(); index++) {
+                    resolved.add(resolveNode(values.get(index), path + "[" + index + "]"));
+                }
+                return Collections.unmodifiableList(resolved);
+            }
+            if (value instanceof String) {
+                return resolvePlaceholders((String) value, environment, source, path);
+            }
+            return value;
+        }
+
         private static Map<String, Object> copyMap(Map<?, ?> source) {
             Map<String, Object> result = new LinkedHashMap<>();
             source.forEach((key, value) -> result.put(String.valueOf(key), value));
             return Collections.unmodifiableMap(result);
+        }
+
+        private static Map<String, Object> mapValue(Object value) {
+            if (value == null) {
+                return Collections.emptyMap();
+            }
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) value;
+            return map;
+        }
+
+        private static void mergeMaps(Map<String, Object> target, Map<String, Object> source) {
+            source.forEach((key, value) -> {
+                Object existing = target.get(key);
+                if (existing instanceof Map && value instanceof Map) {
+                    Map<String, Object> nested = new LinkedHashMap<>();
+                    nested.putAll(mapValue(existing));
+                    mergeMaps(nested, mapValue(value));
+                    target.put(key, nested);
+                } else {
+                    target.put(key, value);
+                }
+            });
         }
 
         private static Object nestedValue(Map<String, Object> source, String path) {
@@ -281,6 +393,256 @@ public final class PepeniumConfig {
             }
             matcher.appendTail(resolved);
             return resolved.toString().trim();
+        }
+
+        private static void validateDocument(Map<?, ?> document, Path source) {
+            validateKeys(document, ROOT_KEYS, "root", source);
+            validateSchemaVersion(document.get("schemaVersion"), source);
+            validateScalar(document, "defaultProfile", "defaultProfile", source);
+            validateHttpUrl(document, "baseUrl", "baseUrl", source);
+            validateSection(document, "credentials", Set.of("username", "password"), "credentials", source);
+            validateSection(document, "reporting", Set.of("directory", "screenshotPath"), "reporting", source);
+            validateSection(document, "logging", Set.of("detailed", "stepLimit"), "logging", source);
+            validateSection(document, "timeouts", Set.of("action", "longAction", "assertion"), "timeouts", source);
+            validateCommonSections(document, "", source);
+            validateCapabilities(document.get("capabilities"), "capabilities", source);
+
+            Object rawProfiles = document.get("profiles");
+            if (rawProfiles == null) {
+                return;
+            }
+            Map<?, ?> profileMap = requireMap(rawProfiles, "profiles", source);
+            profileMap.forEach((profileId, rawProfile) -> {
+                if (!(profileId instanceof String) || ((String) profileId).isBlank()) {
+                    throw invalid("Profile ids must be non-blank strings in " + source.toAbsolutePath());
+                }
+                String path = "profiles." + profileId;
+                Map<?, ?> profile = requireMap(rawProfile, path, source);
+                validateKeys(profile, PROFILE_KEYS, path, source);
+                validateHttpUrl(profile, "serverUrl", path + ".serverUrl", source);
+                validateHttpUrl(profile, "baseUrl", path + ".baseUrl", source);
+                validateSection(profile, "device", Set.of("udid", "name"), path + ".device", source);
+                validateSection(profile, "app", Set.of("path", "package", "activity"), path + ".app", source);
+                validateSection(profile, "browser", Set.of(
+                        "headless", "acceptInsecureCerts", "pageLoadStrategy", "version", "binary", "arguments"
+                ), path + ".browser", source);
+                validateSection(profile, "credentials", Set.of("username", "password"), path + ".credentials", source);
+                validateSection(profile, "reporting", Set.of("directory", "screenshotPath"), path + ".reporting", source);
+                validateSection(profile, "logging", Set.of("detailed", "stepLimit"), path + ".logging", source);
+                validateSection(profile, "timeouts", Set.of("action", "longAction", "assertion"), path + ".timeouts", source);
+                validateCommonSections(profile, path + ".", source);
+                validateScalarSection(profile, "device", path + ".device", source);
+                validateScalarSection(profile, "app", path + ".app", source);
+                validateBrowserSection(profile, path + ".browser", source);
+                validateCapabilities(profile.get("capabilities"), path + ".capabilities", source);
+            });
+        }
+
+        private static void validateSchemaVersion(Object value, Path source) {
+            if (value == null) {
+                return;
+            }
+            if (!(value instanceof Number) || ((Number) value).doubleValue() != 1d) {
+                throw invalid("'schemaVersion' must be the integer 1 in " + source.toAbsolutePath());
+            }
+        }
+
+        private static void validateCommonSections(Map<?, ?> parent, String prefix, Path source) {
+            validateScalarSection(parent, "credentials", prefix + "credentials", source);
+            validateScalarSection(parent, "reporting", prefix + "reporting", source);
+            Object loggingValue = parent.get("logging");
+            if (loggingValue instanceof Map) {
+                Map<?, ?> logging = (Map<?, ?>) loggingValue;
+                validateBoolean(logging.get("detailed"), prefix + "logging.detailed", source);
+                validatePositiveInteger(logging.get("stepLimit"), prefix + "logging.stepLimit", source);
+            }
+            Object timeoutValue = parent.get("timeouts");
+            if (timeoutValue instanceof Map) {
+                ((Map<?, ?>) timeoutValue).forEach((key, value) ->
+                        validateDuration(value, prefix + "timeouts." + key, source));
+            }
+        }
+
+        private static void validateBrowserSection(Map<?, ?> parent, String path, Path source) {
+            Object value = parent.get("browser");
+            if (!(value instanceof Map)) {
+                return;
+            }
+            Map<?, ?> browser = (Map<?, ?>) value;
+            validateBoolean(browser.get("headless"), path + ".headless", source);
+            validateBoolean(browser.get("acceptInsecureCerts"), path + ".acceptInsecureCerts", source);
+            Object strategy = browser.get("pageLoadStrategy");
+            if (strategy != null && !isPlaceholder(strategy)
+                    && !Set.of("normal", "eager", "none").contains(String.valueOf(strategy))) {
+                throw invalid("'" + path + ".pageLoadStrategy' must be normal, eager or none in "
+                        + source.toAbsolutePath());
+            }
+            Object arguments = browser.get("arguments");
+            if (arguments != null) {
+                if (!(arguments instanceof List)) {
+                    throw invalid("'" + path + ".arguments' must be a YAML list in " + source.toAbsolutePath());
+                }
+                List<?> argumentList = (List<?>) arguments;
+                for (int index = 0; index < argumentList.size(); index++) {
+                    validateScalarValue(argumentList.get(index), path + ".arguments[" + index + "]", source);
+                }
+            }
+            validateScalar(browser, "version", path + ".version", source);
+            validateScalar(browser, "binary", path + ".binary", source);
+        }
+
+        private static void validateScalarSection(Map<?, ?> parent, String key, String path, Path source) {
+            Object value = parent.get(key);
+            if (!(value instanceof Map)) {
+                return;
+            }
+            ((Map<?, ?>) value).forEach((nestedKey, nestedValue) ->
+                    validateScalarValue(nestedValue, path + "." + nestedKey, source));
+        }
+
+        private static void validateScalar(Map<?, ?> parent, String key, String path, Path source) {
+            if (parent.containsKey(key)) {
+                validateScalarValue(parent.get(key), path, source);
+            }
+        }
+
+        private static void validateScalarValue(Object value, String path, Path source) {
+            if (value instanceof Map || value instanceof List || value == null) {
+                throw invalid("'" + path + "' must be a non-null scalar value in " + source.toAbsolutePath());
+            }
+            if (value instanceof String && ((String) value).isBlank()) {
+                throw invalid("'" + path + "' must not be blank in " + source.toAbsolutePath());
+            }
+        }
+
+        private static void validateBoolean(Object value, String path, Path source) {
+            if (value == null || value instanceof Boolean || isPlaceholder(value)) {
+                return;
+            }
+            throw invalid("'" + path + "' must be true or false in " + source.toAbsolutePath());
+        }
+
+        private static void validatePositiveInteger(Object value, String path, Path source) {
+            if (value == null || isPlaceholder(value)) {
+                return;
+            }
+            if (!(value instanceof Number) || ((Number) value).longValue() <= 0
+                    || ((Number) value).doubleValue() != ((Number) value).longValue()) {
+                throw invalid("'" + path + "' must be a positive integer in " + source.toAbsolutePath());
+            }
+        }
+
+        private static void validateDuration(Object value, String path, Path source) {
+            if (value == null || isPlaceholder(value)) {
+                return;
+            }
+            String duration = String.valueOf(value).trim();
+            boolean valid = duration.matches("(?i)[1-9][0-9]*(ms|s|m)?");
+            if (!valid && duration.toUpperCase(Locale.ROOT).startsWith("PT")) {
+                try {
+                    Duration parsed = Duration.parse(duration.toUpperCase(Locale.ROOT));
+                    valid = !parsed.isZero() && !parsed.isNegative();
+                } catch (DateTimeParseException ignored) {
+                    valid = false;
+                }
+            }
+            if (!valid) {
+                throw invalid("'" + path + "' must be a positive duration such as 750ms, 10s, 2m or PT10S in "
+                        + source.toAbsolutePath());
+            }
+        }
+
+        private static void validateHttpUrl(Map<?, ?> parent, String key, String path, Path source) {
+            Object value = parent.get(key);
+            if (value == null || isPlaceholder(value)) {
+                return;
+            }
+            validateScalarValue(value, path, source);
+            try {
+                URI uri = new URI(String.valueOf(value));
+                if (!("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme()))
+                        || uri.getHost() == null) {
+                    throw new URISyntaxException(String.valueOf(value), "HTTP(S) URL with host required");
+                }
+            } catch (URISyntaxException error) {
+                throw invalid("'" + path + "' must be a valid HTTP(S) URL in " + source.toAbsolutePath(), error);
+            }
+        }
+
+        private static boolean isPlaceholder(Object value) {
+            return value instanceof String && PLACEHOLDER.matcher((String) value).find();
+        }
+
+        private static void rejectBrowserStackOwnedCapabilities(Map<String, Object> capabilities, String path) {
+            for (String key : capabilities.keySet()) {
+                if ("bstack:options".equals(key) || key.startsWith("browserstack.")) {
+                    throw invalid("'" + path + "." + key
+                            + "' belongs in the existing BrowserStack YAML, not pepenium.yml.");
+                }
+            }
+        }
+
+        private static String providerHint(String profileId) {
+            return profileId.startsWith("browserstack-")
+                    ? "Keep BrowserStack platform and credential settings in its existing YAML."
+                    : "AWS device and Appium settings are supplied by Device Farm environment variables.";
+        }
+
+        private static void validateSection(Map<?, ?> parent,
+                                            String key,
+                                            Set<String> allowed,
+                                            String path,
+                                            Path source) {
+            Object value = parent.get(key);
+            if (value != null) {
+                validateKeys(requireMap(value, path, source), allowed, path, source);
+            }
+        }
+
+        private static void validateCapabilities(Object value, String path, Path source) {
+            if (value != null) {
+                validateCapabilityNode(requireMap(value, path, source), path, source);
+            }
+        }
+
+        private static void validateCapabilityNode(Object value, String path, Path source) {
+            if (value instanceof Map) {
+                ((Map<?, ?>) value).forEach((key, nested) -> {
+                    if (!(key instanceof String) || ((String) key).isBlank()) {
+                        throw invalid("Capability keys must be non-blank strings at '" + path
+                                + "' in " + source.toAbsolutePath());
+                    }
+                    validateCapabilityNode(nested, path + "." + key, source);
+                });
+                return;
+            }
+            if (value instanceof List) {
+                List<?> list = (List<?>) value;
+                for (int index = 0; index < list.size(); index++) {
+                    validateCapabilityNode(list.get(index), path + "[" + index + "]", source);
+                }
+                return;
+            }
+            if (value == null || value instanceof String || value instanceof Number || value instanceof Boolean) {
+                return;
+            }
+            throw invalid("Unsupported capability value at '" + path + "' in " + source.toAbsolutePath());
+        }
+
+        private static Map<?, ?> requireMap(Object value, String path, Path source) {
+            if (!(value instanceof Map)) {
+                throw invalid("'" + path + "' must be a YAML object in " + source.toAbsolutePath());
+            }
+            return (Map<?, ?>) value;
+        }
+
+        private static void validateKeys(Map<?, ?> values, Set<String> allowed, String path, Path source) {
+            for (Object key : values.keySet()) {
+                String name = String.valueOf(key);
+                if (!allowed.contains(name)) {
+                    throw invalid("Unknown key '" + path + "." + name + "' in " + source.toAbsolutePath());
+                }
+            }
         }
     }
 }

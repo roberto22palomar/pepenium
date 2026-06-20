@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.config.validation;
 
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.ios.options.XCUITestOptions;
 
@@ -142,9 +143,19 @@ public final class AppiumCapabilityOverrides {
 
     private static void applyGenericCapabilities(Function<String, String> env, Object options) {
         String value = envValue(env, "PEPENIUM_APPIUM_CAPABILITIES");
-        if (value == null) {
+        if (value != null) {
+            applyLegacyCapabilities(value, options);
             return;
         }
+        applyStructuredCapabilities(PepeniumConfig.getCapabilities(), options);
+    }
+
+    static void applyStructuredCapabilities(java.util.Map<String, Object> capabilities, Object options) {
+        capabilities.forEach((key, capabilityValue) ->
+                setCapability(options, normalizeCapabilityName(key), capabilityValue));
+    }
+
+    private static void applyLegacyCapabilities(String value, Object options) {
         for (String rawEntry : value.split(";")) {
             String entry = rawEntry == null ? null : rawEntry.trim();
             if (entry == null || entry.isBlank()) {

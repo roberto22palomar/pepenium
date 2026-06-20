@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added native structured YAML capabilities with nested maps/lists, deep global/profile merging, placeholder resolution and strict schema validation with actionable paths.
 - Added optional root `pepenium.yml` configuration with per-profile sections, environment placeholder expansion, structured browser/Appium capabilities and compatible property/environment overrides.
 - Added `ExecutionProfileProvider` discovery through Java `ServiceLoader`, allowing consumers to contribute private-grid, device-lab or provider-specific execution profiles without modifying or forking Pepenium.
 - Added bilingual adaptation guides with a complete custom `DriverConfig`, service descriptor and profile-selection flow.
@@ -22,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Added versioned semantic validation for `pepenium.yml`, including URLs, durations, booleans, provider-owned sections and consistent common capabilities across local, AWS and BrowserStack desktop/mobile runs.
+- Hardened managed driver lifecycle with same-thread execution, idempotent teardown, partial-session cleanup and guaranteed per-test state clearing after reporting failures.
 - Expanded `pepenium.yml` to cover base URLs, reporting and screenshot paths, detailed logging, retained-step limits and toolkit timeouts while preserving the existing profile launch and BrowserStack YAML workflows.
 - Made the standalone consumer smoke depend only on `pepenium-toolkit` with Maven `test` scope, proving that the recommended single dependency exposes the core runtime transitively without leaking test tooling into production classpaths.
 - Updated the security policy to match the current `0.9.x` release line and provide an actionable private vulnerability-reporting route.

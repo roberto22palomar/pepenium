@@ -9,6 +9,7 @@ It is intended to be the single reference point for configuring local runs, remo
 New projects can keep ordinary profile settings in one optional `pepenium.yml` file at the project root. Copy [the complete example](env/pepenium.yml.example) as a starting point.
 
 ```yaml
+schemaVersion: 1
 defaultProfile: local-android
 
 baseUrl: https://example.com
@@ -25,6 +26,12 @@ timeouts:
   action: 750ms
   longAction: 30s
   assertion: 10s
+
+capabilities:
+  acceptInsecureCerts: false
+  vendor:options:
+    project: Pepenium
+    tags: [smoke, local]
 
 profiles:
   local-android:
@@ -54,6 +61,46 @@ Set `-Dpepenium.config=path/to/config.yml` or `PEPENIUM_CONFIG=path/to/config.ym
 The YAML surface covers profile selection, local Android connection/app settings, common local Web browser settings, generic capability maps, base URLs, reporting paths, screenshot paths, logging and toolkit timeouts. Existing environment variables remain compatible and continue to override YAML values.
 
 Profile selection still works exactly as before through `-Dpepenium.profile=...` or `PEPENIUM_PROFILE`. BrowserStack keeps using its existing provider-specific YAML files for now; `pepenium.yml` does not replace them.
+
+### YAML schema and structured capabilities
+
+Set `schemaVersion: 1` in new files. Omitted versions remain accepted for compatibility, while unsupported explicit versions fail immediately.
+
+Pepenium validates known configuration sections when the file is loaded. Unknown keys, malformed sections, invalid HTTP(S) URLs, non-positive durations, invalid booleans and non-object `capabilities` fail early with the exact YAML path instead of being silently ignored.
+
+Capability values preserve native YAML types, including booleans, numbers, lists and nested objects. Global capabilities are merged with the selected profile, and profile values win recursively:
+
+```yaml
+capabilities:
+  vendor:options:
+    project: Pepenium
+    tags: [regression]
+
+profiles:
+  local-android:
+    capabilities:
+      noReset: false
+      settings:
+        ignoreUnimportantViews: true
+      vendor:options:
+        build: ${BUILD_NUMBER}
+```
+
+For Appium, unprefixed top-level capability names receive the `appium:` prefix; W3C names and explicitly namespaced keys remain unchanged. Existing `PEPENIUM_WEB_CAPABILITIES` and `PEPENIUM_APPIUM_CAPABILITIES` strings remain supported and override YAML, but structured YAML is recommended for new projects.
+
+### Provider ownership
+
+`pepenium.yml` deliberately has a different responsibility from provider-owned configuration:
+
+| Execution | `pepenium.yml` owns | Provider-owned source |
+| --- | --- | --- |
+| Local Web/Android | Server URL, device/app/browser settings, capabilities and common settings | None |
+| AWS Device Farm | Common settings and additional non-provider capabilities | `DEVICEFARM_*`, `AWS_DEVICE_FARM` and the Device Farm runtime |
+| BrowserStack | Common settings and additional non-provider capabilities | Existing BrowserStack YAML for credentials, platforms and `bstack:options` |
+
+For AWS and BrowserStack profiles, Pepenium rejects `serverUrl`, `device`, `app` and `browser` sections in `pepenium.yml` because those values would otherwise be ignored by the provider config. BrowserStack-owned keys such as `bstack:options` and `browserstack.*` are also rejected there with guidance to use the existing BrowserStack YAML.
+
+Common structured capabilities are applied consistently to local, AWS and BrowserStack sessions. Provider-owned platform values are applied afterwards and therefore remain authoritative.
 
 Ready-to-copy examples for common local setups live in [docs/env](env/README.md):
 

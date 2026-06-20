@@ -4,6 +4,8 @@ import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,6 +24,7 @@ class PepeniumAnnotationContractTest {
         ExtendWith extendWith = PepeniumTest.class.getAnnotation(ExtendWith.class);
         Target target = PepeniumTest.class.getAnnotation(Target.class);
         Retention retention = PepeniumTest.class.getAnnotation(Retention.class);
+        Execution execution = PepeniumTest.class.getAnnotation(Execution.class);
 
         assertNotNull(testInstance);
         assertEquals(TestInstance.Lifecycle.PER_CLASS, testInstance.value());
@@ -31,6 +34,8 @@ class PepeniumAnnotationContractTest {
         assertEquals(ElementType.TYPE, target.value()[0]);
         assertNotNull(retention);
         assertEquals(RetentionPolicy.RUNTIME, retention.value());
+        assertNotNull(execution);
+        assertEquals(ExecutionMode.SAME_THREAD, execution.value());
 
         PepeniumTest annotation = AnnotationContractFixture.class.getAnnotation(PepeniumTest.class);
         assertNotNull(annotation);

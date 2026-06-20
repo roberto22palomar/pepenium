@@ -7,6 +7,8 @@ import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import lombok.Getter;
 import org.openqa.selenium.WebDriver;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @Getter
 @SuppressFBWarnings(
         value = "EI_EXPOSE_REP",
@@ -16,6 +18,7 @@ public class DriverSession implements AutoCloseable {
     private final WebDriver driver;
     private final DriverRequest request;
     private final AppiumDriverLocalService ownedService;
+    private final AtomicBoolean closed = new AtomicBoolean();
 
     public DriverSession(WebDriver driver, DriverRequest request) {
         this.driver = driver;
@@ -32,11 +35,30 @@ public class DriverSession implements AutoCloseable {
 
     @Override
     public void close() {
-        if (driver != null) {
-            driver.quit();
+        if (!closed.compareAndSet(false, true)) {
+            return;
         }
-        if (ownedService != null) {
-            ownedService.stop();
+        RuntimeException failure = null;
+        try {
+            if (driver != null) {
+                driver.quit();
+            }
+        } catch (RuntimeException error) {
+            failure = error;
+        }
+        try {
+            if (ownedService != null) {
+                ownedService.stop();
+            }
+        } catch (RuntimeException error) {
+            if (failure == null) {
+                failure = error;
+            } else {
+                failure.addSuppressed(error);
+            }
+        }
+        if (failure != null) {
+            throw failure;
         }
     }
 }
