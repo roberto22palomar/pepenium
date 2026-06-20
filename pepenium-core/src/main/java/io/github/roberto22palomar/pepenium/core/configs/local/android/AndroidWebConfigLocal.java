@@ -1,6 +1,7 @@
 package io.github.roberto22palomar.pepenium.core.configs.local.android;
 
 import io.appium.java_client.android.options.UiAutomator2Options;
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
 import io.github.roberto22palomar.pepenium.core.config.validation.AppiumCapabilityOverrides;
 import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
@@ -15,7 +16,7 @@ public class AndroidWebConfigLocal implements DriverConfig {
     private final Function<String, String> env;
 
     public AndroidWebConfigLocal() {
-        this(System::getenv);
+        this(PepeniumConfig::get);
     }
 
     AndroidWebConfigLocal(Function<String, String> env) {

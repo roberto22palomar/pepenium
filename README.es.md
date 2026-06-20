@@ -41,6 +41,8 @@ Primeros pasos recomendados:
 
 Los ficheros de entorno listos para copiar estan en [docs/env](docs/env/README.md):
 
+- [`pepenium.yml.example`](docs/env/pepenium.yml.example) para la configuracion estructurada multi-perfil recomendada
+
 - [`.env.web.example`](docs/env/.env.web.example)
 - [`.env.android.local.example`](docs/env/.env.android.local.example)
 - [`.env.web.capabilities.example`](docs/env/.env.web.capabilities.example)

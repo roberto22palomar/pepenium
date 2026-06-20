@@ -41,6 +41,8 @@ Recommended first steps:
 
 Ready-to-copy environment examples live in [docs/env](docs/env/README.md):
 
+- [`pepenium.yml.example`](docs/env/pepenium.yml.example) for the recommended structured multi-profile configuration
+
 - [`.env.web.example`](docs/env/.env.web.example)
 - [`.env.android.local.example`](docs/env/.env.android.local.example)
 - [`.env.web.capabilities.example`](docs/env/.env.web.capabilities.example)
