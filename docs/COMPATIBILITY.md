@@ -36,6 +36,8 @@ smoke project and runtime matrix before release.
 
 Published archives use a fixed Maven output timestamp so the same source and dependency graph produce stable JAR content. The API compatibility gate compares release candidates with the latest published Pepenium release, not an older historical baseline.
 
+Final release builds reject snapshot dependencies. Their strict semantic version, dated changelog heading and reproducible output timestamp must agree before the publication workflow can access Maven Central.
+
 ## Configuration Compatibility
 
 `schemaVersion: 1` is the supported configuration contract for `1.0.0`. Unknown keys and invalid values fail early.

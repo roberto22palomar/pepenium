@@ -130,6 +130,10 @@
                                 </requireJavaVersion>
                                 <banDuplicatePomDependencyVersions/>
                                 <dependencyConvergence/>
+                                <requireReleaseDeps>
+                                    <onlyWhenRelease>true</onlyWhenRelease>
+                                    <failWhenParentIsSnapshot>true</failWhenParentIsSnapshot>
+                                </requireReleaseDeps>
                             </rules>
                         </configuration>
                     </execution>
