@@ -48,10 +48,10 @@ jobs:
         run: ./.github/scripts/Test-ReleasePreflight.ps1 -ReleaseVersion '${{ inputs.release_version }}'
 
       - name: Run full framework verify
-        run: mvn -B -ntp verify
+        run: ./mvnw -B -ntp verify
 
       - name: Validate release profile packaging without publishing
-        run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit,pepenium-maven-plugin -am -Prelease verify -DskipTests "-Dgpg.skip=true" "-Dcentral.skipPublishing=true" "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true" "-Djapicmp.skip=true"
+        run: ./mvnw -B -ntp -pl pepenium-core,pepenium-toolkit,pepenium-maven-plugin -am -Prelease verify -DskipTests "-Dgpg.skip=true" "-Dcentral.skipPublishing=true" "-Djacoco.skip=true" "-Dcheckstyle.skip=true" "-Dspotbugs.skip=true" "-Djapicmp.skip=true"
 
       - name: Validate standalone public API consumer
         run: ./scripts/test-consumer-smoke.sh --version "${{ steps.metadata.outputs.normalized_version }}"
@@ -78,4 +78,4 @@ jobs:
           cache: maven
 
       - name: Run runtime compatibility tests
-        run: mvn -B -ntp test -Djacoco.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Djapicmp.skip=true
+        run: ./mvnw -B -ntp test -Djacoco.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Djapicmp.skip=true
