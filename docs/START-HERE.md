@@ -24,7 +24,7 @@ schema:
 mvn pepenium:init-config -Dpepenium.init.template=local-web
 ```
 
-Use `local-android` or `browserstack-web` when those environments are your first target. Existing configuration is
+Use `local-android`, `local-ios` or `browserstack-web` when those environments are your first target. Existing configuration is
 never overwritten unless `-Dpepenium.init.force=true` is explicitly supplied. Review the generated values, then run:
 
 ```text

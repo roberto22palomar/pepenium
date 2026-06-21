@@ -154,6 +154,24 @@ class PepeniumConfigTest {
     }
 
     @Test
+    void resolvesLocalIosDeviceAndAppSettings() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-ios:\n"
+                + "    device:\n"
+                + "      udid: simulator-id\n"
+                + "      name: iPhone 16 Pro\n"
+                + "      platformVersion: '18.0'\n"
+                + "    app:\n"
+                + "      bundleId: com.example.app\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(config, true, key -> null);
+
+        assertEquals("simulator-id", resolved.value("local-ios", "IOS_UDID"));
+        assertEquals("iPhone 16 Pro", resolved.value("local-ios", "IOS_DEVICE_NAME"));
+        assertEquals("18.0", resolved.value("local-ios", "IOS_PLATFORM_VERSION"));
+        assertEquals("com.example.app", resolved.value("local-ios", "IOS_BUNDLE_ID"));
+    }
+
+    @Test
     void rejectsDuplicateYamlKeysWithFileContext() throws Exception {
         Path config = writeConfig("defaultProfile: local-web\n"
                 + "defaultProfile: local-android\n"

@@ -156,7 +156,12 @@ public final class PepeniumConfig {
         paths.put("APPIUM_URL", "serverUrl");
         paths.put("ANDROID_UDID", "device.udid");
         paths.put("ANDROID_DEVICE_NAME", "device.name");
+        paths.put("IOS_UDID", "device.udid");
+        paths.put("IOS_DEVICE_NAME", "device.name");
+        paths.put("IOS_PLATFORM_VERSION", "device.platformVersion");
         paths.put("APP_PATH", "app.path");
+        paths.put("IOS_APP_PATH", "app.path");
+        paths.put("IOS_BUNDLE_ID", "app.bundleId");
         paths.put("APP_PACKAGE", "app.package");
         paths.put("APP_ACTIVITY", "app.activity");
         paths.put("PEPENIUM_WEB_HEADLESS", "browser.headless");
@@ -467,8 +472,10 @@ public final class PepeniumConfig {
                 validateKeys(profile, PROFILE_KEYS, path, source);
                 validateHttpUrl(profile, "serverUrl", path + ".serverUrl", source);
                 validateHttpUrl(profile, "baseUrl", path + ".baseUrl", source);
-                validateSection(profile, "device", Set.of("udid", "name"), path + ".device", source);
-                validateSection(profile, "app", Set.of("path", "package", "activity"), path + ".app", source);
+                validateSection(profile, "device", Set.of("udid", "name", "platformVersion"),
+                        path + ".device", source);
+                validateSection(profile, "app", Set.of("path", "package", "activity", "bundleId"),
+                        path + ".app", source);
                 validateSection(profile, "browser", Set.of(
                         "headless", "acceptInsecureCerts", "pageLoadStrategy", "version", "binary", "arguments"
                 ), path + ".browser", source);

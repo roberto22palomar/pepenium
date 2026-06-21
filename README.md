@@ -103,7 +103,7 @@ With `pepenium-maven-plugin` declared under `<build><plugins>`, create a safe st
 mvn pepenium:init-config -Dpepenium.init.template=local-web
 ```
 
-The goal also supports `local-android` and `browserstack-web`, and never replaces an existing `pepenium.yml` unless
+The goal also supports `local-android`, `local-ios` and `browserstack-web`, and never replaces an existing `pepenium.yml` unless
 `-Dpepenium.init.force=true` is supplied explicitly.
 
 Why `pepenium-toolkit` is usually the right entry point:
@@ -282,6 +282,8 @@ This keeps the same test portable across environments without changing its code.
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`

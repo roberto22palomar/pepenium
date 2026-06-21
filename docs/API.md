@@ -117,8 +117,8 @@ The current `TestTarget` values are now treated as the stable functional target 
 
 - `ANDROID_NATIVE` -> default profile `local-android`
 - `ANDROID_WEB` -> default profile `local-android-web`
-- `IOS_NATIVE` -> no built-in default profile
-- `IOS_WEB` -> no built-in default profile
+- `IOS_NATIVE` -> default profile `local-ios`
+- `IOS_WEB` -> default profile `local-ios-web`
 - `WEB_DESKTOP` -> default profile `local-web`
 
 Removing, renaming or silently repointing these defaults should now be treated as a breaking change.
@@ -129,6 +129,8 @@ The built-in execution profile ids defined in `execution-profiles.yml` are now t
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`

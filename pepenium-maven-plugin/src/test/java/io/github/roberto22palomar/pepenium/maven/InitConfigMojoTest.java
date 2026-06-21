@@ -47,6 +47,20 @@ class InitConfigMojoTest {
     }
 
     @Test
+    void createsLocalIosStarter() throws Exception {
+        Path output = tempDir.resolve("ios.yml");
+        InitConfigMojo mojo = mojo(output);
+        mojo.setTemplate("local-ios");
+
+        mojo.execute();
+
+        String content = Files.readString(output);
+        assertTrue(content.contains("defaultProfile: local-ios"));
+        assertTrue(content.contains("platformVersion: ${IOS_PLATFORM_VERSION}"));
+        assertTrue(content.contains("path: ${IOS_APP_PATH}"));
+    }
+
+    @Test
     void refusesToOverwriteExistingConfiguration() throws Exception {
         Path output = tempDir.resolve("pepenium.yml");
         Files.writeString(output, "keep-me");
@@ -77,7 +91,7 @@ class InitConfigMojoTest {
 
         MojoFailureException error = assertThrows(MojoFailureException.class, mojo::execute);
 
-        assertTrue(error.getMessage().contains("local-web, local-android, browserstack-web"));
+        assertTrue(error.getMessage().contains("local-web, local-android, local-ios, browserstack-web"));
     }
 
     private InitConfigMojo mojo(Path output) {

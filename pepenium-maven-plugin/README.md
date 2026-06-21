@@ -12,6 +12,7 @@ Available templates:
 
 - `local-web` (default)
 - `local-android`
+- `local-ios`
 - `browserstack-web`
 
 Select one with `-Dpepenium.init.template=local-android`. The goal refuses to overwrite an existing file unless

@@ -49,16 +49,9 @@ class ExecutionProfileResolverTest {
     }
 
     @Test
-    void failsWhenTargetHasNoDefaultAndCallerProvidesNone() {
-        IllegalStateException error = assertThrows(
-                IllegalStateException.class,
-                () -> resolver.resolve(TestTarget.IOS_NATIVE, null)
-        );
-
-        assertTrue(error.getMessage().contains("No execution profile was provided for target IOS_NATIVE"));
-        assertTrue(error.getMessage().contains("Compatible profiles for IOS_NATIVE:"));
-        assertTrue(error.getMessage().contains("- aws-ios"));
-        assertTrue(error.getMessage().contains("- browserstack-ios"));
+    void resolvesLocalIosDefaultsWhenCallerProvidesNone() {
+        assertEquals("local-ios", resolver.resolve(TestTarget.IOS_NATIVE, null).getId());
+        assertEquals("local-ios-web", resolver.resolve(TestTarget.IOS_WEB, null).getId());
     }
 
     @Test

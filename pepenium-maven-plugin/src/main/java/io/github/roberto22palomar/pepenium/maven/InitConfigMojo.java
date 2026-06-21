@@ -83,6 +83,7 @@ public final class InitConfigMojo extends AbstractMojo {
         Map<String, String> templates = new LinkedHashMap<>();
         templates.put("local-web", localWeb());
         templates.put("local-android", localAndroid());
+        templates.put("local-ios", localIos());
         templates.put("browserstack-web", browserStackWeb());
         return templates;
     }
@@ -137,5 +138,21 @@ public final class InitConfigMojo extends AbstractMojo {
                 + "  browserstack-windows-web:\n"
                 + "    capabilities:\n"
                 + "      acceptInsecureCerts: false\n";
+    }
+
+    private static String localIos() {
+        return commonHeader("local-ios")
+                + "profiles:\n"
+                + "  local-ios:\n"
+                + "    serverUrl: http://127.0.0.1:4723\n"
+                + "    device:\n"
+                + "      udid: ${IOS_UDID}\n"
+                + "      name: ${IOS_DEVICE_NAME}\n"
+                + "      platformVersion: ${IOS_PLATFORM_VERSION}\n"
+                + "    app:\n"
+                + "      path: ${IOS_APP_PATH}\n"
+                + "    capabilities:\n"
+                + "      autoAcceptAlerts: true\n"
+                + "      noReset: false\n";
     }
 }

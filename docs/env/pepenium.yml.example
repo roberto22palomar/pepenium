@@ -48,6 +48,27 @@ profiles:
       udid: emulator-5554
       name: Android Emulator
 
+  local-ios:
+    serverUrl: http://127.0.0.1:4723
+    device:
+      udid: ${IOS_UDID}
+      name: ${IOS_DEVICE_NAME}
+      platformVersion: ${IOS_PLATFORM_VERSION}
+    app:
+      path: ${IOS_APP_PATH}
+      # Use bundleId instead of path when the app is already installed.
+      # bundleId: com.example.app
+    capabilities:
+      autoAcceptAlerts: true
+      noReset: false
+
+  local-ios-web:
+    serverUrl: http://127.0.0.1:4723
+    device:
+      udid: ${IOS_UDID}
+      name: ${IOS_DEVICE_NAME}
+      platformVersion: ${IOS_PLATFORM_VERSION}
+
   local-web:
     browser:
       headless: false

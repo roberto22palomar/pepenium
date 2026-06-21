@@ -32,7 +32,7 @@ For a new project, generate a schema-linked starter file:
 mvn pepenium:init-config -Dpepenium.init.template=local-web
 ```
 
-Supported templates are `local-web`, `local-android` and `browserstack-web`. Generation refuses to overwrite an
+Supported templates are `local-web`, `local-android`, `local-ios` and `browserstack-web`. Generation refuses to overwrite an
 existing file by default.
 
 Then validate the selected profile directly:
@@ -224,6 +224,8 @@ Built-in profile ids currently available:
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`
@@ -399,8 +401,33 @@ Notes:
 
 - Required: No
 - Used by:
+  - local iOS native
   - AWS iOS native
-- Purpose: Fallback iOS app path when `DEVICEFARM_APP_PATH` is not available
+- Purpose: Local iOS app path, or AWS fallback when `DEVICEFARM_APP_PATH` is not available
+
+### `IOS_BUNDLE_ID`
+
+- Required: No
+- Used by: local iOS native
+- Purpose: Launches an already installed iOS app when no `IOS_APP_PATH` or `APP_PATH` is provided
+
+### `IOS_UDID`
+
+- Required: No
+- Used by: local iOS native and mobile web
+- Purpose: Selects a specific simulator or connected iOS device
+
+### `IOS_DEVICE_NAME`
+
+- Required: No
+- Default: `iPhone Simulator`
+- Used by: local iOS native and mobile web
+
+### `IOS_PLATFORM_VERSION`
+
+- Required: No
+- Used by: local iOS native and mobile web
+- Purpose: Selects the simulator runtime version when Appium cannot infer it
 
 ## Screenshot Output
 

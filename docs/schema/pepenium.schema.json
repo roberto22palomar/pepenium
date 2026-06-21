@@ -75,7 +75,8 @@
       "type": "object", "additionalProperties": false,
       "properties": {
         "udid": { "$ref": "#/$defs/nonBlankString" },
-        "name": { "$ref": "#/$defs/nonBlankString" }
+        "name": { "$ref": "#/$defs/nonBlankString" },
+        "platformVersion": { "$ref": "#/$defs/nonBlankString" }
       }
     },
     "app": {
@@ -83,7 +84,8 @@
       "properties": {
         "path": { "$ref": "#/$defs/nonBlankString" },
         "package": { "$ref": "#/$defs/nonBlankString" },
-        "activity": { "$ref": "#/$defs/nonBlankString" }
+        "activity": { "$ref": "#/$defs/nonBlankString" },
+        "bundleId": { "$ref": "#/$defs/nonBlankString" }
       }
     },
     "capabilityValue": {
