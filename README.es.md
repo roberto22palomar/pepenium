@@ -273,6 +273,8 @@ Eso permite ejecutar el mismo test en varios entornos sin tocar su codigo.
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`

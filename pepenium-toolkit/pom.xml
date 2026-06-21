@@ -13,6 +13,10 @@
     <artifactId>pepenium-toolkit</artifactId>
     <name>Pepenium Toolkit</name>
 
+    <properties>
+        <pepenium.module.name>io.github.roberto22palomar.pepenium.toolkit</pepenium.module.name>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.github.roberto22palomar</groupId>

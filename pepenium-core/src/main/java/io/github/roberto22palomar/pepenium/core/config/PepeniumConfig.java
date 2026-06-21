@@ -1,6 +1,10 @@
 package io.github.roberto22palomar.pepenium.core.config;
 
+import io.github.roberto22palomar.pepenium.core.observability.SensitiveDataSanitizer;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -80,7 +85,30 @@ public final class PepeniumConfig {
     }
 
     public static void validateProfile(String profileId) {
-        Holder.CONFIG.validateProfile(profileId);
+        Holder.CONFIG.validateResolvedProfile(profileId);
+    }
+
+    /**
+     * Validates a configuration file without creating a driver session.
+     *
+     * @param path configuration file to validate
+     * @param profileId profile whose placeholders and provider rules must be resolved; when blank, the configured
+     *                  default profile is used
+     */
+    public static void validate(Path path, String profileId) {
+        Objects.requireNonNull(path, "Configuration path must not be null");
+        ResolvedConfig config = load(path, true, System::getenv);
+        String selectedProfile = isBlank(profileId) ? config.defaultProfile() : profileId.trim();
+        config.validateResolvedProfile(selectedProfile);
+    }
+
+    /**
+     * Validates a configuration file and its default profile without creating a driver session.
+     *
+     * @param path configuration file to validate
+     */
+    public static void validate(Path path) {
+        validate(path, null);
     }
 
     static ResolvedConfig load(Path path, boolean explicit, Function<String, String> environment) {
@@ -91,7 +119,7 @@ public final class PepeniumConfig {
             return ResolvedConfig.empty(environment);
         }
         try (InputStream input = Files.newInputStream(path)) {
-            Object document = new Yaml().load(input);
+            Object document = createYamlParser().load(input);
             if (document == null) {
                 return ResolvedConfig.empty(environment);
             }
@@ -99,9 +127,21 @@ public final class PepeniumConfig {
                 throw invalid("Configuration root must be a YAML object in " + path.toAbsolutePath());
             }
             return ResolvedConfig.from((Map<?, ?>) document, environment, path);
+        } catch (YAMLException error) {
+            throw invalid("Could not parse YAML file " + path.toAbsolutePath() + ": "
+                    + SensitiveDataSanitizer.sanitizeText(error.getMessage()));
         } catch (IOException error) {
             throw invalid("Could not read configuration file " + path.toAbsolutePath(), error);
         }
+    }
+
+    private static Yaml createYamlParser() {
+        LoaderOptions options = new LoaderOptions();
+        options.setAllowDuplicateKeys(false);
+        options.setMaxAliasesForCollections(50);
+        options.setNestingDepthLimit(50);
+        options.setCodePointLimit(3 * 1024 * 1024);
+        return new Yaml(new SafeConstructor(options));
     }
 
     private static ResolvedConfig loadCurrent() {
@@ -118,7 +158,12 @@ public final class PepeniumConfig {
         paths.put("APPIUM_URL", "serverUrl");
         paths.put("ANDROID_UDID", "device.udid");
         paths.put("ANDROID_DEVICE_NAME", "device.name");
+        paths.put("IOS_UDID", "device.udid");
+        paths.put("IOS_DEVICE_NAME", "device.name");
+        paths.put("IOS_PLATFORM_VERSION", "device.platformVersion");
         paths.put("APP_PATH", "app.path");
+        paths.put("IOS_APP_PATH", "app.path");
+        paths.put("IOS_BUNDLE_ID", "app.bundleId");
         paths.put("APP_PACKAGE", "app.package");
         paths.put("APP_ACTIVITY", "app.activity");
         paths.put("PEPENIUM_WEB_HEADLESS", "browser.headless");
@@ -276,6 +321,54 @@ public final class PepeniumConfig {
             }
         }
 
+        void validateResolvedProfile(String profileId) {
+            validateProfile(profileId);
+            for (String key : KEY_PATHS.keySet()) {
+                validateResolvedValue(key, value(profileId, key), profileId);
+            }
+            capabilities(profileId);
+        }
+
+        private void validateResolvedValue(String key, String value, String profileId) {
+            if (value == null) {
+                return;
+            }
+            String path = resolvedPath(profileId, KEY_PATHS.get(key));
+            switch (key) {
+                case "APPIUM_URL":
+                case "PEPENIUM_BASE_URL":
+                    validateResolvedHttpUrl(value, path, source);
+                    break;
+                case "PEPENIUM_WEB_HEADLESS":
+                case "PEPENIUM_WEB_ACCEPT_INSECURE_CERTS":
+                case "PEPENIUM_DETAIL_LOGGING":
+                    validateResolvedBoolean(value, path, source);
+                    break;
+                case "PEPENIUM_STEP_TRACKER_LIMIT":
+                    validateResolvedPositiveInteger(value, path, source);
+                    break;
+                case "PEPENIUM_ACTION_TIMEOUT_SECONDS":
+                case "PEPENIUM_ACTION_LONG_TIMEOUT_SECONDS":
+                case "PEPENIUM_ASSERTION_TIMEOUT_SECONDS":
+                    validateDuration(value, path, source);
+                    break;
+                case "PEPENIUM_WEB_PAGE_LOAD_STRATEGY":
+                    if (!Set.of("normal", "eager", "none").contains(value)) {
+                        throw invalid("'" + path + "' must resolve to normal, eager or none in "
+                                + source.toAbsolutePath());
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private String resolvedPath(String profileId, String path) {
+            return profiles.containsKey(profileId) && nestedValue(profiles.get(profileId), path) != null
+                    ? "profiles." + profileId + "." + path
+                    : path;
+        }
+
         String defaultProfile() {
             return defaultProfile;
         }
@@ -421,8 +514,10 @@ public final class PepeniumConfig {
                 validateKeys(profile, PROFILE_KEYS, path, source);
                 validateHttpUrl(profile, "serverUrl", path + ".serverUrl", source);
                 validateHttpUrl(profile, "baseUrl", path + ".baseUrl", source);
-                validateSection(profile, "device", Set.of("udid", "name"), path + ".device", source);
-                validateSection(profile, "app", Set.of("path", "package", "activity"), path + ".app", source);
+                validateSection(profile, "device", Set.of("udid", "name", "platformVersion"),
+                        path + ".device", source);
+                validateSection(profile, "app", Set.of("path", "package", "activity", "bundleId"),
+                        path + ".app", source);
                 validateSection(profile, "browser", Set.of(
                         "headless", "acceptInsecureCerts", "pageLoadStrategy", "version", "binary", "arguments"
                 ), path + ".browser", source);
@@ -566,6 +661,36 @@ public final class PepeniumConfig {
                 }
             } catch (URISyntaxException error) {
                 throw invalid("'" + path + "' must be a valid HTTP(S) URL in " + source.toAbsolutePath(), error);
+            }
+        }
+
+        private static void validateResolvedHttpUrl(String value, String path, Path source) {
+            try {
+                URI uri = new URI(value);
+                if (!("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme()))
+                        || uri.getHost() == null) {
+                    throw new URISyntaxException(value, "HTTP(S) URL with host required");
+                }
+            } catch (URISyntaxException error) {
+                throw invalid("'" + path + "' must resolve to a valid HTTP(S) URL in "
+                        + source.toAbsolutePath(), error);
+            }
+        }
+
+        private static void validateResolvedBoolean(String value, String path, Path source) {
+            if (!("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value))) {
+                throw invalid("'" + path + "' must resolve to true or false in " + source.toAbsolutePath());
+            }
+        }
+
+        private static void validateResolvedPositiveInteger(String value, String path, Path source) {
+            try {
+                if (Long.parseLong(value) <= 0) {
+                    throw new NumberFormatException("not positive");
+                }
+            } catch (NumberFormatException error) {
+                throw invalid("'" + path + "' must resolve to a positive integer in "
+                        + source.toAbsolutePath(), error);
             }
         }
 

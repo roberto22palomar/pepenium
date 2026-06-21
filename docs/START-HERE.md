@@ -13,6 +13,23 @@ Use this page to get your first success quickly, then dive deeper only when you 
 | Try Android locally with the least friction | Appium in Docker + emulator on host | 5-15 min |
 | Experiment with a fully dockerized Android setup | Appium + emulator in Docker | 10-20 min |
 | Validate public API consumption from another Maven project | Run consumer smoke | 2-3 min |
+| Configure a new consumer project | Run `pepenium:init-config` | Under 1 min |
+
+## New Consumer: Create Configuration First
+
+After declaring `pepenium-maven-plugin` in your Maven build, generate a configuration that is valid against the current
+schema:
+
+```text
+mvn pepenium:init-config -Dpepenium.init.template=local-web
+```
+
+Use `local-android`, `local-ios` or `browserstack-web` when those environments are your first target. Existing configuration is
+never overwritten unless `-Dpepenium.init.force=true` is explicitly supplied. Review the generated values, then run:
+
+```text
+mvn pepenium:validate-config
+```
 
 ## 1. Verify The Repo Builds
 

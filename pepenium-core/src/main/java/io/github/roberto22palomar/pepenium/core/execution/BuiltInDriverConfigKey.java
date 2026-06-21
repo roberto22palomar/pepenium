@@ -14,12 +14,16 @@ import io.github.roberto22palomar.pepenium.core.configs.local.android.AndroidWeb
 import io.github.roberto22palomar.pepenium.core.configs.local.desktop.ChromeWebConfigLocal;
 import io.github.roberto22palomar.pepenium.core.configs.local.desktop.EdgeWebConfigLocal;
 import io.github.roberto22palomar.pepenium.core.configs.local.desktop.FirefoxWebConfigLocal;
+import io.github.roberto22palomar.pepenium.core.configs.local.ios.IOSConfigLocal;
+import io.github.roberto22palomar.pepenium.core.configs.local.ios.IOSWebConfigLocal;
 
 import java.util.function.Supplier;
 
 enum BuiltInDriverConfigKey {
     LOCAL_ANDROID(AndroidConfigLocal::new),
     LOCAL_ANDROID_WEB(AndroidWebConfigLocal::new),
+    LOCAL_IOS(IOSConfigLocal::new),
+    LOCAL_IOS_WEB(IOSWebConfigLocal::new),
     LOCAL_DESKTOP_CHROME(ChromeWebConfigLocal::new),
     LOCAL_DESKTOP_FIREFOX(FirefoxWebConfigLocal::new),
     LOCAL_DESKTOP_EDGE(EdgeWebConfigLocal::new),

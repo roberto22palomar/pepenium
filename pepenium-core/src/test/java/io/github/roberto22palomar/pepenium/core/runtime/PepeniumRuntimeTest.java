@@ -6,6 +6,7 @@ import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 import io.github.roberto22palomar.pepenium.core.execution.ExecutionProfile;
 import io.github.roberto22palomar.pepenium.core.execution.ExecutionProfileResolver;
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
+import io.github.roberto22palomar.pepenium.core.observability.PepeniumTimeline;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ class PepeniumRuntimeTest {
     @AfterEach
     void tearDown() {
         StepTracker.clear();
+        PepeniumTimeline.clear();
     }
 
     @Test
@@ -82,6 +84,8 @@ class PepeniumRuntimeTest {
                 .description("cleanup config")
                 .build(), TestTarget.WEB_DESKTOP);
         StepTracker.record("Something happened");
+        PepeniumTimeline.beginTest();
+        PepeniumTimeline.recordAction("Opened checkout");
 
         runtime.cleanupDriver();
 
@@ -89,6 +93,8 @@ class PepeniumRuntimeTest {
         assertNull(runtime.getSession());
         assertNull(runtime.getDriver());
         assertEquals(0, StepTracker.snapshot().getTotalRecorded());
+        assertTrue(PepeniumTimeline.snapshot().getEvents().isEmpty());
+        assertNull(PepeniumTimeline.snapshot().getStartedAt());
     }
 
     @Test

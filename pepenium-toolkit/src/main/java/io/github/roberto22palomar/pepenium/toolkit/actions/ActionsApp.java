@@ -35,7 +35,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 @SuppressFBWarnings(
-        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
+        value = "EI_EXPOSE_REP",
         justification = "The Appium driver is a shared mutable runtime handle intentionally exposed to advanced callers."
 )
 public class ActionsApp implements MobileActions {

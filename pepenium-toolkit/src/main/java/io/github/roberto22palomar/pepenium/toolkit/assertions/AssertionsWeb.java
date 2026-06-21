@@ -1,6 +1,5 @@
 package io.github.roberto22palomar.pepenium.toolkit.assertions;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -15,10 +14,6 @@ public class AssertionsWeb extends PlatformAssertions implements WebAssertions {
     }
 
     @Override
-    @SuppressFBWarnings(
-            value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
-            justification = "AssertionsWeb intentionally exposes the active WebDriver for advanced consumer workflows."
-    )
     public WebDriver getDriver() {
         return driver;
     }

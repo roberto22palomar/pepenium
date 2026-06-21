@@ -15,7 +15,8 @@ target/
 *.exe
 *.log
 
-# Runtime YAML files are often secret/provider-specific.
-*.yml
-!pepenium-core/src/main/resources/execution-profiles.yml
-!.github/workflows/*.yml
+# Provider-owned runtime YAML may contain credentials. `pepenium.yml` is
+# intentionally versionable when it uses environment placeholders.
+/.pepenium/
+/pepenium-core/src/test/resources/browserstack*.yml
+/pepenium-examples/src/test/resources/browserstack*.yml

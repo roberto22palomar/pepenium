@@ -38,13 +38,14 @@
     <modules>
         <module>pepenium-core</module>
         <module>pepenium-toolkit</module>
+        <module>pepenium-maven-plugin</module>
         <module>pepenium-examples</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.outputTimestamp>2026-04-07T00:00:00Z</project.build.outputTimestamp>
+        <maven.compiler.release>11</maven.compiler.release>
 
         <selenium.bom.version>4.39.0</selenium.bom.version>
         <appium.java.client.version>10.0.0</appium.java.client.version>
@@ -54,6 +55,7 @@
 
         <lombok.version>1.18.42</lombok.version>
         <snakeyaml.version>2.5</snakeyaml.version>
+        <errorprone.annotations.version>2.41.0</errorprone.annotations.version>
 
         <slf4j.version>2.0.17</slf4j.version>
         <log4j2.version>2.25.3</log4j2.version>
@@ -62,22 +64,25 @@
         <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
         <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
         <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
-        <maven.dependency.plugin.version>3.9.0</maven.dependency.plugin.version>
-        <maven.enforcer.plugin.version>3.5.0</maven.enforcer.plugin.version>
+        <maven.dependency.plugin.version>3.11.0</maven.dependency.plugin.version>
+        <maven.enforcer.plugin.version>3.6.3</maven.enforcer.plugin.version>
         <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
         <maven.javadoc.plugin.version>3.8.0</maven.javadoc.plugin.version>
         <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
         <maven.gpg.plugin.version>3.2.7</maven.gpg.plugin.version>
-        <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
+        <maven.plugin.plugin.version>3.15.1</maven.plugin.plugin.version>
+        <maven.plugin.annotations.version>3.15.1</maven.plugin.annotations.version>
+        <maven.api.version>3.9.9</maven.api.version>
+        <jacoco.maven.plugin.version>0.8.15</jacoco.maven.plugin.version>
         <japicmp.maven.plugin.version>0.25.4</japicmp.maven.plugin.version>
-        <public.api.compatibility.baseline.version>0.9.6</public.api.compatibility.baseline.version>
-        <spotbugs.maven.plugin.version>4.8.6.6</spotbugs.maven.plugin.version>
+        <public.api.compatibility.baseline.version>0.9.7</public.api.compatibility.baseline.version>
+        <spotbugs.maven.plugin.version>4.10.2.0</spotbugs.maven.plugin.version>
         <checkstyle.version>10.18.2</checkstyle.version>
         <central.publishing.maven.plugin.version>0.9.0</central.publishing.maven.plugin.version>
 
         <pepenium.excludedTags>pepenium-example</pepenium.excludedTags>
         <pepenium.examples.skip.tests>true</pepenium.examples.skip.tests>
-        <jacoco.minimum.line.coverage>0.22</jacoco.minimum.line.coverage>
+        <jacoco.minimum.line.coverage>0.60</jacoco.minimum.line.coverage>
         <checkstyle.skip>false</checkstyle.skip>
         <spotbugs.skip>false</spotbugs.skip>
         <maven.javadoc.failOnWarnings>false</maven.javadoc.failOnWarnings>
@@ -94,6 +99,11 @@
                 <version>${selenium.bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>${errorprone.annotations.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -119,6 +129,11 @@
                                     <version>[11,)</version>
                                 </requireJavaVersion>
                                 <banDuplicatePomDependencyVersions/>
+                                <dependencyConvergence/>
+                                <requireReleaseDeps>
+                                    <onlyWhenRelease>true</onlyWhenRelease>
+                                    <failWhenParentIsSnapshot>true</failWhenParentIsSnapshot>
+                                </requireReleaseDeps>
                             </rules>
                         </configuration>
                     </execution>
@@ -136,6 +151,46 @@
                         <java.util.logging.config.file>${maven.multiModuleProjectDirectory}/pepenium-core/src/main/resources/jul.properties</java.util.logging.config.file>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>${pepenium.module.name}</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven.resources.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>include-license-in-artifacts</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${maven.multiModuleProjectDirectory}</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>LICENSE</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>

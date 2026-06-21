@@ -4,6 +4,58 @@ This document lists the environment variables and system properties currently us
 
 It is intended to be the single reference point for configuring local runs, remote executions and observability features.
 
+The canonical editor schema is [schema/pepenium.schema.json](schema/pepenium.schema.json). The distributed example
+contains a YAML language-server directive, so compatible editors provide completion and report unknown keys before a
+test starts.
+
+## Validate before running
+
+Configuration can be validated without opening Selenium/Appium or contacting a provider:
+
+```java
+PepeniumConfig.validate(Path.of("pepenium.yml"), "local-web");
+```
+
+For Maven projects, declare the versioned plugin once:
+
+```xml
+<plugin>
+    <groupId>io.github.roberto22palomar</groupId>
+    <artifactId>pepenium-maven-plugin</artifactId>
+    <version>${pepenium.version}</version>
+</plugin>
+```
+
+For a new project, generate a schema-linked starter file:
+
+```text
+mvn pepenium:init-config -Dpepenium.init.template=local-web
+```
+
+Supported templates are `local-web`, `local-android`, `local-ios` and `browserstack-web`. Generation refuses to overwrite an
+existing file by default.
+
+Commit `pepenium.yml` with the project so profile names, timeouts, routes and non-secret capabilities are reviewed like code. Keep credentials as `${ENVIRONMENT_VARIABLE}` placeholders. Provider-owned BrowserStack YAML remains outside source control under `.pepenium/browserstack/` because it may contain access credentials.
+
+Then validate the selected profile directly:
+
+```text
+mvn pepenium:validate-config -Dpepenium.profile=local-web
+```
+
+The goal uses `pepenium.yml` in the project root by default. Override it with `-Dpepenium.config=path/to/file.yml`
+or skip an intentional validation binding with `-Dpepenium.config.skip=true`.
+
+The lower-level command-line entry point remains available and uses exit code `0` for valid configuration and `2` for
+invalid arguments or configuration:
+
+```text
+mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java -Dexec.classpathScope=test -Dexec.mainClass=io.github.roberto22palomar.pepenium.core.config.PepeniumConfigCli -Dexec.args="--config pepenium.yml --profile local-web"
+```
+
+The preflight resolves placeholders for the selected profile and enforces provider ownership rules. It never creates a
+driver session.
+
 ## Recommended Configuration: `pepenium.yml`
 
 New projects can keep ordinary profile settings in one optional `pepenium.yml` file at the project root. Copy [the complete example](env/pepenium.yml.example) as a starting point.
@@ -174,6 +226,8 @@ Built-in profile ids currently available:
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`
@@ -349,8 +403,33 @@ Notes:
 
 - Required: No
 - Used by:
+  - local iOS native
   - AWS iOS native
-- Purpose: Fallback iOS app path when `DEVICEFARM_APP_PATH` is not available
+- Purpose: Local iOS app path, or AWS fallback when `DEVICEFARM_APP_PATH` is not available
+
+### `IOS_BUNDLE_ID`
+
+- Required: No
+- Used by: local iOS native
+- Purpose: Launches an already installed iOS app when no `IOS_APP_PATH` or `APP_PATH` is provided
+
+### `IOS_UDID`
+
+- Required: No
+- Used by: local iOS native and mobile web
+- Purpose: Selects a specific simulator or connected iOS device
+
+### `IOS_DEVICE_NAME`
+
+- Required: No
+- Default: `iPhone Simulator`
+- Used by: local iOS native and mobile web
+
+### `IOS_PLATFORM_VERSION`
+
+- Required: No
+- Used by: local iOS native and mobile web
+- Purpose: Selects the simulator runtime version when Appium cannot infer it
 
 ## Screenshot Output
 

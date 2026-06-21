@@ -64,29 +64,11 @@ public final class CapabilitiesSummary {
         }
 
         Map<String, Object> ordered = new TreeMap<>(Comparator.naturalOrder());
-        all.forEach((key, value) -> ordered.put(key, sanitizeValue(key, value)));
+        all.forEach((key, value) -> ordered.put(key, SensitiveDataSanitizer.sanitizeValue(key, value)));
 
         StringJoiner joiner = new StringJoiner(", ");
         ordered.forEach((key, value) -> joiner.add(key + "=" + value));
         return joiner.toString();
     }
 
-    private static Object sanitizeValue(String key, Object value) {
-        if (value == null) {
-            return null;
-        }
-        if (isSensitiveKey(key)) {
-            return "***";
-        }
-        return value;
-    }
-
-    private static boolean isSensitiveKey(String key) {
-        String normalized = key == null ? "" : key.toLowerCase();
-        return normalized.contains("accesskey")
-                || normalized.contains("password")
-                || normalized.contains("secret")
-                || normalized.contains("token")
-                || normalized.contains("apikey");
-    }
 }

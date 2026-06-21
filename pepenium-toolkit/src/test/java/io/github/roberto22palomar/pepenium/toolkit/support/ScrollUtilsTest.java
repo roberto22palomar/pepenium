@@ -165,6 +165,21 @@ class ScrollUtilsTest {
     }
 
     @Test
+    void scrollToElementToleratesNullPageSource() {
+        stubDriverState();
+        stubViewport();
+        capabilities.setCapability("platformName", "iOS");
+        when(driver.findElements(LOCATOR)).thenReturn(List.of(), List.of(), List.of(element));
+        when(driver.getPageSource()).thenReturn(null);
+        when(element.isDisplayed()).thenReturn(true);
+
+        ScrollUtils scrollUtils = new ScrollUtils(driver);
+
+        assertSame(element, scrollUtils.scrollToElement(LOCATOR, 2));
+        verify(driver).perform(anyList());
+    }
+
+    @Test
     void scrollToElementStopsAfterStagnantPageAndThrows() {
         stubDriverState();
         stubViewport();

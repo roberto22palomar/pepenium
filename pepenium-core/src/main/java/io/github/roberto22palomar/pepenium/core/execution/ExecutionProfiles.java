@@ -1,6 +1,8 @@
 package io.github.roberto22palomar.pepenium.core.execution;
 
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -167,7 +169,13 @@ public final class ExecutionProfiles {
                 throw new IllegalStateException("Missing required resource: " + PROFILES_RESOURCE);
             }
 
-            ProfilesFile yamlFile = new Yaml().loadAs(input, ProfilesFile.class);
+            LoaderOptions options = new LoaderOptions();
+            options.setAllowDuplicateKeys(false);
+            options.setMaxAliasesForCollections(50);
+            options.setNestingDepthLimit(50);
+            options.setCodePointLimit(3 * 1024 * 1024);
+            ProfilesFile yamlFile = new Yaml(new Constructor(ProfilesFile.class, options))
+                    .loadAs(input, ProfilesFile.class);
             return loadProfiles(yamlFile);
         } catch (RuntimeException e) {
             throw e;

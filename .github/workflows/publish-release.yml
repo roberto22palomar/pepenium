@@ -25,7 +25,7 @@ jobs:
 
     outputs:
       release_version: ${{ steps.meta.outputs.release_version }}
-      release_ref: ${{ steps.meta.outputs.release_ref }}
+      release_ref: ${{ steps.pin.outputs.release_sha }}
 
     steps:
       - name: Resolve release metadata
@@ -44,6 +44,16 @@ jobs:
 
           Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value "release_version=$normalizedVersion"
           Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value "release_ref=$releaseRef"
+
+      - name: Checkout requested release ref
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.meta.outputs.release_ref }}
+
+      - name: Pin immutable release commit
+        id: pin
+        shell: bash
+        run: echo "release_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   preflight:
     needs: prepare-release
@@ -82,4 +92,4 @@ jobs:
           gpg-passphrase: GPG_PASSPHRASE
 
       - name: Publish to Maven Central
-        run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit -am -Prelease deploy
+        run: ./mvnw -B -ntp -pl pepenium-core,pepenium-toolkit,pepenium-maven-plugin -am -Prelease deploy

@@ -1,0 +1,8 @@
+schemaVersion: 1
+defaultProfile: consumer-local-web
+
+profiles:
+  consumer-local-web:
+    baseUrl: https://example.com
+    browser:
+      headless: true

@@ -3,7 +3,7 @@ package io.github.roberto22palomar.pepenium.core.observability;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
-import org.apache.logging.log4j.ThreadContext;
+import org.slf4j.MDC;
 
 import java.util.Objects;
 
@@ -23,22 +23,22 @@ public final class LoggingContext {
     public static void setSessionId(String sessionId) {
         put("sessionId", sessionId);
         if (sessionId != null && !sessionId.isBlank()) {
-            ThreadContext.put("sessionShort", shorten(sessionId));
+            MDC.put("sessionShort", shorten(sessionId));
         }
     }
 
     public static void clearSessionId() {
-        ThreadContext.remove("sessionId");
-        ThreadContext.remove("sessionShort");
+        MDC.remove("sessionId");
+        MDC.remove("sessionShort");
     }
 
     public static void clearAll() {
-        ThreadContext.clearMap();
+        MDC.clear();
     }
 
     private static void put(String key, Object value) {
         if (Objects.nonNull(value)) {
-            ThreadContext.put(key, String.valueOf(value));
+            MDC.put(key, String.valueOf(value));
         }
     }
 

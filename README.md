@@ -35,7 +35,7 @@ If you are new to the project, start with [START-HERE.md](docs/START-HERE.md).
 
 Recommended first steps:
 
-1. Run `mvn -q -DskipTests test-compile`
+1. Run `./mvnw -q -DskipTests test-compile` (`mvnw.cmd` on Windows)
 2. Run the desktop web showcase for your first live success
 3. Move to Android only after the web path is working
 
@@ -62,6 +62,7 @@ Ready-to-copy environment examples live in [docs/env](docs/env/README.md):
 See [START-HERE.md](docs/START-HERE.md) for the fastest first-run path, [QUICK-START.md](docs/QUICK-START.md) for the fuller walkthrough and [CHANGELOG.md](CHANGELOG.md) for release history.
 Use [ENVIRONMENT.md](docs/ENVIRONMENT.md) as the central reference for environment variables, precedence rules, runtime properties and capability override patterns.
 Use [API.md](docs/API.md) for the current public-vs-internal API guidance on the road to `1.0.0`.
+Use [COMPATIBILITY.md](docs/COMPATIBILITY.md) for the Java, operating-system, configuration and API stability contract.
 Use [ADAPTING.md](docs/ADAPTING.md) to add consumer-owned execution profiles for private grids, device labs or additional providers without forking Pepenium.
 Use [HISTORY.md](docs/HISTORY.md) for the project evolution and current open-source direction.
 Use [REPOSITORY.md](docs/REPOSITORY.md) for the repository map and placement rules.
@@ -72,7 +73,7 @@ The main CI workflow now runs framework `verify` and then validates that standal
 
 ## Quality
 
-- CI runs `mvn verify` on every push and pull request to `main`
+- CI runs the pinned Maven Wrapper on every push and pull request to `main`
 - Coverage is aggregated from the JaCoCo reports produced by `pepenium-core` and `pepenium-toolkit`
 - Checkstyle, SpotBugs and `japicmp` are part of the normal verification path
 - The standalone `consumer-smoke` project validates public API consumption from outside the main reactor
@@ -95,6 +96,15 @@ Typical consumer dependency:
     <scope>test</scope>
 </dependency>
 ```
+
+With `pepenium-maven-plugin` declared under `<build><plugins>`, create a safe starter configuration in one command:
+
+```text
+mvn pepenium:init-config -Dpepenium.init.template=local-web
+```
+
+The goal also supports `local-android`, `local-ios` and `browserstack-web`, and never replaces an existing `pepenium.yml` unless
+`-Dpepenium.init.force=true` is supplied explicitly.
 
 Why `pepenium-toolkit` is usually the right entry point:
 
@@ -183,6 +193,7 @@ Repository modules:
 
 - `pepenium-core`: framework engine, runtime, execution and provider configuration
 - `pepenium-toolkit`: reusable test-author helpers such as actions and support utilities
+- `pepenium-maven-plugin`: build-time `pepenium.yml` validation without driver startup
 - `pepenium-examples`: repository-only example tests, flows and page objects built on top of `pepenium` and `pepenium-toolkit`
 
 ### `core`
@@ -271,6 +282,8 @@ This keeps the same test portable across environments without changing its code.
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -154,6 +155,41 @@ class PepeniumConfigTest {
     }
 
     @Test
+    void resolvesLocalIosDeviceAndAppSettings() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-ios:\n"
+                + "    device:\n"
+                + "      udid: simulator-id\n"
+                + "      name: iPhone 16 Pro\n"
+                + "      platformVersion: '18.0'\n"
+                + "    app:\n"
+                + "      bundleId: com.example.app\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(config, true, key -> null);
+
+        assertEquals("simulator-id", resolved.value("local-ios", "IOS_UDID"));
+        assertEquals("iPhone 16 Pro", resolved.value("local-ios", "IOS_DEVICE_NAME"));
+        assertEquals("18.0", resolved.value("local-ios", "IOS_PLATFORM_VERSION"));
+        assertEquals("com.example.app", resolved.value("local-ios", "IOS_BUNDLE_ID"));
+    }
+
+    @Test
+    void rejectsDuplicateYamlKeysWithFileContext() throws Exception {
+        Path config = writeConfig("defaultProfile: local-web\n"
+                + "defaultProfile: local-android\n"
+                + "profiles: {}\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("Could not parse YAML file"));
+        assertTrue(error.getMessage().contains(config.toAbsolutePath().toString()));
+        assertTrue(error.getMessage().contains("duplicate key"));
+        assertNull(error.getCause());
+    }
+
+    @Test
     void rejectsUnsupportedSchemaVersions() throws Exception {
         Path config = writeConfig("schemaVersion: 2\nprofiles: {}\n");
 
@@ -181,6 +217,92 @@ class PepeniumConfigTest {
                 () -> PepeniumConfig.load(invalidTimeout, true, key -> null)
         );
         assertTrue(timeoutError.getMessage().contains("timeouts.action"));
+    }
+
+    @Test
+    void rejectsInvalidValuesAfterPlaceholderResolution() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    baseUrl: ${BASE_URL}\n"
+                + "    browser:\n"
+                + "      headless: ${HEADLESS}\n"
+                + "    timeouts:\n"
+                + "      action: ${ACTION_TIMEOUT}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of(
+                        "BASE_URL", "ftp://example.test",
+                        "HEADLESS", "true",
+                        "ACTION_TIMEOUT", "10s"
+                )::get
+        );
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> resolved.validateResolvedProfile("local-web")
+        );
+
+        assertTrue(error.getMessage().contains("profiles.local-web.baseUrl"));
+        assertTrue(error.getMessage().contains("HTTP(S) URL"));
+    }
+
+    @Test
+    void rejectsInvalidBooleanAndDurationAfterPlaceholderResolution() throws Exception {
+        Path booleanConfig = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    browser:\n"
+                + "      headless: ${HEADLESS}\n");
+        PepeniumConfig.ResolvedConfig invalidBoolean = PepeniumConfig.load(
+                booleanConfig, true, Map.of("HEADLESS", "yes")::get);
+
+        IllegalStateException booleanError = assertThrows(
+                IllegalStateException.class,
+                () -> invalidBoolean.validateResolvedProfile("local-web")
+        );
+        assertTrue(booleanError.getMessage().contains("profiles.local-web.browser.headless"));
+        assertTrue(booleanError.getMessage().contains("true or false"));
+
+        Path durationConfig = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    timeouts:\n"
+                + "      action: ${ACTION_TIMEOUT}\n");
+        PepeniumConfig.ResolvedConfig invalidDuration = PepeniumConfig.load(
+                durationConfig, true, Map.of("ACTION_TIMEOUT", "eventually")::get);
+
+        IllegalStateException durationError = assertThrows(
+                IllegalStateException.class,
+                () -> invalidDuration.validateResolvedProfile("local-web")
+        );
+        assertTrue(durationError.getMessage().contains("profiles.local-web.timeouts.action"));
+        assertTrue(durationError.getMessage().contains("positive duration"));
+    }
+
+    @Test
+    void acceptsValidValuesAfterPlaceholderResolution() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    baseUrl: ${BASE_URL}\n"
+                + "    browser:\n"
+                + "      headless: ${HEADLESS}\n"
+                + "      pageLoadStrategy: ${PAGE_LOAD}\n"
+                + "    logging:\n"
+                + "      stepLimit: ${STEP_LIMIT}\n"
+                + "    timeouts:\n"
+                + "      action: ${ACTION_TIMEOUT}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of(
+                        "BASE_URL", "https://example.test",
+                        "HEADLESS", "true",
+                        "PAGE_LOAD", "eager",
+                        "STEP_LIMIT", "25",
+                        "ACTION_TIMEOUT", "750ms"
+                )::get
+        );
+
+        resolved.validateResolvedProfile("local-web");
     }
 
     @Test
