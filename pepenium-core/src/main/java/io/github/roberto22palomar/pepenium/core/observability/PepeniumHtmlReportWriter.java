@@ -29,8 +29,16 @@ public final class PepeniumHtmlReportWriter {
             Path htmlFile = reportDir.resolve(htmlFileName);
             Path jsonFile = reportDir.resolve(baseFileName + ".json");
 
-            Files.writeString(htmlFile, PepeniumReportHtmlRenderer.render(report), StandardCharsets.UTF_8);
-            Files.writeString(jsonFile, PepeniumReportJsonRenderer.renderReportJson(report, htmlFileName), StandardCharsets.UTF_8);
+            AtomicArtifactWriter.writeString(
+                    htmlFile,
+                    PepeniumReportHtmlRenderer.render(report),
+                    StandardCharsets.UTF_8
+            );
+            AtomicArtifactWriter.writeString(
+                    jsonFile,
+                    PepeniumReportJsonRenderer.renderReportJson(report, htmlFileName),
+                    StandardCharsets.UTF_8
+            );
 
             Path indexFile = PepeniumReportIndexWriter.writeIndex(reportDir);
 

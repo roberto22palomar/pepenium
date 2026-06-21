@@ -16,10 +16,18 @@ import java.util.stream.Stream;
 
 final class PepeniumReportIndexWriter {
 
+    private static final Object INDEX_WRITE_LOCK = new Object();
+
     private PepeniumReportIndexWriter() {
     }
 
     static Path writeIndex(Path reportDir) throws IOException {
+        synchronized (INDEX_WRITE_LOCK) {
+            return writeIndexLocked(reportDir.toAbsolutePath().normalize());
+        }
+    }
+
+    private static Path writeIndexLocked(Path reportDir) throws IOException {
         List<Path> jsonFiles;
         try (Stream<Path> files = Files.list(reportDir)) {
             jsonFiles = files
@@ -37,13 +45,17 @@ final class PepeniumReportIndexWriter {
             }
         }
 
-        Files.writeString(
+        AtomicArtifactWriter.writeString(
                 reportDir.resolve("summary.json"),
                 PepeniumReportJsonRenderer.renderSuiteSummaryJson(summaries),
                 StandardCharsets.UTF_8
         );
         Path indexFile = reportDir.resolve("index.html");
-        Files.writeString(indexFile, renderIndexHtml(reportDir, summaries), StandardCharsets.UTF_8);
+        AtomicArtifactWriter.writeString(
+                indexFile,
+                renderIndexHtml(reportDir, summaries),
+                StandardCharsets.UTF_8
+        );
         return indexFile;
     }
 
