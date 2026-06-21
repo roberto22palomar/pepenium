@@ -16,6 +16,9 @@ timeouts:
   action: 750ms
   longAction: 30s
   assertion: 10s
+  # TCP connection and Selenium/Appium command transport limits.
+  sessionConnect: 10s
+  sessionCommand: 3m
 
 # Global capabilities apply to every selected profile. Profile capabilities
 # override matching values and merge nested vendor objects recursively.

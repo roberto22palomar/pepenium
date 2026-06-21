@@ -78,6 +78,8 @@ timeouts:
   action: 750ms
   longAction: 30s
   assertion: 10s
+  sessionConnect: 10s
+  sessionCommand: 3m
 
 capabilities:
   acceptInsecureCerts: false
@@ -98,6 +100,13 @@ profiles:
 ```
 
 The file is optional. Existing projects using environment variables continue to work unchanged.
+
+`sessionConnect` limits TCP connection establishment. `sessionCommand` is the Selenium/Appium HTTP read timeout,
+including session creation and `quit()`. They can be overridden with
+`PEPENIUM_SESSION_CONNECT_TIMEOUT_SECONDS` and `PEPENIUM_SESSION_COMMAND_TIMEOUT_SECONDS`; despite the legacy
+suffix, both accept plain seconds, `ms`, `s`, `m` and ISO-8601 durations. Pepenium also checks loopback Appium
+endpoints before creating a session and reports immediately when the local service is unavailable. Cloud endpoints
+remain under Selenium's transport so corporate proxies and provider routing continue to work.
 
 Resolution order is:
 

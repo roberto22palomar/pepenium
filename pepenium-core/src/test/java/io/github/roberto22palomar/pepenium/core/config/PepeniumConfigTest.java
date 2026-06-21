@@ -25,10 +25,12 @@ class PepeniumConfigTest {
                 + "  directory: target/reports\n"
                 + "timeouts:\n"
                 + "  action: 2s\n"
+                + "  sessionConnect: 15s\n"
                 + "profiles:\n"
                 + "  local-web:\n"
                 + "    timeouts:\n"
                 + "      action: 750ms\n"
+                + "      sessionCommand: 4m\n"
                 + "    browser:\n"
                 + "      headless: true\n"
                 + "      arguments: [--incognito, '--window-size=1280,720']\n"
@@ -42,6 +44,8 @@ class PepeniumConfigTest {
         assertEquals("target/reports", resolved.value("local-web", "PEPENIUM_REPORT_DIR"));
         assertEquals("750ms", resolved.value("local-web", "PEPENIUM_ACTION_TIMEOUT_SECONDS"));
         assertEquals("2s", resolved.value("other-profile", "PEPENIUM_ACTION_TIMEOUT_SECONDS"));
+        assertEquals("15s", resolved.value("local-web", "PEPENIUM_SESSION_CONNECT_TIMEOUT_SECONDS"));
+        assertEquals("4m", resolved.value("local-web", "PEPENIUM_SESSION_COMMAND_TIMEOUT_SECONDS"));
         assertEquals("true", resolved.value("local-web", "PEPENIUM_WEB_HEADLESS"));
         assertEquals("--incognito;--window-size=1280,720",
                 resolved.value("local-web", "PEPENIUM_WEB_ARGS"));

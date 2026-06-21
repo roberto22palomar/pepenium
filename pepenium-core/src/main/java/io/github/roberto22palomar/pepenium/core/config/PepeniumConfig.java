@@ -182,6 +182,8 @@ public final class PepeniumConfig {
         paths.put("PEPENIUM_ACTION_TIMEOUT_SECONDS", "timeouts.action");
         paths.put("PEPENIUM_ACTION_LONG_TIMEOUT_SECONDS", "timeouts.longAction");
         paths.put("PEPENIUM_ASSERTION_TIMEOUT_SECONDS", "timeouts.assertion");
+        paths.put("PEPENIUM_SESSION_CONNECT_TIMEOUT_SECONDS", "timeouts.sessionConnect");
+        paths.put("PEPENIUM_SESSION_COMMAND_TIMEOUT_SECONDS", "timeouts.sessionCommand");
         return Collections.unmodifiableMap(paths);
     }
 
@@ -496,7 +498,9 @@ public final class PepeniumConfig {
             validateSection(document, "credentials", Set.of("username", "password"), "credentials", source);
             validateSection(document, "reporting", Set.of("directory", "screenshotPath"), "reporting", source);
             validateSection(document, "logging", Set.of("detailed", "stepLimit"), "logging", source);
-            validateSection(document, "timeouts", Set.of("action", "longAction", "assertion"), "timeouts", source);
+            validateSection(document, "timeouts", Set.of(
+                    "action", "longAction", "assertion", "sessionConnect", "sessionCommand"
+            ), "timeouts", source);
             validateCommonSections(document, "", source);
             validateCapabilities(document.get("capabilities"), "capabilities", source);
 
@@ -524,7 +528,9 @@ public final class PepeniumConfig {
                 validateSection(profile, "credentials", Set.of("username", "password"), path + ".credentials", source);
                 validateSection(profile, "reporting", Set.of("directory", "screenshotPath"), path + ".reporting", source);
                 validateSection(profile, "logging", Set.of("detailed", "stepLimit"), path + ".logging", source);
-                validateSection(profile, "timeouts", Set.of("action", "longAction", "assertion"), path + ".timeouts", source);
+                validateSection(profile, "timeouts", Set.of(
+                        "action", "longAction", "assertion", "sessionConnect", "sessionCommand"
+                ), path + ".timeouts", source);
                 validateCommonSections(profile, path + ".", source);
                 validateScalarSection(profile, "device", path + ".device", source);
                 validateScalarSection(profile, "app", path + ".app", source);

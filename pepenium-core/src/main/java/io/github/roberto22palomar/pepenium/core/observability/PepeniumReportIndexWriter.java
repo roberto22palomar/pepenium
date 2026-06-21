@@ -1,9 +1,12 @@
 package io.github.roberto22palomar.pepenium.core.observability;
 
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -23,7 +26,16 @@ final class PepeniumReportIndexWriter {
 
     static Path writeIndex(Path reportDir) throws IOException {
         synchronized (INDEX_WRITE_LOCK) {
-            return writeIndexLocked(reportDir.toAbsolutePath().normalize());
+            Path normalizedReportDir = reportDir.toAbsolutePath().normalize();
+            Files.createDirectories(normalizedReportDir);
+            Path lockFile = normalizedReportDir.resolve(".pepenium-index.lock");
+            try (FileChannel lockChannel = FileChannel.open(
+                    lockFile,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.WRITE
+            ); FileLock ignored = lockChannel.lock()) {
+                return writeIndexLocked(normalizedReportDir);
+            }
         }
     }
 

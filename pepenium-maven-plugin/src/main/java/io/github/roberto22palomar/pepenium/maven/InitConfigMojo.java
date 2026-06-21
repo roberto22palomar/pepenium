@@ -101,7 +101,9 @@ public final class InitConfigMojo extends AbstractMojo {
                 + "timeouts:\n"
                 + "  action: 10s\n"
                 + "  longAction: 30s\n"
-                + "  assertion: 10s\n\n";
+                + "  assertion: 10s\n"
+                + "  sessionConnect: 10s\n"
+                + "  sessionCommand: 3m\n\n";
     }
 
     private static String localWeb() {
