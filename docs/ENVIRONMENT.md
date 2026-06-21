@@ -35,6 +35,8 @@ mvn pepenium:init-config -Dpepenium.init.template=local-web
 Supported templates are `local-web`, `local-android`, `local-ios` and `browserstack-web`. Generation refuses to overwrite an
 existing file by default.
 
+Commit `pepenium.yml` with the project so profile names, timeouts, routes and non-secret capabilities are reviewed like code. Keep credentials as `${ENVIRONMENT_VARIABLE}` placeholders. Provider-owned BrowserStack YAML remains outside source control under `.pepenium/browserstack/` because it may contain access credentials.
+
 Then validate the selected profile directly:
 
 ```text
