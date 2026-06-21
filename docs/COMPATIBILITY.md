@@ -38,6 +38,8 @@ Published archives use a fixed Maven output timestamp so the same source and dep
 
 Final release builds reject snapshot dependencies. Their strict semantic version, dated changelog heading and reproducible output timestamp must agree before the publication workflow can access Maven Central.
 
+Every published module must retain at least 60% line coverage. Current module coverage remains above that floor, so the gate preserves room for provider integration code while rejecting broad untested regressions.
+
 ## Configuration Compatibility
 
 `schemaVersion: 1` is the supported configuration contract for `1.0.0`. Unknown keys and invalid values fail early.

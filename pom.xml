@@ -82,7 +82,7 @@
 
         <pepenium.excludedTags>pepenium-example</pepenium.excludedTags>
         <pepenium.examples.skip.tests>true</pepenium.examples.skip.tests>
-        <jacoco.minimum.line.coverage>0.22</jacoco.minimum.line.coverage>
+        <jacoco.minimum.line.coverage>0.60</jacoco.minimum.line.coverage>
         <checkstyle.skip>false</checkstyle.skip>
         <spotbugs.skip>false</spotbugs.skip>
         <maven.javadoc.failOnWarnings>false</maven.javadoc.failOnWarnings>

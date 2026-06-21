@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Raised the enforced line-coverage floor from 22% to 60%, below the current lowest module coverage but high enough to block substantial untested regressions.
 - Made `pepenium.yml` versionable by replacing the broad `*.yml` ignore rule with targeted exclusions for credential-bearing provider YAML.
 - Strengthened release preflight with strict SemVer, dated changelog/output-timestamp alignment and rejection of snapshot dependencies in final releases.
 - Added a helper that builds published runtime artifacts twice and compares their SHA-256 hashes.
