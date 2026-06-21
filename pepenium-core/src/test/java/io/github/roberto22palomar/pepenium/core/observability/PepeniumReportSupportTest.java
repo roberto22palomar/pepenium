@@ -7,6 +7,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class PepeniumReportSupportTest {
 
@@ -40,5 +41,19 @@ class PepeniumReportSupportTest {
         Path external = tempDir.resolve("external").resolve("manual.png");
 
         assertEquals(external.toUri().toString(), PepeniumReportSupport.pathToHref(external.toString(), reportDir));
+    }
+
+    @Test
+    void failureDetailsAreSanitizedBeforeReportPersistence() {
+        RuntimeException failure = new RuntimeException(
+                "Grid https://user:secret@hub.example.test failed with accessKey=abc123"
+        );
+
+        String message = PepeniumReportSupport.rootMessage(failure);
+        String stackTrace = PepeniumReportSupport.stackTrace(failure);
+
+        assertEquals("Grid https://***@hub.example.test failed with accessKey=***", message);
+        assertFalse(stackTrace.contains("user:secret"));
+        assertFalse(stackTrace.contains("abc123"));
     }
 }

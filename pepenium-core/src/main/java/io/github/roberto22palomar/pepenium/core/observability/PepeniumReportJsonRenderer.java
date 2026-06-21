@@ -136,7 +136,9 @@ final class PepeniumReportJsonRenderer {
                     PepeniumReportSupport.safe(remote.get("enabled"))
             );
         } catch (Exception e) {
-            log.warn("Failed to read Pepenium report summary from '{}': {}", jsonFile, e.getMessage());
+            log.warn("Failed to read Pepenium report summary from '{}': {}",
+                    jsonFile,
+                    SensitiveDataSanitizer.sanitizeText(e.getMessage()));
             return null;
         }
     }
