@@ -25,3 +25,5 @@ mvn pepenium:validate-config -Dpepenium.profile=local-web
 ```
 
 Both goals use the project-root `pepenium.yml` by default and accept `-Dpepenium.config=path/to/file.yml`.
+
+The plugin classpath intentionally excludes Selenium, Appium, JUnit and logging APIs from its core dependency. Configuration goals load only Pepenium's configuration classes and SnakeYAML, avoiding duplicate automation stacks inside Maven.

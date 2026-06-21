@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Reduced the Maven plugin runtime classpath to Pepenium configuration code and SnakeYAML instead of loading Selenium, Appium, JUnit and SLF4J into Maven.
 - Raised the enforced line-coverage floor from 22% to 60%, below the current lowest module coverage but high enough to block substantial untested regressions.
 - Made `pepenium.yml` versionable by replacing the broad `*.yml` ignore rule with targeted exclusions for credential-bearing provider YAML.
 - Strengthened release preflight with strict SemVer, dated changelog/output-timestamp alignment and rejection of snapshot dependencies in final releases.
