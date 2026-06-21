@@ -99,6 +99,7 @@ final class PepeniumRuntime implements ExtensionContext.Store.CloseableResource 
 
     void clearPerTestState() {
         StepTracker.clear();
+        PepeniumTimeline.clear();
     }
 
     void cleanupDriver() {
@@ -117,6 +118,7 @@ final class PepeniumRuntime implements ExtensionContext.Store.CloseableResource 
             PepeniumConfig.clearActiveProfile();
             LoggingContext.clearAll();
             StepTracker.clear();
+            PepeniumTimeline.clear();
         }
     }
 

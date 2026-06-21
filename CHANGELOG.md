@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Cleared timeline events and timestamps alongside step state after each test and session teardown to prevent cross-test retention in reused JUnit workers.
 - Updated stable build verification tooling (Enforcer, JaCoCo, Dependency Plugin and SpotBugs) without changing consumer runtime dependencies.
 - Included the MIT license under `META-INF/LICENSE` in every published binary artifact.
 - Expanded diagnostic redaction to authorization headers, bearer tokens, cookies, credentials, private keys and session keys.
