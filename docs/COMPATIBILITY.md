@@ -13,6 +13,10 @@ This document defines the compatibility contract Pepenium intends to carry into 
 | Selenium | Managed by the versioned Selenium BOM | Full framework verification |
 | Appium Java client | Version pinned by the parent POM | Local, AWS and BrowserStack request-contract tests |
 | Configuration | `pepenium.yml` schema version 1 | Runtime validation, CLI preflight and editor schema |
+
+Published JARs declare stable automatic module names for JPMS-aware consumers:
+`io.github.roberto22palomar.pepenium.core`, `io.github.roberto22palomar.pepenium.toolkit` and
+`io.github.roberto22palomar.pepenium.maven.plugin`. These names are part of the 1.0 compatibility contract.
 | Dependency graph | Convergent runtime versions | Maven Enforcer on every reactor build |
 
 Real device availability, installed browsers, Appium servers and provider accounts remain consumer infrastructure.

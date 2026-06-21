@@ -15,6 +15,10 @@
     <name>Pepenium Maven Plugin</name>
     <description>Maven goals for validating Pepenium projects before test execution.</description>
 
+    <properties>
+        <pepenium.module.name>io.github.roberto22palomar.pepenium.maven.plugin</pepenium.module.name>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.github.roberto22palomar</groupId>

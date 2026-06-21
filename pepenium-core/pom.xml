@@ -13,6 +13,10 @@
     <artifactId>pepenium</artifactId>
     <name>Pepenium Core</name>
 
+    <properties>
+        <pepenium.module.name>io.github.roberto22palomar.pepenium.core</pepenium.module.name>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.appium</groupId>
