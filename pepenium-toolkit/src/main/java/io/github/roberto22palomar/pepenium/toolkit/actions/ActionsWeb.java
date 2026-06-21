@@ -45,10 +45,6 @@ public class ActionsWeb implements WebActions {
     );
 
     @Override
-    @SuppressFBWarnings(
-            value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
-            justification = "ActionsWeb intentionally exposes the active WebDriver for advanced consumer workflows."
-    )
     public WebDriver getDriver() {
         return driver;
     }

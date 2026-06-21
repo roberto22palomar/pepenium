@@ -191,7 +191,8 @@ public class ScrollUtils {
 
     private int safePageHash() {
         try {
-            return driver.getPageSource().hashCode();
+            String pageSource = driver.getPageSource();
+            return pageSource == null ? ThreadLocalRandom.current().nextInt() : pageSource.hashCode();
         } catch (Throwable t) {
             return ThreadLocalRandom.current().nextInt();
         }

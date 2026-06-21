@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuppressFBWarnings(
-        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
+        value = "EI_EXPOSE_REP",
         justification = "YAML-mapped configuration DTO intentionally exposes mutable list state."
 )
 public class BrowserStackConfigDesktop {
