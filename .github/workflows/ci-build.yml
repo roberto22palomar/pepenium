@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   java-compatibility:
@@ -48,6 +48,8 @@ jobs:
 
   framework-verify:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -62,6 +64,9 @@ jobs:
 
       - name: Run full framework verify
         run: mvn -B -ntp verify
+
+      - name: Verify reproducible runtime artifacts
+        run: ./scripts/test-reproducible-build.sh
 
       - name: Generate coverage badge data
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
