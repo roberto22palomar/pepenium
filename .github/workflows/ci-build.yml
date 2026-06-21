@@ -44,7 +44,7 @@ jobs:
           cache: maven
 
       - name: Run portable unit and contract tests
-        run: mvn -B -ntp test -Djacoco.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Djapicmp.skip=true
+        run: ./mvnw -B -ntp test -Djacoco.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Djapicmp.skip=true
 
   framework-verify:
     runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
           cache: maven
 
       - name: Run full framework verify
-        run: mvn -B -ntp verify
+        run: ./mvnw -B -ntp verify
 
       - name: Generate coverage badge data
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
