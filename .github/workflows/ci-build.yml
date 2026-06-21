@@ -44,6 +44,7 @@ jobs:
           cache: maven
 
       - name: Run portable unit and contract tests
+        shell: bash
         run: ./mvnw -B -ntp test -Djacoco.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Djapicmp.skip=true
 
   framework-verify:
