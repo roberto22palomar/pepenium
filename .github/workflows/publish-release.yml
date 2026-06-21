@@ -92,4 +92,4 @@ jobs:
           gpg-passphrase: GPG_PASSPHRASE
 
       - name: Publish to Maven Central
-        run: mvn -B -ntp -pl pepenium-core,pepenium-toolkit,pepenium-maven-plugin -am -Prelease deploy
+        run: ./mvnw -B -ntp -pl pepenium-core,pepenium-toolkit,pepenium-maven-plugin -am -Prelease deploy
