@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Decoupled Pepenium from the Log4j runtime by using the SLF4J MDC contract and stopped publishing a root logging configuration, allowing consumers to choose their own SLF4J backend safely.
 - Hardened `pepenium.yml` loading with safe parser limits, duplicate-key rejection and file-aware syntax diagnostics.
 - Applied the same safe parser limits and duplicate-key rejection to all BrowserStack YAML loaders.
+- Revalidated URLs, booleans, durations, positive limits and page-load strategies after environment placeholder resolution during configuration preflight.
 - Extended the standalone consumer smoke and release publication flow to install, execute and publish the configuration plugin as a first-class artifact.
 - Expanded CI and release preflight with Java 11/17/21 runtime checks and Linux, Windows and macOS portability coverage.
 - Switched compilation to `--release 11` so newer build JDKs cannot accidentally leak newer Java APIs into published artifacts.
