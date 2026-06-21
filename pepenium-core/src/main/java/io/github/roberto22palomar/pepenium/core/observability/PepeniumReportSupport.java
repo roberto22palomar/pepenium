@@ -350,19 +350,7 @@ final class PepeniumReportSupport {
     }
 
     static String sanitizeServerUrl(URL url) {
-        if (url == null) {
-            return null;
-        }
-        String protocol = url.getProtocol() == null ? "http" : url.getProtocol();
-        String host = url.getHost();
-        int port = url.getPort();
-        String path = url.getPath() == null ? "" : url.getPath();
-        StringBuilder value = new StringBuilder(protocol).append("://").append(host);
-        if (port > 0) {
-            value.append(":").append(port);
-        }
-        value.append(path);
-        return value.toString();
+        return SensitiveDataSanitizer.sanitizeServerUrl(url);
     }
 
     private static String uniqueArtifactStem(String prefix) {

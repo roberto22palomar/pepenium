@@ -42,7 +42,7 @@ public final class PepeniumBanner {
 
         if (request.getServerUrl() != null) {
             builder.append(" :: Server    :: ")
-                    .append(request.getServerUrl())
+                    .append(SensitiveDataSanitizer.sanitizeServerUrl(request.getServerUrl()))
                     .append(lineSeparator);
         }
 

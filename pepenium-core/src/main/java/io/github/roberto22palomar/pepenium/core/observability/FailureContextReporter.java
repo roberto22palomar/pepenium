@@ -207,7 +207,7 @@ public final class FailureContextReporter {
         if (buildInfoIndex >= 0) {
             message = message.substring(0, buildInfoIndex);
         }
-        message = message.replaceAll("\\s+", " ").trim();
+        message = SensitiveDataSanitizer.sanitizeText(message.replaceAll("\\s+", " ").trim());
         return message.length() <= 220 ? message : message.substring(0, 217) + "...";
     }
 

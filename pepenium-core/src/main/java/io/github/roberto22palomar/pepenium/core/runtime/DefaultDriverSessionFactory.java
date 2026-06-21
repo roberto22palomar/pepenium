@@ -6,6 +6,7 @@ import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.observability.CapabilitiesSummary;
 import io.github.roberto22palomar.pepenium.core.observability.LoggingContext;
 import io.github.roberto22palomar.pepenium.core.observability.PepeniumBanner;
+import io.github.roberto22palomar.pepenium.core.observability.SensitiveDataSanitizer;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
@@ -32,7 +33,7 @@ public class DefaultDriverSessionFactory implements DriverSessionFactory {
                 request.getDescription(),
                 CapabilitiesSummary.summarize(request.getCapabilities()));
         if (request.getServerUrl() != null) {
-            log.info("Driver server: {}", sanitizeServerUrl(request.getServerUrl()));
+            log.info("Driver server: {}", SensitiveDataSanitizer.sanitizeServerUrl(request.getServerUrl()));
         }
         log.info("Effective capabilities: {}", CapabilitiesSummary.describe(request.getCapabilities()));
         try {
@@ -74,18 +75,6 @@ public class DefaultDriverSessionFactory implements DriverSessionFactory {
             }
             throw error;
         }
-    }
-
-    private String sanitizeServerUrl(URL url) {
-        if (url == null) {
-            return "none";
-        }
-        String userInfo = url.getUserInfo();
-        if (userInfo == null || userInfo.isBlank()) {
-            return url.toString();
-        }
-        String raw = url.toString();
-        return raw.replace(userInfo + "@", "***@");
     }
 
     private URL requireServerUrl(DriverRequest request) {

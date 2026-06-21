@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Made BrowserStack YAML path resolution trim accidental whitespace while rejecting null or blank paths with clearer messages.
 
 ### Fixed
+- Prevented authenticated provider URLs, nested capability secrets and credential-bearing exception messages from leaking into banners, logs or generated reports.
 - Kept built-in execution-profile contract checks independent from consumer profiles discovered through `ServiceLoader`, with explicit `builtInList()` introspection.
 - Added early validation for consumer-provided execution profile metadata, duplicate IDs, provider failures and null lazy configs.
 - Made Android and iOS mobile hidden-wait behavior consistent: `waitUntilHidden(...)` now fails when an element remains visible instead of silently continuing.
