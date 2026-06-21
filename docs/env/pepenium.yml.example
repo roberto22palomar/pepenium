@@ -20,6 +20,11 @@ timeouts:
   sessionConnect: 10s
   sessionCommand: 3m
 
+# Escape hatch for custom DriverConfig implementations and private providers.
+# Built-in Pepenium options must remain in their typed sections above.
+settings:
+  TEAM_GRID_REGION: eu-west-1
+
 # Global capabilities apply to every selected profile. Profile capabilities
 # override matching values and merge nested vendor objects recursively.
 capabilities:
@@ -83,6 +88,11 @@ profiles:
     capabilities:
       vendor:options:
         browser: chrome
+
+  team-grid-web:
+    settings:
+      TEAM_GRID_REGION: eu-south-2
+      TEAM_GRID_TOKEN: ${TEAM_GRID_TOKEN}
 
   # AWS receives device/app details from Device Farm. Only common settings and
   # additional capabilities belong here.

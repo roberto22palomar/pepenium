@@ -159,6 +159,43 @@ class PepeniumConfigTest {
     }
 
     @Test
+    void resolvesOpenEndedSettingsWithProfileOverrides() throws Exception {
+        Path config = writeConfig("settings:\n"
+                + "  TEAM_GRID_REGION: eu-west-1\n"
+                + "  TEAM_GRID_TAGS: [smoke, regression]\n"
+                + "profiles:\n"
+                + "  team-grid-web:\n"
+                + "    settings:\n"
+                + "      TEAM_GRID_REGION: eu-south-2\n"
+                + "      TEAM_GRID_TOKEN: ${GRID_TOKEN}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of("GRID_TOKEN", "private-token")::get
+        );
+
+        assertEquals("eu-south-2", resolved.value("team-grid-web", "TEAM_GRID_REGION"));
+        assertEquals("eu-west-1", resolved.value("other-profile", "TEAM_GRID_REGION"));
+        assertEquals("smoke;regression", resolved.value("team-grid-web", "TEAM_GRID_TAGS"));
+        assertEquals("private-token", resolved.value("team-grid-web", "TEAM_GRID_TOKEN"));
+        resolved.validateResolvedProfile("team-grid-web");
+    }
+
+    @Test
+    void rejectsBuiltInKeysInsideOpenEndedSettings() throws Exception {
+        Path config = writeConfig("settings:\n"
+                + "  PEPENIUM_REPORT_DIR: build/reports\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("built-in setting"));
+        assertTrue(error.getMessage().contains("reporting.directory"));
+    }
+
+    @Test
     void resolvesLocalIosDeviceAndAppSettings() throws Exception {
         Path config = writeConfig("profiles:\n"
                 + "  local-ios:\n"

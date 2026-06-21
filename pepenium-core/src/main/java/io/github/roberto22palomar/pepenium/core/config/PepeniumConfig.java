@@ -34,11 +34,11 @@ public final class PepeniumConfig {
     private static final Map<String, String> KEY_PATHS = createKeyPaths();
     private static final Set<String> ROOT_KEYS = Set.of(
             "schemaVersion", "defaultProfile", "baseUrl", "credentials", "reporting", "logging", "timeouts",
-            "capabilities", "profiles"
+            "capabilities", "settings", "profiles"
     );
     private static final Set<String> PROFILE_KEYS = Set.of(
             "serverUrl", "device", "app", "browser", "baseUrl", "credentials", "reporting",
-            "logging", "timeouts", "capabilities"
+            "logging", "timeouts", "capabilities", "settings"
     );
 
     private PepeniumConfig() {
@@ -268,18 +268,37 @@ public final class PepeniumConfig {
             Map<String, Object> profile = profiles.get(profileId);
             String path = KEY_PATHS.getOrDefault(key, key.toLowerCase(Locale.ROOT).replace('_', '.'));
             Object value = profile == null ? null : nestedValue(profile, path);
-            boolean fromProfile = value != null;
+            String sourcePath = value == null ? null : "profiles." + profileId + "." + path;
             if ("PEPENIUM_WEB_CAPABILITIES".equals(key)
                     || "PEPENIUM_APPIUM_CAPABILITIES".equals(key)) {
                 return null;
             }
             if (value == null) {
-                value = nestedValue(global, path);
+                value = settingValue(profile, key);
+                if (value != null) {
+                    sourcePath = "profiles." + profileId + ".settings." + key;
+                }
             }
-            String sourcePath = fromProfile
-                    ? "profiles." + profileId + "." + path
-                    : path;
+            if (value == null) {
+                value = nestedValue(global, path);
+                if (value != null) {
+                    sourcePath = path;
+                }
+            }
+            if (value == null) {
+                value = settingValue(global, key);
+                if (value != null) {
+                    sourcePath = "settings." + key;
+                }
+            }
             return render(value, sourcePath);
+        }
+
+        private static Object settingValue(Map<String, Object> source, String key) {
+            if (source == null) {
+                return null;
+            }
+            return mapValue(source.get("settings")).get(key);
         }
 
         Map<String, Object> capabilities(String profileId) {
@@ -329,6 +348,11 @@ public final class PepeniumConfig {
                 validateResolvedValue(key, value(profileId, key), profileId);
             }
             capabilities(profileId);
+            resolveNode(global.get("settings"), "settings");
+            Map<String, Object> profile = profiles.get(profileId);
+            if (profile != null) {
+                resolveNode(profile.get("settings"), "profiles." + profileId + ".settings");
+            }
         }
 
         private void validateResolvedValue(String key, String value, String profileId) {
@@ -503,6 +527,7 @@ public final class PepeniumConfig {
             ), "timeouts", source);
             validateCommonSections(document, "", source);
             validateCapabilities(document.get("capabilities"), "capabilities", source);
+            validateSettings(document.get("settings"), "settings", source);
 
             Object rawProfiles = document.get("profiles");
             if (rawProfiles == null) {
@@ -536,6 +561,7 @@ public final class PepeniumConfig {
                 validateScalarSection(profile, "app", path + ".app", source);
                 validateBrowserSection(profile, path + ".browser", source);
                 validateCapabilities(profile.get("capabilities"), path + ".capabilities", source);
+                validateSettings(profile.get("settings"), path + ".settings", source);
             });
         }
 
@@ -734,6 +760,24 @@ public final class PepeniumConfig {
             if (value != null) {
                 validateCapabilityNode(requireMap(value, path, source), path, source);
             }
+        }
+
+        private static void validateSettings(Object value, String path, Path source) {
+            if (value == null) {
+                return;
+            }
+            Map<?, ?> settings = requireMap(value, path, source);
+            settings.forEach((key, setting) -> {
+                if (!(key instanceof String) || ((String) key).isBlank()) {
+                    throw invalid("Setting keys must be non-blank strings at '" + path
+                            + "' in " + source.toAbsolutePath());
+                }
+                if (KEY_PATHS.containsKey(key)) {
+                    throw invalid("'" + path + "." + key + "' is a built-in setting. Use '"
+                            + KEY_PATHS.get(key) + "' instead in " + source.toAbsolutePath());
+                }
+                validateCapabilityNode(setting, path + "." + key, source);
+            });
         }
 
         private static void validateCapabilityNode(Object value, String path, Path source) {

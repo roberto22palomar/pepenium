@@ -108,12 +108,33 @@ suffix, both accept plain seconds, `ms`, `s`, `m` and ISO-8601 durations. Pepeni
 endpoints before creating a session and reports immediately when the local service is unavailable. Cloud endpoints
 remain under Selenium's transport so corporate proxies and provider routing continue to work.
 
+For private providers or custom `DriverConfig` implementations, `settings` accepts arbitrary keys globally and per
+profile:
+
+```yaml
+settings:
+  TEAM_GRID_REGION: eu-west-1
+
+profiles:
+  team-grid-web:
+    settings:
+      TEAM_GRID_REGION: eu-south-2
+      TEAM_GRID_TOKEN: ${TEAM_GRID_TOKEN}
+```
+
+Custom Java code reads these values with `PepeniumConfig.get("TEAM_GRID_REGION")`. Profile values override global
+values, while Java system properties and real environment variables retain the highest priority. Built-in keys are
+rejected under `settings` so misspellings and ambiguous duplicate configuration still fail during validation.
+
 Resolution order is:
 
 1. Java system property
 2. Environment variable
-3. Selected profile in `pepenium.yml`
-4. Built-in default
+3. Typed value in the selected profile
+4. Open-ended `settings` value in the selected profile
+5. Typed global YAML value
+6. Open-ended global `settings` value
+7. Built-in default
 
 Use `${ENV_VAR}` placeholders for secrets or machine-specific values. Pepenium resolves placeholders only when the selected profile requests that value, and reports the exact YAML path when a referenced variable is missing.
 
