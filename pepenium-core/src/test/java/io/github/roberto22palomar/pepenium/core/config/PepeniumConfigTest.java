@@ -196,6 +196,40 @@ class PepeniumConfigTest {
     }
 
     @Test
+    void deeplyMergesStructuredSettingsAndReturnsImmutableValues() throws Exception {
+        Path config = writeConfig("settings:\n"
+                + "  teamGrid:\n"
+                + "    region: eu-west-1\n"
+                + "    retries: 2\n"
+                + "    labels: [smoke, android]\n"
+                + "profiles:\n"
+                + "  team-grid-web:\n"
+                + "    settings:\n"
+                + "      teamGrid:\n"
+                + "        retries: 4\n"
+                + "        tunnel:\n"
+                + "          name: ${TUNNEL_NAME}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of("TUNNEL_NAME", "ci-tunnel")::get
+        );
+
+        Map<String, Object> settings = resolved.settings("team-grid-web");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> teamGrid = (Map<String, Object>) settings.get("teamGrid");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> tunnel = (Map<String, Object>) teamGrid.get("tunnel");
+
+        assertEquals("eu-west-1", teamGrid.get("region"));
+        assertEquals(4, teamGrid.get("retries"));
+        assertEquals(List.of("smoke", "android"), teamGrid.get("labels"));
+        assertEquals("ci-tunnel", tunnel.get("name"));
+        assertThrows(UnsupportedOperationException.class, () -> settings.put("other", true));
+        assertThrows(UnsupportedOperationException.class, () -> teamGrid.put("other", true));
+    }
+
+    @Test
     void resolvesLocalIosDeviceAndAppSettings() throws Exception {
         Path config = writeConfig("profiles:\n"
                 + "  local-ios:\n"

@@ -126,6 +126,22 @@ Custom Java code reads these values with `PepeniumConfig.get("TEAM_GRID_REGION")
 values, while Java system properties and real environment variables retain the highest priority. Built-in keys are
 rejected under `settings` so misspellings and ambiguous duplicate configuration still fail during validation.
 
+Nested provider configuration remains structured and is available through `PepeniumConfig.getSettings()`. Global
+and profile maps merge recursively, profile values win, placeholders are resolved, and returned maps/lists are
+immutable:
+
+```yaml
+settings:
+  teamGrid:
+    region: eu-west-1
+    retries: 2
+profiles:
+  team-grid-web:
+    settings:
+      teamGrid:
+        retries: 4
+```
+
 Resolution order is:
 
 1. Java system property

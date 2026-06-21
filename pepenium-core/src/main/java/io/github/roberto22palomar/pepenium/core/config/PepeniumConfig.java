@@ -84,6 +84,17 @@ public final class PepeniumConfig {
         return Holder.CONFIG.capabilities(ACTIVE_PROFILE.get());
     }
 
+    /**
+     * Returns the deeply merged open-ended settings for the active profile.
+     *
+     * <p>Values preserve their YAML types and the returned maps and lists are immutable.</p>
+     *
+     * @return resolved global and active-profile settings
+     */
+    public static Map<String, Object> getSettings() {
+        return Holder.CONFIG.settings(ACTIVE_PROFILE.get());
+    }
+
     public static void validateProfile(String profileId) {
         Holder.CONFIG.validateResolvedProfile(profileId);
     }
@@ -319,6 +330,24 @@ public final class PepeniumConfig {
             return resolved;
         }
 
+        Map<String, Object> settings(String profileId) {
+            if (isBlank(profileId)) {
+                profileId = defaultProfile;
+            }
+            Map<String, Object> merged = new LinkedHashMap<>();
+            mergeMaps(merged, mapValue(global.get("settings")));
+            Map<String, Object> profile = profiles.get(profileId);
+            if (profile != null) {
+                mergeMaps(merged, mapValue(profile.get("settings")));
+            }
+            @SuppressWarnings("unchecked")
+            Map<String, Object> resolved = (Map<String, Object>) resolveNode(
+                    merged,
+                    isBlank(profileId) ? "settings" : "profiles." + profileId + ".settings"
+            );
+            return resolved;
+        }
+
         void validateProfile(String profileId) {
             Map<String, Object> profile = profiles.get(profileId);
             if (profile == null) {
@@ -348,11 +377,7 @@ public final class PepeniumConfig {
                 validateResolvedValue(key, value(profileId, key), profileId);
             }
             capabilities(profileId);
-            resolveNode(global.get("settings"), "settings");
-            Map<String, Object> profile = profiles.get(profileId);
-            if (profile != null) {
-                resolveNode(profile.get("settings"), "profiles." + profileId + ".settings");
-            }
+            settings(profileId);
         }
 
         private void validateResolvedValue(String key, String value, String profileId) {

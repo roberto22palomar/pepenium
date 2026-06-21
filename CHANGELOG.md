@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added an immutable structured-settings API with recursive global/profile merging for complex private-provider configuration.
 - Added open-ended global and per-profile YAML `settings` for private providers and custom driver configurations without weakening validation of built-in options.
 - Added configurable Selenium/Appium connection and command timeouts plus a fast local-endpoint preflight with actionable Appium diagnostics.
 - Added a checksum-pinned Maven 3.9.9 Wrapper so contributors and CI use the same build runtime without a global Maven installation.
