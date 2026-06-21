@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Redacted secrets when observability steps and timeline events are recorded, preventing manual messages from persisting credentials in reports.
 - Cleared timeline events and timestamps alongside step state after each test and session teardown to prevent cross-test retention in reused JUnit workers.
 - Updated stable build verification tooling (Enforcer, JaCoCo, Dependency Plugin and SpotBugs) without changing consumer runtime dependencies.
 - Included the MIT license under `META-INF/LICENSE` in every published binary artifact.

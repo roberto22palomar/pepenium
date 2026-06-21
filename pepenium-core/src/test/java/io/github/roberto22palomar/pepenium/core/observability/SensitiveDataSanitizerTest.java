@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.observability;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
@@ -11,6 +12,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SensitiveDataSanitizerTest {
+
+    @AfterEach
+    void clearObservabilityState() {
+        StepTracker.clear();
+    }
 
     @Test
     void removesCredentialsFromServerUrls() throws Exception {
@@ -65,5 +71,21 @@ class SensitiveDataSanitizerTest {
                 "request failed with Bearer ***",
                 SensitiveDataSanitizer.sanitizeText("request failed with Bearer eyJhbGciOi.secret.signature")
         );
+    }
+
+    @Test
+    void redactsSecretsBeforePersistingStepsAndTimelineEvents() {
+        StepTracker.record("Authenticate token=step-secret");
+        PepeniumTimeline.recordError("Provider returned Bearer timeline-secret");
+
+        String steps = String.valueOf(StepTracker.snapshot().getSteps());
+        String events = PepeniumTimeline.snapshot().getEvents().stream()
+                .map(PepeniumTimeline.Event::getMessage)
+                .reduce("", (left, right) -> left + right);
+
+        assertTrue(steps.contains("token=***"));
+        assertFalse(steps.contains("step-secret"));
+        assertTrue(events.contains("Bearer ***"));
+        assertFalse(events.contains("timeline-secret"));
     }
 }
