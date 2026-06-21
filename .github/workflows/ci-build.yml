@@ -54,6 +54,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -64,9 +66,6 @@ jobs:
 
       - name: Run full framework verify
         run: mvn -B -ntp verify
-
-      - name: Verify reproducible runtime artifacts
-        run: ./scripts/test-reproducible-build.sh
 
       - name: Generate coverage badge data
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -98,6 +97,9 @@ jobs:
           git commit -m "Update coverage badge"
           git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push --force origin coverage-badge
+
+      - name: Verify reproducible runtime artifacts
+        run: ./scripts/test-reproducible-build.sh
 
   consumer-smoke:
     runs-on: ubuntu-latest
