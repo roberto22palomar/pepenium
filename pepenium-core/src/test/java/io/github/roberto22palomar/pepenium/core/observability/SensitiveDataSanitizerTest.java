@@ -49,4 +49,21 @@ class SensitiveDataSanitizerTest {
 
         assertEquals("Provider rejected accessKey=*** and password: ***", sanitized);
     }
+
+    @Test
+    void redactsAuthorizationHeadersCookiesAndCredentials() {
+        Map<?, ?> sanitized = (Map<?, ?>) SensitiveDataSanitizer.sanitizeValue("headers", Map.of(
+                "Authorization", "Bearer eyJhbGciOi.secret.signature",
+                "Cookie", "session=private-value",
+                "clientCredential", "provider-secret"
+        ));
+
+        assertEquals("***", sanitized.get("Authorization"));
+        assertEquals("***", sanitized.get("Cookie"));
+        assertEquals("***", sanitized.get("clientCredential"));
+        assertEquals(
+                "request failed with Bearer ***",
+                SensitiveDataSanitizer.sanitizeText("request failed with Bearer eyJhbGciOi.secret.signature")
+        );
+    }
 }

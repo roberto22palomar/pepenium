@@ -15,7 +15,11 @@ public final class SensitiveDataSanitizer {
             "(?i)([a-z][a-z0-9+.-]*://)([^/@\\s]+)@"
     );
     private static final Pattern SECRET_ASSIGNMENT = Pattern.compile(
-            "(?i)(access[_-]?key|password|secret|token|api[_-]?key)(\\s*[=:]\\s*)([^,;\\s]+)"
+            "(?i)(access[_-]?key|password|secret|token|api[_-]?key|authorization|cookie|credential|"
+                    + "private[_-]?key|client[_-]?secret|session[_-]?key)(\\s*[=:]\\s*)([^,;\\s]+)"
+    );
+    private static final Pattern BEARER_TOKEN = Pattern.compile(
+            "(?i)(\\bbearer\\s+)[a-z0-9._~+/=-]+"
     );
 
     private SensitiveDataSanitizer() {
@@ -42,7 +46,8 @@ public final class SensitiveDataSanitizer {
             return null;
         }
         String withoutUserInfo = URL_USER_INFO.matcher(value).replaceAll("$1***@");
-        return SECRET_ASSIGNMENT.matcher(withoutUserInfo).replaceAll("$1$2***");
+        String withoutBearerTokens = BEARER_TOKEN.matcher(withoutUserInfo).replaceAll("$1***");
+        return SECRET_ASSIGNMENT.matcher(withoutBearerTokens).replaceAll("$1$2***");
     }
 
     public static Object sanitizeValue(String key, Object value) {
@@ -79,10 +84,18 @@ public final class SensitiveDataSanitizer {
 
     private static boolean isSensitiveKey(String key) {
         String normalized = key == null ? "" : key.toLowerCase(Locale.ROOT).replace("_", "").replace("-", "");
+        if ("credentials".equals(normalized)) {
+            return false;
+        }
         return normalized.contains("accesskey")
                 || normalized.contains("password")
                 || normalized.contains("secret")
                 || normalized.contains("token")
-                || normalized.contains("apikey");
+                || normalized.contains("apikey")
+                || normalized.contains("authorization")
+                || normalized.contains("cookie")
+                || normalized.contains("credential")
+                || normalized.contains("privatekey")
+                || normalized.contains("sessionkey");
     }
 }

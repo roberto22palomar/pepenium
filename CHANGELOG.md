@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Expanded diagnostic redaction to authorization headers, bearer tokens, cookies, credentials, private keys and session keys.
 - Added stable `Automatic-Module-Name` manifest entries to every published JAR for JPMS-aware consumers.
 - Prevented invalid YAML content from leaking credentials through nested exception causes and hardened the bundled profile parser with the same resource limits as external configuration.
 - Reduced the Maven plugin runtime classpath to Pepenium configuration code and SnakeYAML instead of loading Selenium, Appium, JUnit and SLF4J into Maven.
