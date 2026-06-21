@@ -2,7 +2,10 @@ package io.github.roberto22palomar.pepenium.core.config.yaml;
 
 import io.github.roberto22palomar.pepenium.core.config.browserstack.BrowserStackConfig;
 import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
+import io.github.roberto22palomar.pepenium.core.observability.SensitiveDataSanitizer;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -20,12 +23,28 @@ public final class YamlLoader {
     public static BrowserStackConfig load(String yamlPath) {
         Path resolvedPath = resolvePath(yamlPath);
         try (InputStream in = Files.newInputStream(resolvedPath)) {
-            BrowserStackConfig config = new Yaml().loadAs(in, BrowserStackConfig.class);
+            BrowserStackConfig config = loadAs(in, BrowserStackConfig.class);
             return ConfigValidationSupport.validateBrowserStackAppConfig(config, resolvedPath.toString());
         } catch (Exception e) {
-            throw ConfigValidationSupport.invalid(
-                    "Failed to load BrowserStack YAML from '" + resolvedPath + "': " + e.getMessage(), e);
+            throw loadFailure(resolvedPath, e);
         }
+    }
+
+    static <T> T loadAs(InputStream input, Class<T> type) {
+        LoaderOptions options = new LoaderOptions();
+        options.setAllowDuplicateKeys(false);
+        options.setMaxAliasesForCollections(50);
+        options.setNestingDepthLimit(50);
+        options.setCodePointLimit(3 * 1024 * 1024);
+        return new Yaml(new Constructor(type, options)).loadAs(input, type);
+    }
+
+    static IllegalStateException loadFailure(Path path, Exception error) {
+        return ConfigValidationSupport.invalid(
+                "Failed to load BrowserStack YAML from '" + path + "': "
+                        + SensitiveDataSanitizer.sanitizeText(error.getMessage()),
+                error
+        );
     }
 
     static Path resolvePath(String yamlPath) {

@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.config;
 
+import io.github.roberto22palomar.pepenium.core.observability.SensitiveDataSanitizer;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -127,7 +128,8 @@ public final class PepeniumConfig {
             }
             return ResolvedConfig.from((Map<?, ?>) document, environment, path);
         } catch (YAMLException error) {
-            throw invalid("Could not parse YAML file " + path.toAbsolutePath() + ": " + error.getMessage(), error);
+            throw invalid("Could not parse YAML file " + path.toAbsolutePath() + ": "
+                    + SensitiveDataSanitizer.sanitizeText(error.getMessage()), error);
         } catch (IOException error) {
             throw invalid("Could not read configuration file " + path.toAbsolutePath(), error);
         }

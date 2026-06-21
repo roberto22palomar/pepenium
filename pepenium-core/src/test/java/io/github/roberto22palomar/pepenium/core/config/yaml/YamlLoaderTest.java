@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -119,5 +120,27 @@ class YamlLoaderTest {
         );
 
         assertTrue(error.getMessage().contains("BrowserStack app is required"));
+    }
+
+    @Test
+    void rejectsDuplicateBrowserStackYamlKeys() throws Exception {
+        Path invalidYaml = Files.createTempFile("browserstack-duplicate", ".yml");
+        Files.writeString(invalidYaml, "userName: user\n"
+                + "accessKey: first-secret\n"
+                + "accessKey: second-secret\n"
+                + "app: bs://app\n"
+                + "platforms:\n"
+                + "  - platformName: Android\n"
+                + "    deviceName: Pixel 9\n"
+                + "    platformVersion: '15'\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> YamlLoader.load(invalidYaml.toString())
+        );
+
+        assertTrue(error.getMessage().contains("duplicate key accessKey"));
+        assertFalse(error.getMessage().contains("first-secret"));
+        assertFalse(error.getMessage().contains("second-secret"));
     }
 }
