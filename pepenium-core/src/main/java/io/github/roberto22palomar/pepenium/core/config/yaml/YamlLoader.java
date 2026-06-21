@@ -7,6 +7,7 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,11 +41,11 @@ public final class YamlLoader {
     }
 
     static IllegalStateException loadFailure(Path path, Exception error) {
-        return ConfigValidationSupport.invalid(
-                "Failed to load BrowserStack YAML from '" + path + "': "
-                        + SensitiveDataSanitizer.sanitizeText(error.getMessage()),
-                error
-        );
+        String message = "Failed to load BrowserStack YAML from '" + path + "': "
+                + SensitiveDataSanitizer.sanitizeText(error.getMessage());
+        return error instanceof IOException
+                ? ConfigValidationSupport.invalid(message, error)
+                : ConfigValidationSupport.invalid(message);
     }
 
     static Path resolvePath(String yamlPath) {

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -185,6 +186,7 @@ class PepeniumConfigTest {
         assertTrue(error.getMessage().contains("Could not parse YAML file"));
         assertTrue(error.getMessage().contains(config.toAbsolutePath().toString()));
         assertTrue(error.getMessage().contains("duplicate key"));
+        assertNull(error.getCause());
     }
 
     @Test

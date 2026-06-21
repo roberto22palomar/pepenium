@@ -129,7 +129,7 @@ public final class PepeniumConfig {
             return ResolvedConfig.from((Map<?, ?>) document, environment, path);
         } catch (YAMLException error) {
             throw invalid("Could not parse YAML file " + path.toAbsolutePath() + ": "
-                    + SensitiveDataSanitizer.sanitizeText(error.getMessage()), error);
+                    + SensitiveDataSanitizer.sanitizeText(error.getMessage()));
         } catch (IOException error) {
             throw invalid("Could not read configuration file " + path.toAbsolutePath(), error);
         }
