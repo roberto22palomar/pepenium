@@ -154,6 +154,22 @@ class PepeniumConfigTest {
     }
 
     @Test
+    void rejectsDuplicateYamlKeysWithFileContext() throws Exception {
+        Path config = writeConfig("defaultProfile: local-web\n"
+                + "defaultProfile: local-android\n"
+                + "profiles: {}\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("Could not parse YAML file"));
+        assertTrue(error.getMessage().contains(config.toAbsolutePath().toString()));
+        assertTrue(error.getMessage().contains("duplicate key"));
+    }
+
+    @Test
     void rejectsUnsupportedSchemaVersions() throws Exception {
         Path config = writeConfig("schemaVersion: 2\nprofiles: {}\n");
 

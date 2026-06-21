@@ -1,6 +1,9 @@
 package io.github.roberto22palomar.pepenium.core.config;
 
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -115,7 +118,7 @@ public final class PepeniumConfig {
             return ResolvedConfig.empty(environment);
         }
         try (InputStream input = Files.newInputStream(path)) {
-            Object document = new Yaml().load(input);
+            Object document = createYamlParser().load(input);
             if (document == null) {
                 return ResolvedConfig.empty(environment);
             }
@@ -123,9 +126,20 @@ public final class PepeniumConfig {
                 throw invalid("Configuration root must be a YAML object in " + path.toAbsolutePath());
             }
             return ResolvedConfig.from((Map<?, ?>) document, environment, path);
+        } catch (YAMLException error) {
+            throw invalid("Could not parse YAML file " + path.toAbsolutePath() + ": " + error.getMessage(), error);
         } catch (IOException error) {
             throw invalid("Could not read configuration file " + path.toAbsolutePath(), error);
         }
+    }
+
+    private static Yaml createYamlParser() {
+        LoaderOptions options = new LoaderOptions();
+        options.setAllowDuplicateKeys(false);
+        options.setMaxAliasesForCollections(50);
+        options.setNestingDepthLimit(50);
+        options.setCodePointLimit(3 * 1024 * 1024);
+        return new Yaml(new SafeConstructor(options));
     }
 
     private static ResolvedConfig loadCurrent() {

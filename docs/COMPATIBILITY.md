@@ -13,9 +13,14 @@ This document defines the compatibility contract Pepenium intends to carry into 
 | Selenium | Managed by the versioned Selenium BOM | Full framework verification |
 | Appium Java client | Version pinned by the parent POM | Local, AWS and BrowserStack request-contract tests |
 | Configuration | `pepenium.yml` schema version 1 | Runtime validation, CLI preflight and editor schema |
+| Dependency graph | Convergent runtime versions | Maven Enforcer on every reactor build |
 
 Real device availability, installed browsers, Appium servers and provider accounts remain consumer infrastructure.
 Pepenium validates the requests it builds for those environments without requiring secrets in pull-request CI.
+
+### Logging backend ownership
+
+Pepenium depends only on the SLF4J API at runtime and uses SLF4J MDC for session context. It does not publish or force a logging backend or a root logging configuration. Consumer projects select the SLF4J 2.x provider that matches their application (for example Logback or Log4j 2), and Pepenium follows that project's logging policy.
 
 ## Public API Stability
 
@@ -28,6 +33,8 @@ The classes listed as public in [API.md](API.md) are compatibility checked with 
 
 Provider SDKs and browser/mobile platforms evolve independently. Dependency upgrades are tested against the consumer
 smoke project and runtime matrix before release.
+
+Published archives use a fixed Maven output timestamp so the same source and dependency graph produce stable JAR content. The API compatibility gate compares release candidates with the latest published Pepenium release, not an older historical baseline.
 
 ## Configuration Compatibility
 

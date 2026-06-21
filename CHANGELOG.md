@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Added a helper that builds published runtime artifacts twice and compares their SHA-256 hashes.
+- Raised the binary API comparison baseline to the latest published `0.9.7`, enforced dependency convergence and made Maven archive timestamps reproducible.
+- Decoupled Pepenium from the Log4j runtime by using the SLF4J MDC contract and stopped publishing a root logging configuration, allowing consumers to choose their own SLF4J backend safely.
+- Hardened `pepenium.yml` loading with safe parser limits, duplicate-key rejection and file-aware syntax diagnostics.
 - Extended the standalone consumer smoke and release publication flow to install, execute and publish the configuration plugin as a first-class artifact.
 - Expanded CI and release preflight with Java 11/17/21 runtime checks and Linux, Windows and macOS portability coverage.
 - Switched compilation to `--release 11` so newer build JDKs cannot accidentally leak newer Java APIs into published artifacts.

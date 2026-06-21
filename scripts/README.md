@@ -2,6 +2,10 @@
 
 These scripts wrap common validation flows so contributors do not need to remember long Maven command lines.
 
+## Reproducible Artifacts
+
+Run `./scripts/test-reproducible-build.sh` on Linux or macOS to build the three published runtime artifacts twice and verify identical SHA-256 hashes.
+
 ## Consumer Smoke
 
 Validate that Pepenium can be consumed from a standalone Maven project:

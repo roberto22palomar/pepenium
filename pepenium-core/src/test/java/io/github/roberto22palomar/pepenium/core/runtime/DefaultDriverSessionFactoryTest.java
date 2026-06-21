@@ -6,7 +6,7 @@ import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import io.github.roberto22palomar.pepenium.core.observability.LoggingContext;
-import org.apache.logging.log4j.ThreadContext;
+import org.slf4j.MDC;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -60,8 +60,8 @@ class DefaultDriverSessionFactoryTest {
             assertSame(request, session.getRequest());
             assertNotNull(constructedOptions.get());
             assertEquals("chrome", constructedOptions.get().getBrowserName());
-            assertEquals("chrome-session-123456", ThreadContext.get("sessionId"));
-            assertEquals("chrome-s", ThreadContext.get("sessionShort"));
+            assertEquals("chrome-session-123456", MDC.get("sessionId"));
+            assertEquals("chrome-s", MDC.get("sessionShort"));
         }
     }
 
@@ -87,8 +87,8 @@ class DefaultDriverSessionFactoryTest {
             assertSame(request, session.getRequest());
             assertNotNull(constructedOptions.get());
             assertEquals(Boolean.TRUE, constructedOptions.get().getCapability("acceptInsecureCerts"));
-            assertEquals("firefox-session-123456", ThreadContext.get("sessionId"));
-            assertEquals("firefox-", ThreadContext.get("sessionShort"));
+            assertEquals("firefox-session-123456", MDC.get("sessionId"));
+            assertEquals("firefox-", MDC.get("sessionShort"));
         }
     }
 
@@ -113,8 +113,8 @@ class DefaultDriverSessionFactoryTest {
 
             assertSame(request, session.getRequest());
             assertSame(capabilities, constructedOptions.get());
-            assertEquals("edge-session-123456", ThreadContext.get("sessionId"));
-            assertEquals("edge-ses", ThreadContext.get("sessionShort"));
+            assertEquals("edge-session-123456", MDC.get("sessionId"));
+            assertEquals("edge-ses", MDC.get("sessionShort"));
         }
     }
 
@@ -170,7 +170,7 @@ class DefaultDriverSessionFactoryTest {
             DriverSession session = factory.create(request);
 
             assertSame(construction.constructed().get(0), session.getDriver());
-            assertEquals("remote-session", ThreadContext.get("sessionId"));
+            assertEquals("remote-session", MDC.get("sessionId"));
         }
     }
 
@@ -196,7 +196,7 @@ class DefaultDriverSessionFactoryTest {
             DriverSession session = factory.create(request);
 
             assertSame(construction.constructed().get(0), session.getDriver());
-            assertEquals("android-session", ThreadContext.get("sessionId"));
+            assertEquals("android-session", MDC.get("sessionId"));
         }
     }
 
@@ -222,7 +222,7 @@ class DefaultDriverSessionFactoryTest {
             DriverSession session = factory.create(request);
 
             assertSame(construction.constructed().get(0), session.getDriver());
-            assertEquals("ios-session", ThreadContext.get("sessionId"));
+            assertEquals("ios-session", MDC.get("sessionId"));
         }
     }
 }
