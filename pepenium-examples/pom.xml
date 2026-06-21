@@ -15,6 +15,7 @@
     <description>Repository-only runnable examples and showcase templates built on top of Pepenium core and toolkit.</description>
 
     <properties>
+        <pepenium.module.name>io.github.roberto22palomar.pepenium.examples</pepenium.module.name>
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.install.skip>true</maven.install.skip>
         <central.skipPublishing>true</central.skipPublishing>
