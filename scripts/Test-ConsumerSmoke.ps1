@@ -10,9 +10,9 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 function Invoke-Maven {
     param([string[]] $Arguments)
 
-    & mvn @Arguments
+    & (Join-Path $repoRoot "mvnw.cmd") @Arguments
     if ($LASTEXITCODE -ne 0) {
-        throw "Maven command failed with exit code ${LASTEXITCODE}: mvn $($Arguments -join ' ')"
+        throw "Maven Wrapper failed with exit code ${LASTEXITCODE}: $($Arguments -join ' ')"
     }
 }
 

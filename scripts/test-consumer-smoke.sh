@@ -29,7 +29,7 @@ done
 cd "$ROOT_DIR"
 
 if [[ "$SKIP_INSTALL" -eq 0 ]]; then
-  mvn -B -ntp \
+  ./mvnw -B -ntp \
     -pl pepenium-core,pepenium-toolkit,pepenium-maven-plugin \
     -am install \
     -DskipTests \
@@ -44,4 +44,4 @@ if [[ -n "$PEPENIUM_VERSION" ]]; then
   SMOKE_ARGS+=("-Dpepenium.version=$PEPENIUM_VERSION")
 fi
 
-mvn "${SMOKE_ARGS[@]}"
+./mvnw "${SMOKE_ARGS[@]}"

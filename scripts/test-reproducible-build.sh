@@ -4,7 +4,7 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
-version="$(mvn -q help:evaluate -Dexpression=project.version -DforceStdout)"
+version="$(./mvnw -q help:evaluate -Dexpression=project.version -DforceStdout)"
 artifacts=(
   "pepenium-core/target/pepenium-${version}.jar"
   "pepenium-toolkit/target/pepenium-toolkit-${version}.jar"
@@ -12,7 +12,7 @@ artifacts=(
 )
 
 build_runtime_artifacts() {
-  mvn -B -ntp clean package -DskipTests \
+  ./mvnw -B -ntp clean package -DskipTests \
     -Djacoco.skip=true \
     -Dcheckstyle.skip=true \
     -Dspotbugs.skip=true \
