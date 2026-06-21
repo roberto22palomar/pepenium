@@ -58,12 +58,12 @@ Basic requirements:
 Typical commands:
 
 ```bash
-mvn verify
+./mvnw verify
 ```
 
 Some features require specific execution profiles or provider credentials, especially BrowserStack and AWS Device Farm flows.
 
-When validating public API compatibility, `mvn verify` now runs the automatic binary/source compatibility check for the documented public API. Also run:
+When validating public API compatibility, `./mvnw verify` runs the automatic binary/source compatibility check for the documented public API. Also run:
 
 ```bash
 ./scripts/test-consumer-smoke.sh

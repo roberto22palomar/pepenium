@@ -8,7 +8,7 @@ This document defines the compatibility contract Pepenium intends to carry into 
 | --- | --- | --- |
 | Java bytecode | Java 11 | Compiled with `--release 11` |
 | Java runtimes | 11, 17 and 21 | Unit and provider-contract tests on every pull request |
-| Build tool | Maven 3.9+ | Enforced by Maven Enforcer |
+| Build tool | Maven Wrapper 3.9.9; Maven 3.9+ supported | Wrapper checksum and Maven Enforcer |
 | Operating systems | Linux, Windows and macOS | Portable tests run across all three in CI |
 | Selenium | Managed by the versioned Selenium BOM | Full framework verification |
 | Appium Java client | Version pinned by the parent POM | Local, AWS and BrowserStack request-contract tests |

@@ -35,7 +35,7 @@ If you are new to the project, start with [START-HERE.md](docs/START-HERE.md).
 
 Recommended first steps:
 
-1. Run `mvn -q -DskipTests test-compile`
+1. Run `./mvnw -q -DskipTests test-compile` (`mvnw.cmd` on Windows)
 2. Run the desktop web showcase for your first live success
 3. Move to Android only after the web path is working
 
@@ -73,7 +73,7 @@ The main CI workflow now runs framework `verify` and then validates that standal
 
 ## Quality
 
-- CI runs `mvn verify` on every push and pull request to `main`
+- CI runs the pinned Maven Wrapper on every push and pull request to `main`
 - Coverage is aggregated from the JaCoCo reports produced by `pepenium-core` and `pepenium-toolkit`
 - Checkstyle, SpotBugs and `japicmp` are part of the normal verification path
 - The standalone `consumer-smoke` project validates public API consumption from outside the main reactor

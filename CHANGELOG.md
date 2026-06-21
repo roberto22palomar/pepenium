@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added a checksum-pinned Maven 3.9.9 Wrapper so contributors and CI use the same build runtime without a global Maven installation.
 - Added first-class `local-ios` and `local-ios-web` execution profiles, YAML settings and starter generation for XCUITest native and Safari sessions.
 - Added a non-destructive `pepenium:init-config` Maven goal with schema-linked starters for local web, local Android and BrowserStack web adoption.
 - Added `pepenium-maven-plugin` with a `validate-config` goal that validates a selected YAML profile during Maven's `validate` phase without opening a driver session.
