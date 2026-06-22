@@ -11,7 +11,7 @@ import java.net.URL;
 @Getter
 @Builder(toBuilder = true)
 @SuppressFBWarnings(
-        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
+        value = "EI_EXPOSE_REP",
         justification = "The owned Appium service is intentionally passed through as a non-copyable runtime handle."
 )
 public class DriverRequest {

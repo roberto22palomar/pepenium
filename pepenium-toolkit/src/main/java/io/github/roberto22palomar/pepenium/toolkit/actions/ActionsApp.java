@@ -6,6 +6,7 @@ import io.appium.java_client.AppiumDriver;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import io.github.roberto22palomar.pepenium.toolkit.support.ActionLoggingSupport;
 import io.github.roberto22palomar.pepenium.toolkit.support.FastUiSettle;
+import io.github.roberto22palomar.pepenium.toolkit.support.ToolkitTimeouts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -29,14 +30,15 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Slf4j
 @SuppressFBWarnings(
-        value = "EI_EXPOSE_REP2",
-        justification = "The Appium driver is a shared mutable runtime handle intentionally owned elsewhere."
+        value = "EI_EXPOSE_REP",
+        justification = "The Appium driver is a shared mutable runtime handle intentionally exposed to advanced callers."
 )
-public class ActionsApp {
+public class ActionsApp implements MobileActions {
 
     private final AppiumDriver driver;
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(6L);
@@ -45,21 +47,37 @@ public class ActionsApp {
     private static final Duration SCREENSHOT_SETTLE_POLL = Duration.ofMillis(120);
     private static final Duration SCREENSHOT_SETTLE_BUFFER = Duration.ofMillis(80);
 
+    @Override
+    public AppiumDriver getDriver() {
+        return this.driver;
+    }
+
+    @Override
     public WebElement waitToBePresent(By locator) {
         ActionLoggingSupport.recordWait("Wait for present " + locator);
-        WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
+        WebDriverWait wait = new WebDriverWait(driver, longTimeout());
         return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
     }
 
+    @Override
     public WebElement waitToBeVisible(By locator) {
         ActionLoggingSupport.recordWait("Wait for visible " + locator);
-        WebDriverWait wait = new WebDriverWait(driver, DEFAULT_TIMEOUT);
+        WebDriverWait wait = new WebDriverWait(driver, defaultTimeout());
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
+    @Override
+    public WebElement waitToBeClickable(By locator) {
+        ActionLoggingSupport.recordWait("Wait for clickable " + locator);
+        WebDriverWait wait = new WebDriverWait(driver, defaultTimeout());
+        return wait.until(ExpectedConditions.elementToBeClickable(locator));
+    }
+
+    @Override
     public boolean waitForElementText(By locator, String expectedText) {
+        Objects.requireNonNull(expectedText, "expectedText must not be null");
         try {
-            return new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            return new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.textToBe(locator, expectedText));
         } catch (TimeoutException e) {
             log.warn("Timeout waiting for text '{}' on element: {}", expectedText, locator);
@@ -67,6 +85,7 @@ public class ActionsApp {
         }
     }
 
+    @Override
     public boolean isElementPresent(By locator) {
         try {
             driver.findElement(locator);
@@ -76,9 +95,10 @@ public class ActionsApp {
         }
     }
 
+    @Override
     public boolean isElementVisible(By locator) {
         try {
-            new WebDriverWait(driver, DEFAULT_TIMEOUT)
+            new WebDriverWait(driver, defaultTimeout())
                     .until(ExpectedConditions.visibilityOfElementLocated(locator));
             return true;
         } catch (TimeoutException e) {
@@ -87,6 +107,18 @@ public class ActionsApp {
         }
     }
 
+    @Override
+    public boolean waitGone(By locator) {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, longTimeout());
+            return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+        } catch (TimeoutException e) {
+            log.warn("Timeout waiting for element to disappear: {}", locator);
+            return false;
+        }
+    }
+
+    @Override
     public String getElementText(By locator) {
         try {
             WebElement element = waitToBePresent(locator);
@@ -97,12 +129,12 @@ public class ActionsApp {
         }
     }
 
+    @Override
     public void click(By locator) {
         StepTracker.record("Tap " + locator);
         ActionLoggingSupport.recordAction("Tap " + locator);
         try {
-            WebElement element = new WebDriverWait(driver, DEFAULT_TIMEOUT)
-                    .until(ExpectedConditions.elementToBeClickable(locator));
+            WebElement element = waitToBeClickable(locator);
             element.click();
         } catch (TimeoutException e) {
             ActionLoggingSupport.logTimeout(log, "tap", locator, e);
@@ -113,6 +145,7 @@ public class ActionsApp {
         }
     }
 
+    @Override
     public boolean waitStableScreen() {
         final By root = AppiumBy.androidUIAutomator("new UiSelector().resourceId(\"android:id/content\")");
         final By spinner = AppiumBy.androidUIAutomator("new UiSelector().className(\"android.widget.ProgressBar\")");
@@ -151,6 +184,7 @@ public class ActionsApp {
         return false;
     }
 
+    @Override
     public boolean clickIfVisible(By locator) {
         if (isElementVisible(locator)) {
             click(locator);
@@ -159,7 +193,9 @@ public class ActionsApp {
         return false;
     }
 
+    @Override
     public void type(By locator, String text) {
+        Objects.requireNonNull(text, "text must not be null");
         StepTracker.record("Type into " + locator);
         ActionLoggingSupport.recordAction("Type into " + locator);
         try {
@@ -173,19 +209,18 @@ public class ActionsApp {
         }
     }
 
+    @Override
     public void waitUntilHidden(By locator) {
         StepTracker.record("Wait until hidden " + locator);
         ActionLoggingSupport.recordWait("Wait until hidden " + locator);
-        try {
-            WebDriverWait wait = new WebDriverWait(driver, LONG_TIMEOUT);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
-        } catch (TimeoutException e) {
+        if (!waitGone(locator)) {
+            TimeoutException e = new TimeoutException("Element stayed visible: " + locator);
             ActionLoggingSupport.logTimeout(log, "hidden wait", locator, e);
             throw e;
         }
     }
 
+    @Override
     public void swipeUp() {
         StepTracker.record("Swipe up");
         ActionLoggingSupport.recordAction("Swipe up");
@@ -207,6 +242,7 @@ public class ActionsApp {
         driver.perform(Collections.singletonList(swipe));
     }
 
+    @Override
     public void swipeDown() {
         StepTracker.record("Swipe down");
         ActionLoggingSupport.recordAction("Swipe down");
@@ -229,6 +265,7 @@ public class ActionsApp {
         takeScreenshot();
     }
 
+    @Override
     public void swipeLeft() {
         StepTracker.record("Swipe left");
         ActionLoggingSupport.recordAction("Swipe left");
@@ -250,6 +287,7 @@ public class ActionsApp {
         driver.perform(Collections.singletonList(swipe));
     }
 
+    @Override
     public void swipeRight() {
         StepTracker.record("Swipe right");
         ActionLoggingSupport.recordAction("Swipe right");
@@ -272,7 +310,9 @@ public class ActionsApp {
         takeScreenshot();
     }
 
+    @Override
     public WebElement scrollToElement(By locator, int maxSwipes) {
+        validateScrollToElementArguments(locator, maxSwipes);
         StepTracker.record("Scroll to " + locator);
         ActionLoggingSupport.recordAction("Scroll to " + locator);
         int attempts = 0;
@@ -292,11 +332,19 @@ public class ActionsApp {
         throw new NoSuchElementException("Element not found after " + maxSwipes + " swipes: " + locator);
     }
 
+    private void validateScrollToElementArguments(By locator, int maxSwipes) {
+        Objects.requireNonNull(locator, "locator must not be null");
+        if (maxSwipes < 1) {
+            throw new IllegalArgumentException("maxSwipes must be at least 1");
+        }
+    }
+
     public void swipeAtElement(By locator,
                                Direction direction,
                                int times,
                                double percent,
                                int durationMs) {
+        validateSwipeAtElementArguments(direction, times, percent, durationMs);
         StepTracker.record("Swipe " + direction + " on " + locator + " x" + times);
         ActionLoggingSupport.recordAction("Swipe " + direction + " on " + locator + " x" + times);
 
@@ -350,6 +398,58 @@ public class ActionsApp {
         driver.perform(Collections.singletonList(swipe));
     }
 
+    private void validateSwipeAtElementArguments(Direction direction, int times, double percent, int durationMs) {
+        if (direction == null) {
+            throw new IllegalArgumentException("Swipe direction must not be null");
+        }
+        if (times < 1) {
+            throw new IllegalArgumentException("Swipe times must be at least 1");
+        }
+        if (percent <= 0.0 || percent > 1.0) {
+            throw new IllegalArgumentException("Swipe percent must be greater than 0 and at most 1");
+        }
+        if (durationMs < 1) {
+            throw new IllegalArgumentException("Swipe durationMs must be at least 1");
+        }
+    }
+
+    private void validateSwipeAtElementArguments(SwipeDirection direction, int times, double percent, int durationMs) {
+        if (direction == null) {
+            throw new IllegalArgumentException("Swipe direction must not be null");
+        }
+        validateSwipeAtElementArguments(Direction.valueOf(direction.name()), times, percent, durationMs);
+    }
+
+    @Override
+    public void swipeAtElement(By locator,
+                               SwipeDirection direction,
+                               int times,
+                               double percent,
+                               int durationMs) {
+        validateSwipeAtElementArguments(direction, times, percent, durationMs);
+        swipeAtElement(locator, Direction.valueOf(direction.name()), times, percent, durationMs);
+    }
+
+    @Override
+    public void tapCenter() {
+        StepTracker.record("Tap screen center");
+        ActionLoggingSupport.recordAction("Tap screen center");
+        Dimension size = driver.manage().window().getSize();
+        tapPoint(size.width / 2, size.height / 2, 80);
+    }
+
+    private void tapPoint(int x, int y, int ms) {
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence tap = new Sequence(finger, 1)
+                .addAction(finger.createPointerMove(Duration.ZERO,
+                        PointerInput.Origin.viewport(), x, y))
+                .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(finger.createPointerMove(Duration.ofMillis(ms),
+                        PointerInput.Origin.viewport(), x, y))
+                .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        driver.perform(Collections.singletonList(tap));
+    }
+
     private Point clampToViewport(int x, int y) {
         Dimension size = driver.manage().window().getSize();
         int safeX = Math.max(5, Math.min(size.getWidth() - 5, x));
@@ -359,10 +459,12 @@ public class ActionsApp {
 
     public enum Direction {UP, DOWN, LEFT, RIGHT}
 
+    @Override
     public String takeScreenshotFast() {
         return takeScreenshot(false);
     }
 
+    @Override
     public String takeScreenshot() {
         return takeScreenshot(true);
     }
@@ -371,6 +473,7 @@ public class ActionsApp {
             value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE",
             justification = "Screenshot output falls back to a concrete filesystem path before resolution."
     )
+    @Override
     public String takeScreenshot(boolean settleBeforeCapture) {
         StepTracker.record(settleBeforeCapture ? "Take screenshot" : "Take fast screenshot");
         if (driver == null) {
@@ -384,7 +487,7 @@ public class ActionsApp {
             }
 
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            String filename = "screenshot_" + Instant.now().toEpochMilli() + ".png";
+            String filename = uniqueScreenshotFileName("screenshot");
             Path screenshotBaseDir = resolveScreenshotBaseDir();
             Path filePath = screenshotBaseDir.resolve(filename);
             Files.createDirectories(filePath.getParent());
@@ -421,5 +524,18 @@ public class ActionsApp {
 
     private Path resolveScreenshotBaseDir() {
         return ActionLoggingSupport.resolveScreenshotBaseDir();
+    }
+
+    private Duration defaultTimeout() {
+        return ToolkitTimeouts.actionTimeout(DEFAULT_TIMEOUT);
+    }
+
+    private Duration longTimeout() {
+        return ToolkitTimeouts.longActionTimeout(LONG_TIMEOUT);
+    }
+
+    private String uniqueScreenshotFileName(String prefix) {
+        return prefix + "_" + Instant.now().toEpochMilli()
+                + "_" + Long.toUnsignedString(System.nanoTime(), 36) + ".png";
     }
 }

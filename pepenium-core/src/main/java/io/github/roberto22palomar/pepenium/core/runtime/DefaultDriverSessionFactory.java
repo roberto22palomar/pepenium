@@ -6,6 +6,7 @@ import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.observability.CapabilitiesSummary;
 import io.github.roberto22palomar.pepenium.core.observability.LoggingContext;
 import io.github.roberto22palomar.pepenium.core.observability.PepeniumBanner;
+import io.github.roberto22palomar.pepenium.core.observability.SensitiveDataSanitizer;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
@@ -16,67 +17,115 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.HttpCommandExecutor;
+import org.openqa.selenium.remote.http.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.time.Duration;
+import java.util.function.BiConsumer;
 
 public class DefaultDriverSessionFactory implements DriverSessionFactory {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultDriverSessionFactory.class);
+    private final BiConsumer<DriverRequest, Duration> endpointPreflight;
+
+    public DefaultDriverSessionFactory() {
+        this(DriverEndpointPreflight::verifyLocalEndpoint);
+    }
+
+    DefaultDriverSessionFactory(BiConsumer<DriverRequest, Duration> endpointPreflight) {
+        this.endpointPreflight = endpointPreflight;
+    }
 
     @Override
     public DriverSession create(DriverRequest request) throws Exception {
-        PepeniumBanner.print(request);
-        log.info("Creating driver session: description='{}', capabilities={}",
-                request.getDescription(),
-                CapabilitiesSummary.summarize(request.getCapabilities()));
-        if (request.getServerUrl() != null) {
-            log.info("Driver server: {}", sanitizeServerUrl(request.getServerUrl()));
+        try {
+            validateRequest(request);
+            Duration connectTimeout = SessionTimeouts.connectTimeout();
+            Duration commandTimeout = SessionTimeouts.commandTimeout();
+            endpointPreflight.accept(request, connectTimeout);
+            PepeniumBanner.print(request);
+            log.info("Creating driver session: description='{}', capabilities={}",
+                    request.getDescription(),
+                    CapabilitiesSummary.summarize(request.getCapabilities()));
+            if (request.getServerUrl() != null) {
+                log.info("Driver server: {}", SensitiveDataSanitizer.sanitizeServerUrl(request.getServerUrl()));
+            }
+            log.info("Effective capabilities: {}", CapabilitiesSummary.describe(request.getCapabilities()));
+            log.info("Session transport timeouts: connect={}, command={}", connectTimeout, commandTimeout);
+
+            WebDriver driver;
+            switch (request.getDriverType()) {
+                case ANDROID_APPIUM:
+                    driver = new AndroidDriver(commandExecutor(request, connectTimeout, commandTimeout),
+                            requireCapabilities(request));
+                    break;
+                case IOS_APPIUM:
+                    driver = new IOSDriver(commandExecutor(request, connectTimeout, commandTimeout),
+                            requireCapabilities(request));
+                    break;
+                case REMOTE_WEB:
+                    driver = new RemoteWebDriver(commandExecutor(request, connectTimeout, commandTimeout),
+                            requireCapabilities(request));
+                    break;
+                case LOCAL_CHROME:
+                    driver = new ChromeDriver(resolveChromeOptions(request.getCapabilities()));
+                    break;
+                case LOCAL_FIREFOX:
+                    driver = new FirefoxDriver(resolveFirefoxOptions(request.getCapabilities()));
+                    break;
+                case LOCAL_EDGE:
+                    driver = new EdgeDriver(resolveEdgeOptions(request.getCapabilities()));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported driver type: " + request.getDriverType());
+            }
+
+            String sessionId = String.valueOf(((RemoteWebDriver) driver).getSessionId());
+            LoggingContext.setSessionId(sessionId);
+            log.info("Driver session created successfully");
+            return new DriverSession(driver, request);
+        } catch (Exception error) {
+            if (request != null && request.getOwnedService() != null) {
+                try {
+                    request.getOwnedService().stop();
+                } catch (RuntimeException stopError) {
+                    error.addSuppressed(stopError);
+                }
+            }
+            throw error;
         }
-        log.info("Effective capabilities: {}", CapabilitiesSummary.describe(request.getCapabilities()));
-        WebDriver driver;
-
-        switch (request.getDriverType()) {
-            case ANDROID_APPIUM:
-                driver = new AndroidDriver(requireServerUrl(request), requireCapabilities(request));
-                break;
-            case IOS_APPIUM:
-                driver = new IOSDriver(requireServerUrl(request), requireCapabilities(request));
-                break;
-            case REMOTE_WEB:
-                driver = new RemoteWebDriver(requireServerUrl(request), requireCapabilities(request));
-                break;
-            case LOCAL_CHROME:
-                driver = new ChromeDriver(resolveChromeOptions(request.getCapabilities()));
-                break;
-            case LOCAL_FIREFOX:
-                driver = new FirefoxDriver(resolveFirefoxOptions(request.getCapabilities()));
-                break;
-            case LOCAL_EDGE:
-                driver = new EdgeDriver(resolveEdgeOptions(request.getCapabilities()));
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported driver type: " + request.getDriverType());
-        }
-
-        String sessionId = String.valueOf(((RemoteWebDriver) driver).getSessionId());
-        LoggingContext.setSessionId(sessionId);
-        log.info("Driver session created successfully");
-
-        return new DriverSession(driver, request);
     }
 
-    private String sanitizeServerUrl(URL url) {
-        if (url == null) {
-            return "none";
+    private void validateRequest(DriverRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Driver request must not be null");
         }
-        String userInfo = url.getUserInfo();
-        if (userInfo == null || userInfo.isBlank()) {
-            return url.toString();
+        if (request.getDriverType() == null) {
+            throw new IllegalStateException("Driver request does not provide a driver type: " + request.getDescription());
         }
-        String raw = url.toString();
-        return raw.replace(userInfo + "@", "***@");
+        switch (request.getDriverType()) {
+            case ANDROID_APPIUM:
+            case IOS_APPIUM:
+            case REMOTE_WEB:
+                requireServerUrl(request);
+                requireCapabilities(request);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private HttpCommandExecutor commandExecutor(DriverRequest request,
+                                                Duration connectTimeout,
+                                                Duration commandTimeout) {
+        ClientConfig clientConfig = ClientConfig.defaultConfig()
+                .baseUrl(requireServerUrl(request))
+                .connectionTimeout(connectTimeout)
+                .readTimeout(commandTimeout);
+        return new HttpCommandExecutor(clientConfig);
     }
 
     private URL requireServerUrl(DriverRequest request) {

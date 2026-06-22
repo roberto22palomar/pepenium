@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.observability;
 
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
@@ -8,7 +9,9 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -30,7 +33,7 @@ final class PepeniumReportSupport {
 
     static final DateTimeFormatter FILE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
     static final DateTimeFormatter DISPLAY_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    static final Yaml YAML = new Yaml();
+    static final Yaml YAML = createSafeYamlParser();
 
     private PepeniumReportSupport() {
     }
@@ -132,7 +135,7 @@ final class PepeniumReportSupport {
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
             Path screenshotDir = reportDir.resolve("screenshots");
             Files.createDirectories(screenshotDir);
-            Path screenshotPath = screenshotDir.resolve("report_" + Instant.now().toEpochMilli() + ".png");
+            Path screenshotPath = screenshotDir.resolve(uniqueArtifactStem("report") + ".png");
             Files.write(screenshotPath, screenshot);
             return pathToHref(screenshotPath.toString(), reportDir);
         } catch (Exception e) {
@@ -159,7 +162,7 @@ final class PepeniumReportSupport {
             if (fileNamePath != null) {
                 fileName = fileNamePath.toString();
             }
-            Path target = screenshotDir.resolve("manual_" + Instant.now().toEpochMilli() + "_" + fileName).normalize();
+            Path target = screenshotDir.resolve(uniqueArtifactStem("manual") + "_" + fileName).normalize();
             if (!source.equals(target)) {
                 Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -189,9 +192,9 @@ final class PepeniumReportSupport {
     }
 
     static Path resolveReportDir() {
-        String override = System.getProperty("pepenium.report.dir");
-        if (override == null || override.isBlank()) {
-            override = System.getenv("PEPENIUM_REPORT_DIR");
+        String override = PepeniumConfig.get("PEPENIUM_REPORT_DIR");
+        if (override != null) {
+            override = override.trim();
         }
         return override == null || override.isBlank()
                 ? reportDirHint()
@@ -276,7 +279,7 @@ final class PepeniumReportSupport {
         if (root == null || root.getMessage() == null || root.getMessage().isBlank()) {
             return null;
         }
-        return root.getMessage().replaceAll("\\s+", " ").trim();
+        return SensitiveDataSanitizer.sanitizeText(root.getMessage().replaceAll("\\s+", " ").trim());
     }
 
     static String stackTrace(Throwable cause) {
@@ -285,7 +288,16 @@ final class PepeniumReportSupport {
         }
         StringWriter writer = new StringWriter();
         cause.printStackTrace(new PrintWriter(writer));
-        return writer.toString();
+        return SensitiveDataSanitizer.sanitizeText(writer.toString());
+    }
+
+    private static Yaml createSafeYamlParser() {
+        LoaderOptions options = new LoaderOptions();
+        options.setAllowDuplicateKeys(false);
+        options.setMaxAliasesForCollections(20);
+        options.setNestingDepthLimit(30);
+        options.setCodePointLimit(10 * 1024 * 1024);
+        return new Yaml(new SafeConstructor(options));
     }
 
     private static Throwable rootCause(Throwable throwable) {
@@ -350,18 +362,11 @@ final class PepeniumReportSupport {
     }
 
     static String sanitizeServerUrl(URL url) {
-        if (url == null) {
-            return null;
-        }
-        String protocol = url.getProtocol() == null ? "http" : url.getProtocol();
-        String host = url.getHost();
-        int port = url.getPort();
-        String path = url.getPath() == null ? "" : url.getPath();
-        StringBuilder value = new StringBuilder(protocol).append("://").append(host);
-        if (port > 0) {
-            value.append(":").append(port);
-        }
-        value.append(path);
-        return value.toString();
+        return SensitiveDataSanitizer.sanitizeServerUrl(url);
+    }
+
+    private static String uniqueArtifactStem(String prefix) {
+        return prefix + "_" + Instant.now().toEpochMilli()
+                + "_" + Long.toUnsignedString(System.nanoTime(), 36);
     }
 }

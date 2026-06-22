@@ -4,24 +4,220 @@ This document lists the environment variables and system properties currently us
 
 It is intended to be the single reference point for configuring local runs, remote executions and observability features.
 
-Ready-to-copy examples for common local setups:
+The canonical editor schema is [schema/pepenium.schema.json](schema/pepenium.schema.json). The distributed example
+contains a YAML language-server directive, so compatible editors provide completion and report unknown keys before a
+test starts.
 
-- [`.env.web.example`](../.env.web.example)
-- [`.env.android.local.example`](../.env.android.local.example)
-- [`.env.web.capabilities.example`](../.env.web.capabilities.example)
-- [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
-- [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
-- [`.env.mobile.capabilities.example`](../.env.mobile.capabilities.example)
+## Validate before running
+
+Configuration can be validated without opening Selenium/Appium or contacting a provider:
+
+```java
+PepeniumConfig.validate(Path.of("pepenium.yml"), "local-web");
+```
+
+For Maven projects, declare the versioned plugin once:
+
+```xml
+<plugin>
+    <groupId>io.github.roberto22palomar</groupId>
+    <artifactId>pepenium-maven-plugin</artifactId>
+    <version>${pepenium.version}</version>
+</plugin>
+```
+
+For a new project, generate a schema-linked starter file:
+
+```text
+mvn pepenium:init-config -Dpepenium.init.template=local-web
+```
+
+Supported templates are `local-web`, `local-android`, `local-ios` and `browserstack-web`. Generation refuses to overwrite an
+existing file by default.
+
+Commit `pepenium.yml` with the project so profile names, timeouts, routes and non-secret capabilities are reviewed like code. Keep credentials as `${ENVIRONMENT_VARIABLE}` placeholders. Provider-owned BrowserStack YAML remains outside source control under `.pepenium/browserstack/` because it may contain access credentials.
+
+Then validate the selected profile directly:
+
+```text
+mvn pepenium:validate-config -Dpepenium.profile=local-web
+```
+
+The goal uses `pepenium.yml` in the project root by default. Override it with `-Dpepenium.config=path/to/file.yml`
+or skip an intentional validation binding with `-Dpepenium.config.skip=true`.
+
+The lower-level command-line entry point remains available and uses exit code `0` for valid configuration and `2` for
+invalid arguments or configuration:
+
+```text
+mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java -Dexec.classpathScope=test -Dexec.mainClass=io.github.roberto22palomar.pepenium.core.config.PepeniumConfigCli -Dexec.args="--config pepenium.yml --profile local-web"
+```
+
+The preflight resolves placeholders for the selected profile and enforces provider ownership rules. It never creates a
+driver session.
+
+## Recommended Configuration: `pepenium.yml`
+
+New projects can keep ordinary profile settings in one optional `pepenium.yml` file at the project root. Copy [the complete example](env/pepenium.yml.example) as a starting point.
+
+```yaml
+schemaVersion: 1
+defaultProfile: local-android
+
+baseUrl: https://example.com
+
+reporting:
+  directory: target/pepenium-reports
+  screenshotPath: target/pepenium-screenshots
+
+logging:
+  detailed: false
+  stepLimit: 20
+
+timeouts:
+  action: 750ms
+  longAction: 30s
+  assertion: 10s
+  sessionConnect: 10s
+  sessionCommand: 3m
+
+capabilities:
+  acceptInsecureCerts: false
+  vendor:options:
+    project: Pepenium
+    tags: [smoke, local]
+
+profiles:
+  local-android:
+    serverUrl: http://127.0.0.1:4723
+    device:
+      udid: emulator-5554
+      name: Android Emulator
+    app:
+      path: ${APP_BINARY}
+    capabilities:
+      noReset: false
+```
+
+The file is optional. Existing projects using environment variables continue to work unchanged.
+
+`sessionConnect` limits TCP connection establishment. `sessionCommand` is the Selenium/Appium HTTP read timeout,
+including session creation and `quit()`. They can be overridden with
+`PEPENIUM_SESSION_CONNECT_TIMEOUT_SECONDS` and `PEPENIUM_SESSION_COMMAND_TIMEOUT_SECONDS`; despite the legacy
+suffix, both accept plain seconds, `ms`, `s`, `m` and ISO-8601 durations. Pepenium also checks loopback Appium
+endpoints before creating a session and reports immediately when the local service is unavailable. Cloud endpoints
+remain under Selenium's transport so corporate proxies and provider routing continue to work.
+
+For private providers or custom `DriverConfig` implementations, `settings` accepts arbitrary keys globally and per
+profile:
+
+```yaml
+settings:
+  TEAM_GRID_REGION: eu-west-1
+
+profiles:
+  team-grid-web:
+    settings:
+      TEAM_GRID_REGION: eu-south-2
+      TEAM_GRID_TOKEN: ${TEAM_GRID_TOKEN}
+```
+
+Custom Java code reads these values with `PepeniumConfig.get("TEAM_GRID_REGION")`. Profile values override global
+values, while Java system properties and real environment variables retain the highest priority. Built-in keys are
+rejected under `settings` so misspellings and ambiguous duplicate configuration still fail during validation.
+
+Nested provider configuration remains structured and is available through `PepeniumConfig.getSettings()`. Global
+and profile maps merge recursively, profile values win, placeholders are resolved, and returned maps/lists are
+immutable:
+
+```yaml
+settings:
+  teamGrid:
+    region: eu-west-1
+    retries: 2
+profiles:
+  team-grid-web:
+    settings:
+      teamGrid:
+        retries: 4
+```
+
+Resolution order is:
+
+1. Java system property
+2. Environment variable
+3. Typed value in the selected profile
+4. Open-ended `settings` value in the selected profile
+5. Typed global YAML value
+6. Open-ended global `settings` value
+7. Built-in default
+
+Use `${ENV_VAR}` placeholders for secrets or machine-specific values. Pepenium resolves placeholders only when the selected profile requests that value, and reports the exact YAML path when a referenced variable is missing.
+
+Set `-Dpepenium.config=path/to/config.yml` or `PEPENIUM_CONFIG=path/to/config.yml` to use a different file. An explicitly configured missing file fails early; an absent default `pepenium.yml` is simply ignored.
+
+The YAML surface covers profile selection, local Android connection/app settings, common local Web browser settings, generic capability maps, base URLs, reporting paths, screenshot paths, logging and toolkit timeouts. Existing environment variables remain compatible and continue to override YAML values.
+
+Profile selection still works exactly as before through `-Dpepenium.profile=...` or `PEPENIUM_PROFILE`. BrowserStack keeps using its existing provider-specific YAML files for now; `pepenium.yml` does not replace them.
+
+### YAML schema and structured capabilities
+
+Set `schemaVersion: 1` in new files. Omitted versions remain accepted for compatibility, while unsupported explicit versions fail immediately.
+
+Pepenium validates known configuration sections when the file is loaded. Unknown keys, malformed sections, invalid HTTP(S) URLs, non-positive durations, invalid booleans and non-object `capabilities` fail early with the exact YAML path instead of being silently ignored.
+
+Capability values preserve native YAML types, including booleans, numbers, lists and nested objects. Global capabilities are merged with the selected profile, and profile values win recursively:
+
+```yaml
+capabilities:
+  vendor:options:
+    project: Pepenium
+    tags: [regression]
+
+profiles:
+  local-android:
+    capabilities:
+      noReset: false
+      settings:
+        ignoreUnimportantViews: true
+      vendor:options:
+        build: ${BUILD_NUMBER}
+```
+
+For Appium, unprefixed top-level capability names receive the `appium:` prefix; W3C names and explicitly namespaced keys remain unchanged. Existing `PEPENIUM_WEB_CAPABILITIES` and `PEPENIUM_APPIUM_CAPABILITIES` strings remain supported and override YAML, but structured YAML is recommended for new projects.
+
+### Provider ownership
+
+`pepenium.yml` deliberately has a different responsibility from provider-owned configuration:
+
+| Execution | `pepenium.yml` owns | Provider-owned source |
+| --- | --- | --- |
+| Local Web/Android | Server URL, device/app/browser settings, capabilities and common settings | None |
+| AWS Device Farm | Common settings and additional non-provider capabilities | `DEVICEFARM_*`, `AWS_DEVICE_FARM` and the Device Farm runtime |
+| BrowserStack | Common settings and additional non-provider capabilities | Existing BrowserStack YAML for credentials, platforms and `bstack:options` |
+
+For AWS and BrowserStack profiles, Pepenium rejects `serverUrl`, `device`, `app` and `browser` sections in `pepenium.yml` because those values would otherwise be ignored by the provider config. BrowserStack-owned keys such as `bstack:options` and `browserstack.*` are also rejected there with guidance to use the existing BrowserStack YAML.
+
+Common structured capabilities are applied consistently to local, AWS and BrowserStack sessions. Provider-owned platform values are applied afterwards and therefore remain authoritative.
+
+Ready-to-copy examples for common local setups live in [docs/env](env/README.md):
+
+- [`.env.web.example`](env/.env.web.example)
+- [`.env.android.local.example`](env/.env.android.local.example)
+- [`.env.web.capabilities.example`](env/.env.web.capabilities.example)
+- [`.env.android.host-emulator.example`](env/.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](env/.env.android.docker-emulator.example)
+- [`.env.mobile.capabilities.example`](env/.env.mobile.capabilities.example)
 
 ## How To Choose A Config Starting Point
 
 Use this quick rule:
 
-- `WEB_DESKTOP` on your machine: start from [`.env.web.example`](../.env.web.example)
-- `ANDROID_NATIVE` with local Appium: start from [`.env.android.local.example`](../.env.android.local.example)
-- `ANDROID_NATIVE` with Dockerized Appium and host emulator: start from [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
-- `ANDROID_NATIVE` with Dockerized Appium and Dockerized emulator: start from [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
-- Any Appium-backed mobile profile that needs extra tuning: copy the relevant keys from [`.env.mobile.capabilities.example`](../.env.mobile.capabilities.example)
+- `WEB_DESKTOP` on your machine: start from [`.env.web.example`](env/.env.web.example)
+- `ANDROID_NATIVE` with local Appium: start from [`.env.android.local.example`](env/.env.android.local.example)
+- `ANDROID_NATIVE` with Dockerized Appium and host emulator: start from [`.env.android.host-emulator.example`](env/.env.android.host-emulator.example)
+- `ANDROID_NATIVE` with Dockerized Appium and Dockerized emulator: start from [`.env.android.docker-emulator.example`](env/.env.android.docker-emulator.example)
+- Any Appium-backed mobile profile that needs extra tuning: copy the relevant keys from [`.env.mobile.capabilities.example`](env/.env.mobile.capabilities.example)
 
 ## Configuration Precedence In Practice
 
@@ -29,7 +225,8 @@ The precedence order is:
 
 1. Java system property
 2. Environment variable
-3. Built-in default
+3. Selected `pepenium.yml` profile
+4. Built-in default
 
 Practical examples:
 
@@ -40,11 +237,12 @@ Practical examples:
 
 ## Resolution Order
 
-When a setting supports both a Java system property and an environment variable, Pepenium resolves them in this order:
+When a setting supports YAML, a Java system property and an environment variable, Pepenium resolves them in this order:
 
 1. Java system property
 2. Environment variable
-3. Built-in default, if one exists
+3. Selected `pepenium.yml` profile
+4. Built-in default, if one exists
 
 ## Execution Selection
 
@@ -74,6 +272,8 @@ Built-in profile ids currently available:
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`
@@ -171,8 +371,17 @@ These optional environment variables are supported by the Appium-backed built-in
 - `APPIUM_ANDROID_INSTALL_TIMEOUT`
 - `APP_WAIT_PACKAGE`
 - `APP_WAIT_ACTIVITY`
+- `PEPENIUM_APPIUM_CAPABILITIES`
 
 They are intended for advanced mobile runs when the default Appium option sets need to be tuned without forking the framework.
+
+Notes:
+
+- `PEPENIUM_APPIUM_CAPABILITIES` uses `;` separators and `key=value` entries, for example `appWaitDuration=30000;vendor:flag=true`
+- unprefixed keys are applied as `appium:*` capabilities, so `appWaitDuration=30000` becomes `appium:appWaitDuration=30000`
+- W3C keys such as `platformName` and `browserName`, and vendor-prefixed keys such as `bstack:options`, are kept as written
+- scalar values are typed automatically: `true` / `false` become booleans, integer values become longs and decimal values become doubles
+- equivalent Java system properties are supported by lowercasing the variable and replacing `_` with `.`, for example `-Dappium.no.reset=true` or `-Dpepenium.appium.capabilities=appWaitDuration=30000`
 ## Local Web and Mobile Web
 
 ### `PEPENIUM_BASE_URL`
@@ -240,8 +449,33 @@ Notes:
 
 - Required: No
 - Used by:
+  - local iOS native
   - AWS iOS native
-- Purpose: Fallback iOS app path when `DEVICEFARM_APP_PATH` is not available
+- Purpose: Local iOS app path, or AWS fallback when `DEVICEFARM_APP_PATH` is not available
+
+### `IOS_BUNDLE_ID`
+
+- Required: No
+- Used by: local iOS native
+- Purpose: Launches an already installed iOS app when no `IOS_APP_PATH` or `APP_PATH` is provided
+
+### `IOS_UDID`
+
+- Required: No
+- Used by: local iOS native and mobile web
+- Purpose: Selects a specific simulator or connected iOS device
+
+### `IOS_DEVICE_NAME`
+
+- Required: No
+- Default: `iPhone Simulator`
+- Used by: local iOS native and mobile web
+
+### `IOS_PLATFORM_VERSION`
+
+- Required: No
+- Used by: local iOS native and mobile web
+- Purpose: Selects the simulator runtime version when Appium cannot infer it
 
 ## Screenshot Output
 
@@ -275,6 +509,34 @@ Notes:
 - Required: No
 - Purpose: Legacy compatibility alias for screenshot output, still honored for AWS Device Farm and existing setups
 - Recommendation: Prefer `PEPENIUM_SCREENSHOT_PATH` in new local or shared `.env` files
+
+## Toolkit Wait Tuning
+
+These variables and equivalent Java system properties tune Pepenium toolkit waits without changing test code.
+
+### `pepenium.action.timeout.seconds` / `PEPENIUM_ACTION_TIMEOUT_SECONDS`
+
+- Required: No
+- Values: positive duration; plain numbers are seconds, and explicit values such as `500ms`, `2s`, `1m` and `PT2S` are also supported
+- Default: helper-specific short action timeout
+- Purpose: Controls short action waits such as visibility, clickability and quick optional checks
+
+### `pepenium.action.long-timeout.seconds` / `PEPENIUM_ACTION_LONG_TIMEOUT_SECONDS`
+
+- Required: No
+- Values: positive duration; plain numbers are seconds, and explicit values such as `500ms`, `2s`, `1m` and `PT2S` are also supported
+- Default: helper-specific long action timeout
+- Purpose: Controls long action waits such as presence checks and disappearance waits
+
+### `pepenium.assertion.timeout.seconds` / `PEPENIUM_ASSERTION_TIMEOUT_SECONDS`
+
+- Required: No
+- Values: positive duration; plain numbers are seconds, and explicit values such as `500ms`, `2s`, `1m` and `PT2S` are also supported
+- Default: `6`
+- Purpose: Controls waits used by toolkit assertions before they fail
+
+Java system properties win over environment variables. The existing property and environment variable names keep the
+`seconds` suffix for compatibility even when an explicit duration unit is used.
 
 ## Observability
 
@@ -430,6 +692,8 @@ PEPENIUM_WEB_CAPABILITIES=custom:flag=true;custom:retries=3
 ```text
 PEPENIUM_DETAIL_LOGGING=true
 PEPENIUM_STEP_TRACKER_LIMIT=20
+PEPENIUM_ACTION_TIMEOUT_SECONDS=750ms
+PEPENIUM_ASSERTION_TIMEOUT_SECONDS=10
 ```
 
 ### Local Android With Extra Appium Tuning
@@ -443,6 +707,7 @@ APP_PACKAGE=com.example.app
 APP_ACTIVITY=.MainActivity
 APPIUM_NO_RESET=true
 APPIUM_NEW_COMMAND_TIMEOUT=300
+PEPENIUM_APPIUM_CAPABILITIES=appWaitDuration=30000;customRetries=3
 PEPENIUM_SCREENSHOT_PATH=C:\temp\pepenium-screenshots
 ```
 

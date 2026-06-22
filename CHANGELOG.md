@@ -9,6 +9,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Added an immutable structured-settings API with recursive global/profile merging for complex private-provider configuration.
+- Added open-ended global and per-profile YAML `settings` for private providers and custom driver configurations without weakening validation of built-in options.
+- Added configurable Selenium/Appium connection and command timeouts plus a fast local-endpoint preflight with actionable Appium diagnostics.
+- Added a checksum-pinned Maven 3.9.9 Wrapper so contributors and CI use the same build runtime without a global Maven installation.
+- Added first-class `local-ios` and `local-ios-web` execution profiles, YAML settings and starter generation for XCUITest native and Safari sessions.
+- Added a non-destructive `pepenium:init-config` Maven goal with schema-linked starters for local web, local Android and BrowserStack web adoption.
+- Added `pepenium-maven-plugin` with a `validate-config` goal that validates a selected YAML profile during Maven's `validate` phase without opening a driver session.
+- Added a session-free configuration preflight API and CLI, plus an editor-compatible JSON Schema for `pepenium.yml`.
+- Added a documented 1.0 compatibility policy covering Java 11/17/21, operating systems, public API and provider validation levels.
+- Added native structured YAML capabilities with nested maps/lists, deep global/profile merging, placeholder resolution and strict schema validation with actionable paths.
+- Added optional root `pepenium.yml` configuration with per-profile sections, environment placeholder expansion, structured browser/Appium capabilities and compatible property/environment overrides.
+- Added `ExecutionProfileProvider` discovery through Java `ServiceLoader`, allowing consumers to contribute private-grid, device-lab or provider-specific execution profiles without modifying or forking Pepenium.
+- Added bilingual adaptation guides with a complete custom `DriverConfig`, service descriptor and profile-selection flow.
+- Added shared public toolkit contracts for portable authoring: `WebActions`, `MobileActions`, `WebAssertions`, `MobileAssertions` and `SwipeDirection`.
+- Added `PepeniumBy` mobile locator helpers for Android/iOS-compatible native page objects, including accessibility-id and text-based convenience locators.
+- Added explicit toolkit timeout configuration through Java system properties and environment variables, with support for plain seconds, `ms`, `s`, `m` and ISO-8601 duration values.
+- Added Appium capability override support through Java system properties, matching the existing environment-variable override model while keeping system properties higher priority.
+- Added helper scripts under `scripts/` to run the standalone consumer smoke flow consistently from PowerShell or Bash.
+- Added `docs/REPOSITORY.md` and grouped repository-level configuration under `config/` so contributors have clearer placement rules.
+- Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
+
+### Changed
+- Made per-test and suite reporting atomic and safe across parallel test threads and forked JVMs sharing one report directory.
+- Redacted secrets when observability steps and timeline events are recorded, preventing manual messages from persisting credentials in reports.
+- Cleared timeline events and timestamps alongside step state after each test and session teardown to prevent cross-test retention in reused JUnit workers.
+- Updated stable build verification tooling (Enforcer, JaCoCo, Dependency Plugin and SpotBugs) without changing consumer runtime dependencies.
+- Included the MIT license under `META-INF/LICENSE` in every published binary artifact.
+- Expanded diagnostic redaction to authorization headers, bearer tokens, cookies, credentials, private keys and session keys.
+- Added stable `Automatic-Module-Name` manifest entries to every published JAR for JPMS-aware consumers.
+- Prevented invalid YAML content from leaking credentials through nested exception causes and hardened the bundled profile parser with the same resource limits as external configuration.
+- Reduced the Maven plugin runtime classpath to Pepenium configuration code and SnakeYAML instead of loading Selenium, Appium, JUnit and SLF4J into Maven.
+- Raised the enforced line-coverage floor from 22% to 60%, below the current lowest module coverage but high enough to block substantial untested regressions.
+- Made `pepenium.yml` versionable by replacing the broad `*.yml` ignore rule with targeted exclusions for credential-bearing provider YAML.
+- Strengthened release preflight with strict SemVer, dated changelog/output-timestamp alignment and rejection of snapshot dependencies in final releases.
+- Added a helper that builds published runtime artifacts twice and compares their SHA-256 hashes.
+- Raised the binary API comparison baseline to the latest published `0.9.7`, enforced dependency convergence and made Maven archive timestamps reproducible.
+- Decoupled Pepenium from the Log4j runtime by using the SLF4J MDC contract and stopped publishing a root logging configuration, allowing consumers to choose their own SLF4J backend safely.
+- Hardened `pepenium.yml` loading with safe parser limits, duplicate-key rejection and file-aware syntax diagnostics.
+- Applied the same safe parser limits and duplicate-key rejection to all BrowserStack YAML loaders.
+- Revalidated URLs, booleans, durations, positive limits and page-load strategies after environment placeholder resolution during configuration preflight.
+- Extended the standalone consumer smoke and release publication flow to install, execute and publish the configuration plugin as a first-class artifact.
+- Expanded CI and release preflight with Java 11/17/21 runtime checks and Linux, Windows and macOS portability coverage.
+- Switched compilation to `--release 11` so newer build JDKs cannot accidentally leak newer Java APIs into published artifacts.
+- Added versioned semantic validation for `pepenium.yml`, including URLs, durations, booleans, provider-owned sections and consistent common capabilities across local, AWS and BrowserStack desktop/mobile runs.
+- Hardened managed driver lifecycle with same-thread execution, idempotent teardown, partial-session cleanup and guaranteed per-test state clearing after reporting failures.
+- Expanded `pepenium.yml` to cover base URLs, reporting and screenshot paths, detailed logging, retained-step limits and toolkit timeouts while preserving the existing profile launch and BrowserStack YAML workflows.
+- Made the standalone consumer smoke depend only on `pepenium-toolkit` with Maven `test` scope, proving that the recommended single dependency exposes the core runtime transitively without leaking test tooling into production classpaths.
+- Updated the security policy to match the current `0.9.x` release line and provide an actionable private vulnerability-reporting route.
+- Moved copyable `.env.*.example` files from the repository root into `docs/env/` and updated README, onboarding and environment docs to point at the grouped location.
+- Moved `checkstyle.xml` into `config/checkstyle/checkstyle.xml` and updated Maven configuration accordingly.
+- Updated CI and release-preflight workflows to use the new consumer-smoke helper script instead of duplicating long Maven command lines.
+- Expanded the standalone `consumer-smoke` project to validate `@PepeniumPage`, Selenium `@FindBy` page objects and the shared Web/Mobile contracts from outside the reactor.
+- Improved the examples documentation so the live web showcase and native mobile templates explain what they prove.
+- Made direct execution-profile lookups tolerant of accidental surrounding whitespace.
+- Made BrowserStack YAML path resolution trim accidental whitespace while rejecting null or blank paths with clearer messages.
+
+### Fixed
+- Prevented authenticated provider URLs, nested capability secrets and credential-bearing exception messages or stack traces from leaking into banners, logs or generated reports.
+- Kept built-in execution-profile contract checks independent from consumer profiles discovered through `ServiceLoader`, with explicit `builtInList()` introspection.
+- Added early validation for consumer-provided execution profile metadata, duplicate IDs, provider failures and null lazy configs.
+- Made Android and iOS mobile hidden-wait behavior consistent: `waitUntilHidden(...)` now fails when an element remains visible instead of silently continuing.
+- Avoided unnecessary iOS hidden-wait delays when an element is already hidden or absent.
+- Rejected null action text and null expected assertion text before touching drivers or waits, producing clearer failures.
+- Rejected stale element references in present assertions so detached elements are not treated as present.
+- Validated action-helper arguments earlier, especially swipe/scroll inputs, before driver interaction.
+- Hardened screenshot/report path handling by trimming configured output paths and preserving clearer report links.
+- Improved unsupported injection diagnostics so interface/abstract injection mistakes explain the supported direct injection targets.
+- Improved incompatible profile diagnostics with closer compatible-profile suggestions.
+
 ## [0.9.7] - 2026-04-07
 
 ### Added

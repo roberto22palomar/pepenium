@@ -7,11 +7,15 @@
     <parent>
         <groupId>io.github.roberto22palomar</groupId>
         <artifactId>pepenium-parent</artifactId>
-        <version>0.9.7-private</version>
+        <version>0.9.7</version>
     </parent>
 
     <artifactId>pepenium-toolkit</artifactId>
     <name>Pepenium Toolkit</name>
+
+    <properties>
+        <pepenium.module.name>io.github.roberto22palomar.pepenium.toolkit</pepenium.module.name>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -104,13 +108,19 @@
                             <parameter>
                                 <includes>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsWeb</include>
+                                    <include>io.github.roberto22palomar.pepenium.toolkit.actions.WebActions</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsApp.Direction</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.actions.ActionsAppIOS.Direction</include>
+                                    <include>io.github.roberto22palomar.pepenium.toolkit.actions.MobileActions</include>
+                                    <include>io.github.roberto22palomar.pepenium.toolkit.actions.SwipeDirection</include>
+                                    <include>io.github.roberto22palomar.pepenium.toolkit.assertions.WebAssertions</include>
+                                    <include>io.github.roberto22palomar.pepenium.toolkit.assertions.MobileAssertions</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsWeb</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsApp</include>
                                     <include>io.github.roberto22palomar.pepenium.toolkit.assertions.AssertionsAppIOS</include>
+                                    <include>io.github.roberto22palomar.pepenium.toolkit.locators.PepeniumBy</include>
                                 </includes>
                                 <accessModifier>public</accessModifier>
                                 <onlyModified>true</onlyModified>

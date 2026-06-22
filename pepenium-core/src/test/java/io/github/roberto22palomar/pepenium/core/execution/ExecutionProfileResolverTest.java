@@ -43,20 +43,15 @@ class ExecutionProfileResolverTest {
         );
 
         assertTrue(error.getMessage().contains("Compatible profiles for ANDROID_NATIVE"));
-        assertTrue(error.getMessage().contains("Description:"));
+        assertTrue(error.getMessage().contains("Profile description:"));
+        assertTrue(error.getMessage().contains("Closest compatible profiles:"));
+        assertTrue(error.getMessage().contains("- local-android"));
     }
 
     @Test
-    void failsWhenTargetHasNoDefaultAndCallerProvidesNone() {
-        IllegalStateException error = assertThrows(
-                IllegalStateException.class,
-                () -> resolver.resolve(TestTarget.IOS_NATIVE, null)
-        );
-
-        assertTrue(error.getMessage().contains("No execution profile was provided for target IOS_NATIVE"));
-        assertTrue(error.getMessage().contains("Compatible profiles for IOS_NATIVE:"));
-        assertTrue(error.getMessage().contains("- aws-ios"));
-        assertTrue(error.getMessage().contains("- browserstack-ios"));
+    void resolvesLocalIosDefaultsWhenCallerProvidesNone() {
+        assertEquals("local-ios", resolver.resolve(TestTarget.IOS_NATIVE, null).getId());
+        assertEquals("local-ios-web", resolver.resolve(TestTarget.IOS_WEB, null).getId());
     }
 
     @Test
@@ -77,5 +72,18 @@ class ExecutionProfileResolverTest {
         assertTrue(error.getMessage().contains("- browserstack-windows-web"));
         assertTrue(error.getMessage().contains("- browserstack-mac-web"));
         assertTrue(error.getMessage().contains("All available profiles:"));
+    }
+
+    @Test
+    void suggestsClosestCompatibleProfileWhenOverrideLooksLikeATypo() {
+        System.setProperty("pepenium.profile", "local-wbe");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> resolver.resolve(TestTarget.WEB_DESKTOP, null)
+        );
+
+        assertTrue(error.getMessage().contains("Did you mean:"));
+        assertTrue(error.getMessage().contains("- local-web"));
     }
 }

@@ -1,8 +1,28 @@
+<p align="center">
+  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
+    <img alt="Build" src="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml/badge.svg" />
+  </a>
+  <a href="https://github.com/roberto22palomar/pepenium/actions/workflows/ci-build.yml">
+    <img alt="Coverage" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/roberto22palomar/pepenium/coverage-badge/.github/badges/coverage.json" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="LICENSE">
+    <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
+  </a>
+  <img alt="Java" src="https://img.shields.io/badge/Java-11-blue.svg" />
+  <img alt="Maven" src="https://img.shields.io/badge/Maven-3.9%2B-orange.svg" />
+  <img alt="JUnit" src="https://img.shields.io/badge/JUnit-5-purple.svg" />
+  <img alt="Selenium" src="https://img.shields.io/badge/Selenium-4-43B02A.svg" />
+  <img alt="Appium Client" src="https://img.shields.io/badge/Appium%20Client-10-00BFFF.svg" />
+</p>
+
 # Pepenium
 
 <p align="center">
   <a href="README.md">English</a> |
-  <strong>Espanol</strong>
+  <strong>Español</strong>
 </p>
 
 Pepenium es un framework de automatizacion en Java para Android, iOS y Web construido sobre Appium, Selenium y JUnit 5.
@@ -19,37 +39,42 @@ Primeros pasos recomendados:
 2. Ejecuta el showcase web desktop para tener tu primer exito real
 3. Pasa a Android solo cuando la ruta web ya funcione
 
-Ficheros de entorno listos para copiar:
+Los ficheros de entorno listos para copiar estan en [docs/env](docs/env/README.md):
 
-- [`.env.web.example`](.env.web.example)
-- [`.env.android.local.example`](.env.android.local.example)
-- [`.env.web.capabilities.example`](.env.web.capabilities.example)
-- [`.env.android.host-emulator.example`](.env.android.host-emulator.example)
-- [`.env.android.docker-emulator.example`](.env.android.docker-emulator.example)
-- [`.env.mobile.capabilities.example`](.env.mobile.capabilities.example)
+- [`pepenium.yml.example`](docs/env/pepenium.yml.example) para la configuracion estructurada multi-perfil recomendada
+
+- [`.env.web.example`](docs/env/.env.web.example)
+- [`.env.android.local.example`](docs/env/.env.android.local.example)
+- [`.env.web.capabilities.example`](docs/env/.env.web.capabilities.example)
+- [`.env.android.host-emulator.example`](docs/env/.env.android.host-emulator.example)
+- [`.env.android.docker-emulator.example`](docs/env/.env.android.docker-emulator.example)
+- [`.env.mobile.capabilities.example`](docs/env/.env.mobile.capabilities.example)
 
 ## Por Que Pepenium
 
 - Un test por target funcional, no un test por proveedor
 - Un modelo de ejecucion compartido para local, BrowserStack y AWS Device Farm
 - Lifecycle de driver y sesion centralizado en una unica factoria
-- Helpers reutilizables `Actions*` para Web, Android e iOS
+- Helpers reutilizables `Actions*` y `Assertions*` para Web, Android e iOS, mas contratos compartidos para flows portables
 - Capturas pensadas para flujos rapidos sin screenshots borrosos
 - Logs mas limpios con contexto automatico y evidencia de fallo
 
-Consulta [START-HERE.es.md](docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico interno de cambios.
+Consulta [START-HERE.es.md](docs/es/START-HERE.es.md) para el camino mas rapido al primer uso, [QUICK-START.es.md](docs/es/QUICK-START.es.md) para la guia mas completa y [CHANGELOG.md](CHANGELOG.md) para el historico de versiones.
 Usa [ENVIRONMENT.md](docs/ENVIRONMENT.md) como referencia central de variables de entorno, reglas de precedencia, properties de runtime y patrones de override de capabilities.
+Usa [ADAPTING.es.md](docs/es/ADAPTING.es.md) para anadir perfiles propios para grids privados, device labs o proveedores adicionales sin hacer fork de Pepenium.
+Usa [HISTORY.es.md](docs/es/HISTORY.es.md) para entender la evolucion del proyecto y su direccion open source actual.
+Usa [REPOSITORY.md](docs/REPOSITORY.md) como mapa del repositorio y reglas para colocar cambios nuevos.
 Usa el `docker-compose.yaml` de la raiz si quieres ejecutar el servidor Appium local en Docker mientras el emulador Android sigue en el host.
 Usa [consumer-smoke/README.md](consumer-smoke/README.md) si quieres validar el consumo de la API publica desde un proyecto Maven separado.
 
-La ruta estandar de validacion ejecuta `verify` sobre el framework y despues valida ese consumer smoke, de modo que los quality gates y el consumo externo puedan comprobarse de forma consistente.
+El workflow principal de CI ejecuta `verify` sobre el framework y despues valida ese consumer smoke, de modo que los quality gates y el consumo externo queden comprobados de forma continua.
 
 ## Calidad
 
-- Ejecuta `mvn verify` antes de integrar cambios del framework
+- El CI ejecuta `mvn verify` en cada push y pull request sobre `main`
 - La cobertura se agrega a partir de los reportes JaCoCo generados por `pepenium-core` y `pepenium-toolkit`
 - Checkstyle, SpotBugs y `japicmp` forman parte del camino normal de verificacion
-- El proyecto independiente `consumer-smoke` valida el consumo de la API fuera del reactor principal
+- El proyecto independiente `consumer-smoke` valida el consumo de la API publica fuera del reactor principal
 
 ## Usar Pepenium Desde Otro Proyecto
 
@@ -66,14 +91,16 @@ Dependencia tipica de consumo:
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-toolkit</artifactId>
     <version>0.9.7</version>
+    <scope>test</scope>
 </dependency>
 ```
 
 Por que `pepenium-toolkit` suele ser el punto de entrada correcto:
 
 - es el artefacto contra el que la mayoria de usuarios externos querran construir
-- te da `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `AssertionsWeb`, `AssertionsApp` y `AssertionsAppIOS`
+- te da `ActionsWeb`, `WebActions`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS`, `MobileAssertions` y `PepeniumBy`
 - arrastra transitivamente el core/runtime, asi que sigues teniendo `BaseTest` y `TestTarget` sin cablear ambas capas a mano
+- el scope `test` evita introducir Selenium, Appium y Pepenium en el classpath productivo
 
 Si quieres un ejemplo concreto de consumidor, mira [consumer-smoke/README.md](consumer-smoke/README.md).
 
@@ -144,9 +171,10 @@ Usa [REPORTING.es.md](docs/es/REPORTING.es.md) para la guia especifica de report
 ## Que Aporta La Linea Actual 0.9.x
 
 - Quality gates reales de Maven con Enforcer, JaCoCo, Checkstyle y SpotBugs
-- Un camino de `verify` mas fuerte para comprobar higiene de libreria de forma consistente
-- Metadata interna del proyecto para el repositorio privado de GitLab
-- Comprobacion de compatibilidad de API y validacion mas fuerte de consumer smoke
+- Un camino de `verify` mas fuerte en CI para comprobar higiene de libreria de forma continua
+- Metadata y packaging orientados a release con sources y Javadocs
+- Workflows dedicados de preflight y publicacion por tag para release
+- Comprobacion de compatibilidad de API publica y validacion mas fuerte de consumer smoke
 - Endurecimiento de `core`, `toolkit`, execution profiles y reporting
 
 ## Arquitectura Actual
@@ -192,8 +220,10 @@ Los builders de request especificos de proveedor viven actualmente en:
 
 Bloques reutilizables:
 
-- `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`
-- `toolkit/assertions`: `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS`
+- `toolkit/actions`: `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `WebActions`
+- `toolkit/actions`: `MobileActions` y `SwipeDirection` para flows compatibles Android/iOS
+- `toolkit/assertions`: `AssertionsWeb`, `WebAssertions`, `AssertionsApp`, `AssertionsAppIOS`, `MobileAssertions`
+- `toolkit/locators`: `PepeniumBy` para localizadores nativos compatibles Android/iOS
 - `toolkit/support`: helpers reutilizables de settle y scroll
 
 ### `examples`
@@ -243,6 +273,8 @@ Eso permite ejecutar el mismo test en varios entornos sin tocar su codigo.
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`
@@ -261,6 +293,8 @@ El catalogo de perfiles incluido se define en:
 - `pepenium-core/src/main/resources/execution-profiles.yml`
 
 Los ids de perfil forman parte del contrato soportado de lanzamiento. Los valores internos de `configKey` que hay detras de ese catalogo siguen siendo detalles internos del framework y pueden evolucionar antes de `1.0.0`.
+
+Los proyectos consumidores pueden aportar perfiles adicionales mediante el mecanismo `ServiceLoader` de Java. Consulta [ADAPTING.es.md](docs/es/ADAPTING.es.md) para ver el provider, descriptor de servicio y `DriverRequest` personalizado completos.
 
 ## Tests de Ejemplo
 

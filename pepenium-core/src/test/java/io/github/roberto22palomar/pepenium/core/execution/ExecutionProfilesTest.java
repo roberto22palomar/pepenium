@@ -3,9 +3,12 @@ package io.github.roberto22palomar.pepenium.core.execution;
 import io.github.roberto22palomar.pepenium.core.configs.local.desktop.ChromeWebConfigLocal;
 import io.github.roberto22palomar.pepenium.core.configs.local.desktop.EdgeWebConfigLocal;
 import io.github.roberto22palomar.pepenium.core.configs.local.desktop.FirefoxWebConfigLocal;
+import io.github.roberto22palomar.pepenium.core.configs.local.ios.IOSConfigLocal;
+import io.github.roberto22palomar.pepenium.core.configs.local.ios.IOSWebConfigLocal;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -33,6 +36,49 @@ class ExecutionProfilesTest {
         assertInstanceOf(ChromeWebConfigLocal.class, ExecutionProfiles.get("local-web").createConfig());
         assertInstanceOf(FirefoxWebConfigLocal.class, ExecutionProfiles.get("local-web-firefox").createConfig());
         assertInstanceOf(EdgeWebConfigLocal.class, ExecutionProfiles.get("local-web-edge").createConfig());
+    }
+
+    @Test
+    void resolvesTypedConfigSuppliersForLocalIosProfiles() {
+        assertInstanceOf(IOSConfigLocal.class, ExecutionProfiles.get("local-ios").createConfig());
+        assertInstanceOf(IOSWebConfigLocal.class, ExecutionProfiles.get("local-ios-web").createConfig());
+    }
+
+    @Test
+    void trimsProfileIdsForDirectLookups() {
+        ExecutionProfile profile = ExecutionProfiles.get("  local-web  ");
+
+        assertEquals("local-web", profile.getId());
+        assertTrue(ExecutionProfiles.exists("  local-web  "));
+    }
+
+    @Test
+    void discoversProfilesFromServiceLoaderProviders() {
+        ExecutionProfile profile = ExecutionProfiles.get("test-service-web");
+
+        assertEquals(TestTarget.WEB_DESKTOP, profile.getTarget());
+        assertEquals("Profile loaded from a test ServiceLoader provider", profile.getDescription());
+        assertTrue(ExecutionProfiles.builtInList().stream()
+                .noneMatch(builtIn -> builtIn.getId().equals(profile.getId())));
+    }
+
+    @Test
+    void rejectsProviderProfilesThatDuplicateExistingIds() {
+        Map<String, ExecutionProfile> profiles = new LinkedHashMap<>();
+        profiles.put("local-web", ExecutionProfiles.get("local-web"));
+        ExecutionProfileProvider provider = () -> List.of(new ExecutionProfile(
+                "local-web",
+                TestTarget.WEB_DESKTOP,
+                "Duplicate profile",
+                () -> () -> null
+        ));
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> ExecutionProfiles.mergeProviderProfiles(profiles, List.of(provider))
+        );
+
+        assertTrue(error.getMessage().contains("Duplicate execution profile id 'local-web'"));
     }
 
     @Test

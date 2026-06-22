@@ -68,6 +68,8 @@ El ejemplo iOS nativo actual sigue la misma estrategia. Sirve para demostrar:
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`

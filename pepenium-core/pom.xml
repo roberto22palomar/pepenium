@@ -7,11 +7,15 @@
     <parent>
         <groupId>io.github.roberto22palomar</groupId>
         <artifactId>pepenium-parent</artifactId>
-        <version>0.9.7-private</version>
+        <version>0.9.7</version>
     </parent>
 
     <artifactId>pepenium</artifactId>
     <name>Pepenium Core</name>
+
+    <properties>
+        <pepenium.module.name>io.github.roberto22palomar.pepenium.core</pepenium.module.name>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -79,18 +83,14 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j2-impl</artifactId>
             <version>${log4j2.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j2.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j2.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -153,7 +153,14 @@
                                     <include>io.github.roberto22palomar.pepenium.core.runtime.PepeniumInject</include>
                                     <include>io.github.roberto22palomar.pepenium.core.runtime.PepeniumPage</include>
                                     <include>io.github.roberto22palomar.pepenium.core.runtime.PepeniumSteps</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.config.PepeniumConfig</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.config.PepeniumConfigCli</include>
                                     <include>io.github.roberto22palomar.pepenium.core.execution.TestTarget</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.execution.ExecutionProfileProvider</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.execution.ExecutionProfile</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.execution.DriverConfig</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.execution.DriverRequest</include>
+                                    <include>io.github.roberto22palomar.pepenium.core.execution.DriverType</include>
                                 </includes>
                                 <accessModifier>protected</accessModifier>
                                 <onlyModified>true</onlyModified>

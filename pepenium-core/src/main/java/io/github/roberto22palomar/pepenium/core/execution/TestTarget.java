@@ -6,8 +6,8 @@ package io.github.roberto22palomar.pepenium.core.execution;
 public enum TestTarget {
     ANDROID_NATIVE("local-android"),
     ANDROID_WEB("local-android-web"),
-    IOS_NATIVE(null),
-    IOS_WEB(null),
+    IOS_NATIVE("local-ios"),
+    IOS_WEB("local-ios-web"),
     WEB_DESKTOP("local-web");
 
     private final String defaultProfileId;

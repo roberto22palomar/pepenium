@@ -17,15 +17,15 @@ final class WebLoginFlow {
 
     void loginWithValidCredentials() {
         stepRecorder.step("Open login page");
-        assertions.assertVisible(loginPage.username());
-        assertions.assertVisible(loginPage.password());
-        assertions.assertVisible(loginPage.submit());
+        assertions.assertVisible(loginPage.usernameField());
+        assertions.assertVisible(loginPage.passwordField());
+        assertions.assertVisible(loginPage.submitButton());
 
         stepRecorder.step("Login with valid credentials");
         loginPage.login("tomsmith", "SuperSecretPassword!");
 
         stepRecorder.step("Verify secure-area success message");
-        assertions.assertVisible(loginPage.flash());
-        assertions.assertTextContains(loginPage.flash(), "You logged into a secure area!");
+        assertions.assertVisible(loginPage.flashMessage());
+        assertions.assertTextContains(loginPage.flashMessage(), "You logged into a secure area!");
     }
 }

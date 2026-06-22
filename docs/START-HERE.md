@@ -13,6 +13,23 @@ Use this page to get your first success quickly, then dive deeper only when you 
 | Try Android locally with the least friction | Appium in Docker + emulator on host | 5-15 min |
 | Experiment with a fully dockerized Android setup | Appium + emulator in Docker | 10-20 min |
 | Validate public API consumption from another Maven project | Run consumer smoke | 2-3 min |
+| Configure a new consumer project | Run `pepenium:init-config` | Under 1 min |
+
+## New Consumer: Create Configuration First
+
+After declaring `pepenium-maven-plugin` in your Maven build, generate a configuration that is valid against the current
+schema:
+
+```text
+mvn pepenium:init-config -Dpepenium.init.template=local-web
+```
+
+Use `local-android`, `local-ios` or `browserstack-web` when those environments are your first target. Existing configuration is
+never overwritten unless `-Dpepenium.init.force=true` is explicitly supplied. Review the generated values, then run:
+
+```text
+mvn pepenium:validate-config
+```
 
 ## 1. Verify The Repo Builds
 
@@ -69,7 +86,7 @@ Start your Android emulator the way you normally do it on your machine.
 
 ### 3.3 Use These Environment Values
 
-Example file: [`.env.android.host-emulator.example`](../.env.android.host-emulator.example)
+Example file: [`.env.android.host-emulator.example`](env/.env.android.host-emulator.example)
 
 ```text
 APPIUM_URL=http://localhost:4723
@@ -91,7 +108,7 @@ Start it with:
 docker compose -f docker-compose.yaml -f docker-compose.emulator.yaml up -d
 ```
 
-Example file: [`.env.android.docker-emulator.example`](../.env.android.docker-emulator.example)
+Example file: [`.env.android.docker-emulator.example`](env/.env.android.docker-emulator.example)
 
 ```text
 APPIUM_URL=http://localhost:4723
@@ -115,9 +132,10 @@ Use this mode only if:
 If you want to know whether Pepenium is usable from another Maven project, run the consumer smoke.
 
 ```text
-mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -U -f consumer-smoke/pom.xml clean test-compile
+.\scripts\Test-ConsumerSmoke.ps1
 ```
+
+On Bash-compatible shells, use `./scripts/test-consumer-smoke.sh`.
 
 ## 6. Check The Native Reports
 
@@ -139,5 +157,7 @@ The console also prints direct `file:///...` links to the per-test report and th
 - Use [README.md](../README.md) for the project overview.
 - Use [QUICK-START.md](QUICK-START.md) for the fuller walkthrough.
 - Use [ENVIRONMENT.md](ENVIRONMENT.md) for every supported variable.
+- Use [ADAPTING.md](ADAPTING.md) to add consumer-owned execution profiles without forking Pepenium.
+- Use [HISTORY.md](HISTORY.md) for the project evolution and current direction.
 - Use [API.md](API.md) to understand what is public vs internal.
 - Use [REPORTING.md](REPORTING.md) for the reporting-specific details.

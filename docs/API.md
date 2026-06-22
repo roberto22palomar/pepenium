@@ -22,6 +22,20 @@ That means some areas may still evolve quickly, but not every package should be 
 
 These are the main classes Pepenium users are expected to import and rely on directly.
 
+The versioned compatibility and runtime matrix is defined in [COMPATIBILITY.md](COMPATIBILITY.md).
+
+### Configuration preflight API
+
+- `PepeniumConfig.validate(Path)` validates structure and the configured default profile.
+- `PepeniumConfig.validate(Path, String)` validates a selected local, AWS or BrowserStack profile.
+- `PepeniumConfig.get(String)` resolves typed or open-ended scalar configuration for the active profile.
+- `PepeniumConfig.getSettings()` returns immutable, deeply merged structured settings for custom providers.
+- `PepeniumConfig.getCapabilities()` returns immutable, deeply merged structured capabilities.
+- `PepeniumConfigCli` exposes the same validation as a command-line preflight without creating a driver.
+- `pepenium-maven-plugin:validate-config` exposes the preflight as a Maven `validate` goal for consumer builds.
+
+These APIs are part of the supported `1.0.0` surface.
+
 ### Core test author API
 
 - [BaseTest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/BaseTest.java)
@@ -91,6 +105,7 @@ That path currently includes:
 - `PepeniumSteps` for direct step recording without inheritance
 - when `automaticLifecycle = false`, driver-bound annotation injection is completed after user-managed setup has initialized the session
 - if a component declares multiple constructors, the intended injected constructor must be marked with `@PepeniumInject`
+- custom pages, flows and fixtures must be concrete classes; interfaces and abstract classes are rejected with diagnostics that list the supported direct injection targets
 
 Current intent:
 
@@ -105,8 +120,8 @@ The current `TestTarget` values are now treated as the stable functional target 
 
 - `ANDROID_NATIVE` -> default profile `local-android`
 - `ANDROID_WEB` -> default profile `local-android-web`
-- `IOS_NATIVE` -> no built-in default profile
-- `IOS_WEB` -> no built-in default profile
+- `IOS_NATIVE` -> default profile `local-ios`
+- `IOS_WEB` -> default profile `local-ios-web`
 - `WEB_DESKTOP` -> default profile `local-web`
 
 Removing, renaming or silently repointing these defaults should now be treated as a breaking change.
@@ -117,6 +132,8 @@ The built-in execution profile ids defined in `execution-profiles.yml` are now t
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`
@@ -132,9 +149,23 @@ The built-in execution profile ids defined in `execution-profiles.yml` are now t
 
 The ids above are contract. The internal wiring behind them is not. The `configKey` values in `execution-profiles.yml` and the concrete `DriverConfig` implementations remain internal framework details.
 
+### Consumer-owned execution profiles are a supported extension point
+
+Consumers may add profiles through [ExecutionProfileProvider](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfileProvider.java) and Java `ServiceLoader` registration.
+
+The supported extension contract includes:
+
+- [ExecutionProfile](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfile.java) for profile metadata and lazy config creation
+- [DriverConfig](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverConfig.java) for consumer-owned request construction
+- [DriverRequest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverRequest.java) and [DriverType](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverType.java) as the neutral driver/session request model
+- unique profile IDs across built-in and consumer providers
+- lazy provider configuration, with no driver creation during profile discovery
+
+See [ADAPTING.md](ADAPTING.md) for a complete external-provider example.
+
 ### `Actions*` and `Assertions*` stay the stable authoring surface
 
-The documented `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` types are now the intended stable authoring surface for `1.0.0`.
+The documented `WebActions`, `ActionsWeb`, `ActionsApp`, `ActionsAppIOS`, `MobileActions`, `SwipeDirection`, `WebAssertions`, `MobileAssertions`, `AssertionsWeb`, `AssertionsApp`, `AssertionsAppIOS` and `PepeniumBy` types are now the intended stable authoring surface for `1.0.0`.
 
 That means public methods on those classes should follow the existing deprecation-first policy instead of being renamed or removed directly.
 
@@ -151,17 +182,33 @@ Current decision:
 ### Toolkit authoring API
 
 - [ActionsWeb](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsWeb.java)
+- [WebActions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/WebActions.java)
 - [ActionsApp](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsApp.java)
 - [ActionsAppIOS](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/ActionsAppIOS.java)
+- [MobileActions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/MobileActions.java)
+- [SwipeDirection](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/actions/SwipeDirection.java)
+- [WebAssertions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/WebAssertions.java)
+- [MobileAssertions](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/MobileAssertions.java)
 - [AssertionsWeb](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsWeb.java)
 - [AssertionsApp](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsApp.java)
 - [AssertionsAppIOS](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/assertions/AssertionsAppIOS.java)
+- [PepeniumBy](../pepenium-toolkit/src/main/java/io/github/roberto22palomar/pepenium/toolkit/locators/PepeniumBy.java)
 
 These are intended as the reusable building blocks for writing tests, flows and page objects.
 
 For cross-platform consistency, the supported cross-platform action surface should converge on the same core verbs across web, Android and iOS, especially `click(...)`, `clickIfVisible(...)`, `type(...)` and `waitUntilHidden(...)`.
 
-The shared assertion surface should likewise stay aligned around `assertVisible(...)`, `assertNotVisible(...)`, `assertPresent(...)`, `assertTextEquals(...)` and `assertTextContains(...)`, while web-only assertions should be reserved for browser-specific concerns such as URL, title and input-value checks.
+For web flows that should depend on a stable contract instead of a concrete helper, prefer `WebActions`. `ActionsWeb` remains the concrete helper and implements that contract.
+
+For native mobile flows that should compile against both Android and iOS helpers, prefer `MobileActions` plus `SwipeDirection`. `ActionsApp` and `ActionsAppIOS` remain the concrete helpers for platform-specific flows and continue to expose their existing nested `Direction` enums for compatibility.
+
+For assertion-heavy flows, prefer `WebAssertions` on web and `MobileAssertions` on native mobile. `AssertionsWeb`, `AssertionsApp` and `AssertionsAppIOS` remain the concrete helpers and implement those contracts.
+
+For shared action flows, `waitUntilHidden(...)` is a strict synchronization point: Android and iOS helpers should both return quickly when the element is already hidden or absent, and fail when the element is still visible after the wait instead of continuing silently.
+
+For native mobile locators, prefer `PepeniumBy.accessibilityId(...)` for controls that have the same accessibility identifier on Android and iOS. `PepeniumBy.text(...)` and `PepeniumBy.textContains(...)` are convenience fallbacks that match common Android text and iOS label/name/value attributes when a stable accessibility id is not available.
+
+The shared assertion surface should stay aligned around `assertVisible(...)`, `assertNotVisible(...)`, `assertPresent(...)`, `assertTextEquals(...)` and `assertTextContains(...)`, while web-only assertions should be reserved for browser-specific concerns such as URL, title and input-value checks.
 
 ## Advanced / Evolving API
 
@@ -173,12 +220,8 @@ The `pepenium-examples` module is repository-only showcase material built on top
 
 Its tests, flows and page objects are useful learning material, but they are not reusable consumer artifacts and they are not protected by the API compatibility contract.
 
-### Execution and configuration types
+### Other execution and configuration types
 
-- [DriverConfig](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverConfig.java)
-- [DriverRequest](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverRequest.java)
-- [DriverType](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/DriverType.java)
-- [ExecutionProfile](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfile.java)
 - [ExecutionProfileResolver](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfileResolver.java)
 - [ExecutionProfiles](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/execution/ExecutionProfiles.java)
 - [DriverSession](../pepenium-core/src/main/java/io/github/roberto22palomar/pepenium/core/runtime/DriverSession.java)
@@ -240,8 +283,8 @@ Pepenium now runs an automatic `japicmp` comparison during `verify` for the `pep
 
 That build-time compatibility gate is intentionally scoped to the documented public API surface:
 
-- `pepenium-core`: `PepeniumTest`, `PepeniumInject`, `PepeniumPage`, `PepeniumSteps`, `BaseTest` and `TestTarget`
-- `pepenium-toolkit`: the documented `Actions*` and `Assertions*` authoring types
+- `pepenium-core`: authoring types plus `ExecutionProfileProvider`, `ExecutionProfile`, `DriverConfig`, `DriverRequest` and `DriverType` for consumer extension
+- `pepenium-toolkit`: the documented `Actions*`, `WebActions`, `MobileActions`, `SwipeDirection`, `WebAssertions`, `MobileAssertions` and `Assertions*` authoring types
 
 This keeps the compatibility check focused on what normal external users are expected to import directly, while semantic contract details such as lifecycle defaults, target defaults and built-in profile ids are protected by dedicated tests and docs.
 
@@ -284,6 +327,7 @@ That smoke project is intentionally outside the main Maven reactor so it behaves
 Typical validation flow:
 
 ```bash
-mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -f consumer-smoke/pom.xml clean test-compile
+./scripts/test-consumer-smoke.sh
 ```
+
+On Windows PowerShell, use `.\scripts\Test-ConsumerSmoke.ps1`.

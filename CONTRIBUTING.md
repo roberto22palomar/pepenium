@@ -58,17 +58,18 @@ Basic requirements:
 Typical commands:
 
 ```bash
-mvn verify
+./mvnw verify
 ```
 
 Some features require specific execution profiles or provider credentials, especially BrowserStack and AWS Device Farm flows.
 
-When validating public API compatibility, `mvn verify` now runs the automatic binary/source compatibility check for the documented public API. Also run:
+When validating public API compatibility, `./mvnw verify` runs the automatic binary/source compatibility check for the documented public API. Also run:
 
 ```bash
-mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -U -f consumer-smoke/pom.xml clean test-compile
+./scripts/test-consumer-smoke.sh
 ```
+
+On Windows PowerShell, use `.\scripts\Test-ConsumerSmoke.ps1`.
 
 ---
 
@@ -85,7 +86,7 @@ Before submitting a pull request:
 - avoid breaking changes unless clearly justified
 - if you change `BaseTest`, `TestTarget`, built-in execution profile ids or reporting-contract expectations, update `docs/API.md` and the contract-focused tests together
 
-Merge requests should:
+Pull requests should:
 
 - reference an existing issue when possible
 - include a clear description of what changed and why
@@ -99,6 +100,8 @@ High-level structure:
 - `pepenium-core/` - framework runtime, execution model and provider/config infrastructure
 - `pepenium-toolkit/` - reusable test-author helpers such as actions and assertions
 - `pepenium-examples/` - repository-only showcase tests, flows and page objects
+- `consumer-smoke/` - standalone Maven consumer that proves public API usage outside the reactor
+- `scripts/` - local helper commands for repeatable contributor workflows
 
 Please respect the existing module boundaries and avoid adding project-specific logic to `pepenium-core` unless it benefits all users of the framework.
 
@@ -108,9 +111,9 @@ When deciding where to place a change:
 - prefer `pepenium-toolkit` for reusable authoring helpers
 - prefer `pepenium-examples` for showcase code and templates
 
-`pepenium-examples` should stay focused on runnable examples that consume the framework from inside this repository. It is not a reusable artifact surface and should not become a second home for framework features.
+`pepenium-examples` should stay focused on runnable examples that consume the framework from inside this repository. It is not a published artifact surface and should not become a second home for reusable framework features.
 
-For public-vs-internal API expectations, see [API.md](docs/API.md).
+For the full placement guide, see [REPOSITORY.md](docs/REPOSITORY.md). For public-vs-internal API expectations, see [API.md](docs/API.md).
 
 ---
 
@@ -131,7 +134,7 @@ For documented public API, prefer this order whenever practical:
 - document the migration path
 - remove it only in a later released version unless a correctness or security reason forces a direct break
 
-Before creating an internal version tag, run the local validation path so version alignment, `CHANGELOG.md`, `verify` and `consumer-smoke` are checked.
+Before creating a release tag, run the `Release Preflight` GitHub Actions workflow, or the equivalent local validation, so version alignment, `CHANGELOG.md`, `verify`, release-profile packaging and `consumer-smoke` are all checked before publication.
 
 ---
 

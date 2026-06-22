@@ -69,7 +69,7 @@ Arranca tu emulador Android de la forma habitual en tu maquina.
 
 ### 3.3 Usa Estos Valores De Entorno
 
-Fichero ejemplo: [`.env.android.host-emulator.example`](../../.env.android.host-emulator.example)
+Fichero ejemplo: [`.env.android.host-emulator.example`](../env/.env.android.host-emulator.example)
 
 ```text
 APPIUM_URL=http://localhost:4723
@@ -91,7 +91,7 @@ Arranque:
 docker compose -f docker-compose.yaml -f docker-compose.emulator.yaml up -d
 ```
 
-Fichero ejemplo: [`.env.android.docker-emulator.example`](../../.env.android.docker-emulator.example)
+Fichero ejemplo: [`.env.android.docker-emulator.example`](../env/.env.android.docker-emulator.example)
 
 ```text
 APPIUM_URL=http://localhost:4723
@@ -115,9 +115,10 @@ Usa este modo solo si:
 Si quieres saber si Pepenium es utilizable desde otro proyecto Maven, ejecuta consumer smoke.
 
 ```text
-mvn -q -pl pepenium-core,pepenium-toolkit -am install -DskipTests
-mvn -q -U -f consumer-smoke/pom.xml clean test-compile
+.\scripts\Test-ConsumerSmoke.ps1
 ```
+
+En shells compatibles con Bash, usa `./scripts/test-consumer-smoke.sh`.
 
 ## 6. Revisa Los Reportes Nativos
 
@@ -139,5 +140,7 @@ La consola tambien imprime enlaces directos `file:///...` al reporte individual 
 - Usa [README.es.md](../../README.es.md) para la vision general del proyecto.
 - Usa [QUICK-START.es.md](QUICK-START.es.md) para la guia mas completa.
 - Usa [ENVIRONMENT.md](../ENVIRONMENT.md) para todas las variables soportadas.
+- Usa [ADAPTING.es.md](ADAPTING.es.md) para anadir perfiles propios sin hacer fork de Pepenium.
+- Usa [HISTORY.es.md](HISTORY.es.md) para entender la evolucion y direccion actual del proyecto.
 - Usa [API.md](../API.md) para entender que es publico y que es interno.
 - Usa [REPORTING.es.md](REPORTING.es.md) para los detalles especificos de reporting.

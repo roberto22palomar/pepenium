@@ -1,0 +1,438 @@
+package io.github.roberto22palomar.pepenium.core.config;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class PepeniumConfigTest {
+
+    @TempDir
+    Path tempDir;
+
+    @Test
+    void resolvesStructuredProfileValuesAndCollections() throws Exception {
+        Path config = writeConfig("defaultProfile: local-web\n"
+                + "reporting:\n"
+                + "  directory: target/reports\n"
+                + "timeouts:\n"
+                + "  action: 2s\n"
+                + "  sessionConnect: 15s\n"
+                + "profiles:\n"
+                + "  local-web:\n"
+                + "    timeouts:\n"
+                + "      action: 750ms\n"
+                + "      sessionCommand: 4m\n"
+                + "    browser:\n"
+                + "      headless: true\n"
+                + "      arguments: [--incognito, '--window-size=1280,720']\n"
+                + "    capabilities:\n"
+                + "      custom:flag: true\n"
+                + "      custom:retries: 3\n");
+
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(config, true, key -> null);
+
+        assertEquals("local-web", resolved.defaultProfile());
+        assertEquals("target/reports", resolved.value("local-web", "PEPENIUM_REPORT_DIR"));
+        assertEquals("750ms", resolved.value("local-web", "PEPENIUM_ACTION_TIMEOUT_SECONDS"));
+        assertEquals("2s", resolved.value("other-profile", "PEPENIUM_ACTION_TIMEOUT_SECONDS"));
+        assertEquals("15s", resolved.value("local-web", "PEPENIUM_SESSION_CONNECT_TIMEOUT_SECONDS"));
+        assertEquals("4m", resolved.value("local-web", "PEPENIUM_SESSION_COMMAND_TIMEOUT_SECONDS"));
+        assertEquals("true", resolved.value("local-web", "PEPENIUM_WEB_HEADLESS"));
+        assertEquals("--incognito;--window-size=1280,720",
+                resolved.value("local-web", "PEPENIUM_WEB_ARGS"));
+        assertEquals(
+                Map.of("custom:flag", true, "custom:retries", 3),
+                resolved.capabilities("local-web")
+        );
+    }
+
+    @Test
+    void resolvesEnvironmentPlaceholdersOnlyWhenSelected() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-android:\n"
+                + "    app:\n"
+                + "      path: ${APP_BINARY}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of("APP_BINARY", "build/app.apk")::get
+        );
+
+        assertEquals("build/app.apk", resolved.value("local-android", "APP_PATH"));
+    }
+
+    @Test
+    void reportsMissingSecretWithItsYamlPath() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-android:\n"
+                + "    app:\n"
+                + "      path: ${MISSING_APP}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(config, true, key -> null);
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> resolved.value("local-android", "APP_PATH")
+        );
+
+        assertTrue(error.getMessage().contains("MISSING_APP"));
+        assertTrue(error.getMessage().contains("profiles.local-android.app.path"));
+    }
+
+    @Test
+    void rejectsMissingExplicitConfigFile() {
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(tempDir.resolve("missing.yml"), true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("Configuration file does not exist"));
+    }
+
+    @Test
+    void preservesAndDeepMergesStructuredCapabilities() throws Exception {
+        Path config = writeConfig("defaultProfile: local-web\n"
+                + "capabilities:\n"
+                + "  vendor:options:\n"
+                + "    project: Pepenium\n"
+                + "    retries: 2\n"
+                + "  acceptInsecureCerts: false\n"
+                + "profiles:\n"
+                + "  local-web:\n"
+                + "    capabilities:\n"
+                + "      vendor:options:\n"
+                + "        retries: 4\n"
+                + "        tags: [smoke, '${RUN_TAG}']\n"
+                + "      acceptInsecureCerts: true\n");
+
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of("RUN_TAG", "chrome")::get
+        );
+
+        Map<String, Object> capabilities = resolved.capabilities("local-web");
+        assertEquals(true, capabilities.get("acceptInsecureCerts"));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> vendorOptions = (Map<String, Object>) capabilities.get("vendor:options");
+        assertEquals("Pepenium", vendorOptions.get("project"));
+        assertEquals(4, vendorOptions.get("retries"));
+        assertEquals(List.of("smoke", "chrome"), vendorOptions.get("tags"));
+    }
+
+    @Test
+    void rejectsUnknownKeysWithTheirYamlPath() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    browser:\n"
+                + "      typoHeadles: true\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("profiles.local-web.browser.typoHeadles"));
+    }
+
+    @Test
+    void rejectsCapabilitiesThatAreNotObjects() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    capabilities: [invalid]\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("profiles.local-web.capabilities"));
+        assertTrue(error.getMessage().contains("must be a YAML object"));
+    }
+
+    @Test
+    void resolvesOpenEndedSettingsWithProfileOverrides() throws Exception {
+        Path config = writeConfig("settings:\n"
+                + "  TEAM_GRID_REGION: eu-west-1\n"
+                + "  TEAM_GRID_TAGS: [smoke, regression]\n"
+                + "profiles:\n"
+                + "  team-grid-web:\n"
+                + "    settings:\n"
+                + "      TEAM_GRID_REGION: eu-south-2\n"
+                + "      TEAM_GRID_TOKEN: ${GRID_TOKEN}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of("GRID_TOKEN", "private-token")::get
+        );
+
+        assertEquals("eu-south-2", resolved.value("team-grid-web", "TEAM_GRID_REGION"));
+        assertEquals("eu-west-1", resolved.value("other-profile", "TEAM_GRID_REGION"));
+        assertEquals("smoke;regression", resolved.value("team-grid-web", "TEAM_GRID_TAGS"));
+        assertEquals("private-token", resolved.value("team-grid-web", "TEAM_GRID_TOKEN"));
+        resolved.validateResolvedProfile("team-grid-web");
+    }
+
+    @Test
+    void rejectsBuiltInKeysInsideOpenEndedSettings() throws Exception {
+        Path config = writeConfig("settings:\n"
+                + "  PEPENIUM_REPORT_DIR: build/reports\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("built-in setting"));
+        assertTrue(error.getMessage().contains("reporting.directory"));
+    }
+
+    @Test
+    void deeplyMergesStructuredSettingsAndReturnsImmutableValues() throws Exception {
+        Path config = writeConfig("settings:\n"
+                + "  teamGrid:\n"
+                + "    region: eu-west-1\n"
+                + "    retries: 2\n"
+                + "    labels: [smoke, android]\n"
+                + "profiles:\n"
+                + "  team-grid-web:\n"
+                + "    settings:\n"
+                + "      teamGrid:\n"
+                + "        retries: 4\n"
+                + "        tunnel:\n"
+                + "          name: ${TUNNEL_NAME}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of("TUNNEL_NAME", "ci-tunnel")::get
+        );
+
+        Map<String, Object> settings = resolved.settings("team-grid-web");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> teamGrid = (Map<String, Object>) settings.get("teamGrid");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> tunnel = (Map<String, Object>) teamGrid.get("tunnel");
+
+        assertEquals("eu-west-1", teamGrid.get("region"));
+        assertEquals(4, teamGrid.get("retries"));
+        assertEquals(List.of("smoke", "android"), teamGrid.get("labels"));
+        assertEquals("ci-tunnel", tunnel.get("name"));
+        assertThrows(UnsupportedOperationException.class, () -> settings.put("other", true));
+        assertThrows(UnsupportedOperationException.class, () -> teamGrid.put("other", true));
+    }
+
+    @Test
+    void resolvesLocalIosDeviceAndAppSettings() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-ios:\n"
+                + "    device:\n"
+                + "      udid: simulator-id\n"
+                + "      name: iPhone 16 Pro\n"
+                + "      platformVersion: '18.0'\n"
+                + "    app:\n"
+                + "      bundleId: com.example.app\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(config, true, key -> null);
+
+        assertEquals("simulator-id", resolved.value("local-ios", "IOS_UDID"));
+        assertEquals("iPhone 16 Pro", resolved.value("local-ios", "IOS_DEVICE_NAME"));
+        assertEquals("18.0", resolved.value("local-ios", "IOS_PLATFORM_VERSION"));
+        assertEquals("com.example.app", resolved.value("local-ios", "IOS_BUNDLE_ID"));
+    }
+
+    @Test
+    void rejectsDuplicateYamlKeysWithFileContext() throws Exception {
+        Path config = writeConfig("defaultProfile: local-web\n"
+                + "defaultProfile: local-android\n"
+                + "profiles: {}\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("Could not parse YAML file"));
+        assertTrue(error.getMessage().contains(config.toAbsolutePath().toString()));
+        assertTrue(error.getMessage().contains("duplicate key"));
+        assertNull(error.getCause());
+    }
+
+    @Test
+    void rejectsUnsupportedSchemaVersions() throws Exception {
+        Path config = writeConfig("schemaVersion: 2\nprofiles: {}\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("schemaVersion"));
+        assertTrue(error.getMessage().contains("integer 1"));
+    }
+
+    @Test
+    void rejectsInvalidUrlsAndTimeoutsAtLoadTime() throws Exception {
+        Path invalidUrl = writeConfig("baseUrl: ftp://example.com\nprofiles: {}\n");
+        IllegalStateException urlError = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(invalidUrl, true, key -> null)
+        );
+        assertTrue(urlError.getMessage().contains("baseUrl"));
+
+        Path invalidTimeout = writeConfig("timeouts:\n  action: eventually\nprofiles: {}\n");
+        IllegalStateException timeoutError = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(invalidTimeout, true, key -> null)
+        );
+        assertTrue(timeoutError.getMessage().contains("timeouts.action"));
+    }
+
+    @Test
+    void rejectsInvalidValuesAfterPlaceholderResolution() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    baseUrl: ${BASE_URL}\n"
+                + "    browser:\n"
+                + "      headless: ${HEADLESS}\n"
+                + "    timeouts:\n"
+                + "      action: ${ACTION_TIMEOUT}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of(
+                        "BASE_URL", "ftp://example.test",
+                        "HEADLESS", "true",
+                        "ACTION_TIMEOUT", "10s"
+                )::get
+        );
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> resolved.validateResolvedProfile("local-web")
+        );
+
+        assertTrue(error.getMessage().contains("profiles.local-web.baseUrl"));
+        assertTrue(error.getMessage().contains("HTTP(S) URL"));
+    }
+
+    @Test
+    void rejectsInvalidBooleanAndDurationAfterPlaceholderResolution() throws Exception {
+        Path booleanConfig = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    browser:\n"
+                + "      headless: ${HEADLESS}\n");
+        PepeniumConfig.ResolvedConfig invalidBoolean = PepeniumConfig.load(
+                booleanConfig, true, Map.of("HEADLESS", "yes")::get);
+
+        IllegalStateException booleanError = assertThrows(
+                IllegalStateException.class,
+                () -> invalidBoolean.validateResolvedProfile("local-web")
+        );
+        assertTrue(booleanError.getMessage().contains("profiles.local-web.browser.headless"));
+        assertTrue(booleanError.getMessage().contains("true or false"));
+
+        Path durationConfig = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    timeouts:\n"
+                + "      action: ${ACTION_TIMEOUT}\n");
+        PepeniumConfig.ResolvedConfig invalidDuration = PepeniumConfig.load(
+                durationConfig, true, Map.of("ACTION_TIMEOUT", "eventually")::get);
+
+        IllegalStateException durationError = assertThrows(
+                IllegalStateException.class,
+                () -> invalidDuration.validateResolvedProfile("local-web")
+        );
+        assertTrue(durationError.getMessage().contains("profiles.local-web.timeouts.action"));
+        assertTrue(durationError.getMessage().contains("positive duration"));
+    }
+
+    @Test
+    void acceptsValidValuesAfterPlaceholderResolution() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    baseUrl: ${BASE_URL}\n"
+                + "    browser:\n"
+                + "      headless: ${HEADLESS}\n"
+                + "      pageLoadStrategy: ${PAGE_LOAD}\n"
+                + "    logging:\n"
+                + "      stepLimit: ${STEP_LIMIT}\n"
+                + "    timeouts:\n"
+                + "      action: ${ACTION_TIMEOUT}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of(
+                        "BASE_URL", "https://example.test",
+                        "HEADLESS", "true",
+                        "PAGE_LOAD", "eager",
+                        "STEP_LIMIT", "25",
+                        "ACTION_TIMEOUT", "750ms"
+                )::get
+        );
+
+        resolved.validateResolvedProfile("local-web");
+    }
+
+    @Test
+    void rejectsAmbiguousBrowserTypesAtLoadTime() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  local-web:\n"
+                + "    browser:\n"
+                + "      headless: 'yes'\n"
+                + "      arguments: --incognito\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("profiles.local-web.browser.headless"));
+    }
+
+    @Test
+    void rejectsProviderOwnedSettingsInPepeniumYaml() throws Exception {
+        Path config = writeConfig("profiles:\n"
+                + "  browserstack-android:\n"
+                + "    serverUrl: https://hub-cloud.browserstack.com/wd/hub\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(config, true, key -> null);
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> resolved.validateProfile("browserstack-android")
+        );
+
+        assertTrue(error.getMessage().contains("provider-owned"));
+        assertTrue(error.getMessage().contains("existing YAML"));
+    }
+
+    @Test
+    void rejectsBrowserStackOwnedCapabilityNamespaces() throws Exception {
+        Path config = writeConfig("capabilities:\n"
+                + "  bstack:options:\n"
+                + "    projectName: Pepenium\n"
+                + "profiles:\n"
+                + "  browserstack-android: {}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(config, true, key -> null);
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> resolved.validateProfile("browserstack-android")
+        );
+
+        assertTrue(error.getMessage().contains("bstack:options"));
+        assertTrue(error.getMessage().contains("BrowserStack YAML"));
+    }
+
+    private Path writeConfig(String content) throws Exception {
+        Path config = tempDir.resolve("pepenium.yml");
+        Files.writeString(config, content);
+        return config;
+    }
+}

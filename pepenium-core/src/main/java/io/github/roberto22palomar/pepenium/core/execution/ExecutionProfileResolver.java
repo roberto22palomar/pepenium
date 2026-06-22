@@ -1,12 +1,20 @@
 package io.github.roberto22palomar.pepenium.core.execution;
 
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
+
 public class ExecutionProfileResolver {
 
     public ExecutionProfile resolve(TestTarget target, String defaultProfileId) {
         String profileId = readOverride();
         String overrideSource = profileId != null && !profileId.isBlank() ? overrideSource() : null;
         if (profileId == null || profileId.isBlank()) {
-            profileId = defaultProfileId != null ? defaultProfileId : target.getDefaultProfileId();
+            profileId = defaultProfileId;
+        }
+        if (profileId == null || profileId.isBlank()) {
+            profileId = PepeniumConfig.getDefaultProfile();
+        }
+        if (profileId == null || profileId.isBlank()) {
+            profileId = target.getDefaultProfileId();
         }
 
         if (profileId == null || profileId.isBlank()) {
@@ -27,10 +35,18 @@ public class ExecutionProfileResolver {
             String sourceMessage = overrideSource != null
                     ? " via " + overrideSource
                     : "";
+            String suggestions = ExecutionProfiles.suggestedProfileIdsMultiline(profileId, target);
+            String suggestionMessage = suggestions.isBlank()
+                    ? ""
+                    : System.lineSeparator() + System.lineSeparator()
+                            + "Did you mean:"
+                            + System.lineSeparator()
+                            + suggestions;
             throw new IllegalStateException(
                     "Unknown execution profile '" + profileId + "'" + sourceMessage
                             + " for target " + target
                             + "."
+                            + suggestionMessage
                             + System.lineSeparator() + System.lineSeparator()
                             + "Compatible profiles for " + target + ":"
                             + System.lineSeparator()
@@ -43,6 +59,8 @@ public class ExecutionProfileResolver {
             );
         }
         ExecutionProfiles.validateCompatibility(profile, target);
+        PepeniumConfig.validateProfile(profile.getId());
+        PepeniumConfig.activateProfile(profile.getId());
         return profile;
     }
 

@@ -1,6 +1,7 @@
 package io.github.roberto22palomar.pepenium.core.configs.browserstack.desktop;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverConfig;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
@@ -54,6 +55,7 @@ public class MacWebConfigBS implements DriverConfig {
     @Override
     public DriverRequest createRequest() throws Exception {
         MutableCapabilities caps = new MutableCapabilities();
+        PepeniumConfig.getCapabilities().forEach(caps::setCapability);
         caps.setCapability("browserName", platform.getBrowserName());
         caps.setCapability("browserVersion", platform.getBrowserVersion());
 

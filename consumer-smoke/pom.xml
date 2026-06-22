@@ -12,21 +12,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <pepenium.version>0.9.7-private</pepenium.version>
+        <pepenium.version>0.9.7</pepenium.version>
         <junit.jupiter.version>5.13.1</junit.jupiter.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.github.roberto22palomar</groupId>
-            <artifactId>pepenium</artifactId>
-            <version>${pepenium.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.github.roberto22palomar</groupId>
             <artifactId>pepenium-toolkit</artifactId>
             <version>${pepenium.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -36,5 +31,26 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.github.roberto22palomar</groupId>
+                <artifactId>pepenium-maven-plugin</artifactId>
+                <version>${pepenium.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>validate-config</goal>
+                        </goals>
+                        <configuration>
+                            <configFile>${project.basedir}/pepenium.yml</configFile>
+                            <profileId>consumer-local-web</profileId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

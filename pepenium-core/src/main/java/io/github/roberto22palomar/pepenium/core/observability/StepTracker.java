@@ -1,5 +1,6 @@
 package io.github.roberto22palomar.pepenium.core.observability;
 
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
@@ -47,16 +48,14 @@ public final class StepTracker {
     }
 
     private static String formatStep(String stepDescription) {
-        String formatted = LocalTime.now().format(TIME_FORMAT) + " | " + stepDescription.trim();
-        PepeniumTimeline.recordStep(stepDescription.trim());
+        String sanitized = SensitiveDataSanitizer.sanitizeText(stepDescription.trim());
+        String formatted = LocalTime.now().format(TIME_FORMAT) + " | " + sanitized;
+        PepeniumTimeline.recordStep(sanitized);
         return formatted;
     }
 
     private static int stepLimit() {
-        String property = System.getProperty("pepenium.step.tracker.limit");
-        if (property == null || property.isBlank()) {
-            property = System.getenv("PEPENIUM_STEP_TRACKER_LIMIT");
-        }
+        String property = PepeniumConfig.get("PEPENIUM_STEP_TRACKER_LIMIT");
 
         if (property == null || property.isBlank()) {
             return DEFAULT_STEP_LIMIT;

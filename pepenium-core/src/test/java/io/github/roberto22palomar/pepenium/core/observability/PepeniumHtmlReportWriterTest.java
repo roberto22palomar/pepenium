@@ -57,6 +57,7 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("Wait Hotspots"));
         assertTrue(reportHtml.contains("Timeline"));
         assertTrue(reportHtml.contains("PASS"));
+        assertTrue(reportHtml.contains("&middot;"));
         assertTrue(indexHtml.contains("Total Reports"));
         assertTrue(indexHtml.contains("Passed"));
         assertTrue(indexHtml.contains("Open PDF summary"));

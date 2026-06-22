@@ -6,30 +6,46 @@
 
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-parent</artifactId>
-    <version>0.9.7-private</version>
+    <version>0.9.7</version>
     <packaging>pom</packaging>
     <name>Pepenium</name>
     <description>Java automation framework for Android, iOS and Web built on Appium, Selenium and JUnit 5.</description>
-    <url>https://gitlab1.cpdarr.elec/TEST/pepenium</url>
+    <url>https://github.com/roberto22palomar/pepenium</url>
     <inceptionYear>2026</inceptionYear>
 
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/mit</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>roberto22palomar</id>
+            <name>Roberto Palomar</name>
+            <url>https://github.com/roberto22palomar</url>
+        </developer>
+    </developers>
+
     <scm>
-        <connection>scm:git:https://gitlab1.cpdarr.elec/TEST/pepenium.git</connection>
-        <developerConnection>scm:git:https://gitlab1.cpdarr.elec/TEST/pepenium.git</developerConnection>
-        <url>https://gitlab1.cpdarr.elec/TEST/pepenium</url>
+        <connection>scm:git:https://github.com/roberto22palomar/pepenium.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/roberto22palomar/pepenium.git</developerConnection>
+        <url>https://github.com/roberto22palomar/pepenium</url>
         <tag>HEAD</tag>
     </scm>
 
     <modules>
         <module>pepenium-core</module>
         <module>pepenium-toolkit</module>
+        <module>pepenium-maven-plugin</module>
         <module>pepenium-examples</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.outputTimestamp>2026-04-07T00:00:00Z</project.build.outputTimestamp>
+        <maven.compiler.release>11</maven.compiler.release>
 
         <selenium.bom.version>4.39.0</selenium.bom.version>
         <appium.java.client.version>10.0.0</appium.java.client.version>
@@ -40,6 +56,7 @@
         <lombok.version>1.18.42</lombok.version>
         <snakeyaml.version>2.5</snakeyaml.version>
         <pdfbox.version>3.0.5</pdfbox.version>
+        <errorprone.annotations.version>2.41.0</errorprone.annotations.version>
 
         <slf4j.version>2.0.17</slf4j.version>
         <log4j2.version>2.25.3</log4j2.version>
@@ -48,20 +65,31 @@
         <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
         <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
         <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
-        <maven.dependency.plugin.version>3.9.0</maven.dependency.plugin.version>
-        <maven.enforcer.plugin.version>3.5.0</maven.enforcer.plugin.version>
+        <maven.dependency.plugin.version>3.11.0</maven.dependency.plugin.version>
+        <maven.enforcer.plugin.version>3.6.3</maven.enforcer.plugin.version>
         <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
-        <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
+        <maven.javadoc.plugin.version>3.8.0</maven.javadoc.plugin.version>
+        <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
+        <maven.gpg.plugin.version>3.2.7</maven.gpg.plugin.version>
+        <maven.plugin.plugin.version>3.15.1</maven.plugin.plugin.version>
+        <maven.plugin.annotations.version>3.15.1</maven.plugin.annotations.version>
+        <maven.api.version>3.9.9</maven.api.version>
+        <jacoco.maven.plugin.version>0.8.15</jacoco.maven.plugin.version>
         <japicmp.maven.plugin.version>0.25.4</japicmp.maven.plugin.version>
-        <public.api.compatibility.baseline.version>0.9.6</public.api.compatibility.baseline.version>
-        <spotbugs.maven.plugin.version>4.8.6.6</spotbugs.maven.plugin.version>
+        <public.api.compatibility.baseline.version>0.9.7</public.api.compatibility.baseline.version>
+        <spotbugs.maven.plugin.version>4.10.2.0</spotbugs.maven.plugin.version>
         <checkstyle.version>10.18.2</checkstyle.version>
+        <central.publishing.maven.plugin.version>0.9.0</central.publishing.maven.plugin.version>
 
         <pepenium.excludedTags>pepenium-example</pepenium.excludedTags>
         <pepenium.examples.skip.tests>true</pepenium.examples.skip.tests>
-        <jacoco.minimum.line.coverage>0.22</jacoco.minimum.line.coverage>
+        <jacoco.minimum.line.coverage>0.60</jacoco.minimum.line.coverage>
         <checkstyle.skip>false</checkstyle.skip>
         <spotbugs.skip>false</spotbugs.skip>
+        <maven.javadoc.failOnWarnings>false</maven.javadoc.failOnWarnings>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
+        <gpg.skip>true</gpg.skip>
+        <central.skipPublishing>false</central.skipPublishing>
     </properties>
 
     <dependencyManagement>
@@ -72,6 +100,11 @@
                 <version>${selenium.bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>${errorprone.annotations.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -91,12 +124,17 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.8,)</version>
+                                    <version>[3.9,)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>[11,)</version>
                                 </requireJavaVersion>
                                 <banDuplicatePomDependencyVersions/>
+                                <dependencyConvergence/>
+                                <requireReleaseDeps>
+                                    <onlyWhenRelease>true</onlyWhenRelease>
+                                    <failWhenParentIsSnapshot>true</failWhenParentIsSnapshot>
+                                </requireReleaseDeps>
                             </rules>
                         </configuration>
                     </execution>
@@ -114,6 +152,46 @@
                         <java.util.logging.config.file>${maven.multiModuleProjectDirectory}/pepenium-core/src/main/resources/jul.properties</java.util.logging.config.file>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>${pepenium.module.name}</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven.resources.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>include-license-in-artifacts</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${maven.multiModuleProjectDirectory}</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>LICENSE</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -177,7 +255,7 @@
                             <goal>check</goal>
                         </goals>
                         <configuration>
-                            <configLocation>${maven.multiModuleProjectDirectory}/checkstyle.xml</configLocation>
+                            <configLocation>${maven.multiModuleProjectDirectory}/config/checkstyle/checkstyle.xml</configLocation>
                             <includeTestSourceDirectory>false</includeTestSourceDirectory>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
@@ -216,15 +294,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven.compiler.plugin.version}</version>
-                    <configuration>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>org.projectlombok</groupId>
-                                <artifactId>lombok</artifactId>
-                                <version>${lombok.version}</version>
-                            </path>
-                        </annotationProcessorPaths>
-                    </configuration>
                 </plugin>
 
                 <plugin>
@@ -253,5 +322,82 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <properties>
+                <gpg.skip>false</gpg.skip>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>${maven.source.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven.javadoc.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <failOnWarnings>${maven.javadoc.failOnWarnings}</failOnWarnings>
+                            <doclint>none</doclint>
+                            <skip>${maven.javadoc.skip}</skip>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <skip>${gpg.skip}</skip>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central.publishing.maven.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                            <waitUntil>validated</waitUntil>
+                            <skipPublishing>${central.skipPublishing}</skipPublishing>
+                            <excludeArtifacts>pepenium-examples</excludeArtifacts>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

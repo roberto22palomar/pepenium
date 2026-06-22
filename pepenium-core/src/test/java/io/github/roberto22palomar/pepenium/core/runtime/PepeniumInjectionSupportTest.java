@@ -126,6 +126,27 @@ class PepeniumInjectionSupportTest {
     }
 
     @Test
+    void unsupportedInterfacesReportSupportedTargetsAndConcreteComponentGuidance() {
+        PepeniumInjectionSupport injector = new PepeniumInjectionSupport(
+                mock(PepeniumRuntime.class),
+                fixtureConfig(),
+                new PepeniumInjectionSupport.CacheState()
+        );
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> injector.resolve(CustomFlowContract.class)
+        );
+
+        assertTrue(error.getMessage().contains("Unsupported Pepenium injection target"));
+        assertTrue(error.getMessage().contains("Interfaces cannot be created automatically"));
+        assertTrue(error.getMessage().contains("Supported direct targets are"));
+        assertTrue(error.getMessage().contains("WebDriver"));
+        assertTrue(error.getMessage().contains("MobileActions"));
+        assertTrue(error.getMessage().contains("@PepeniumInject"));
+    }
+
+    @Test
     void lenientInjectionLeavesDriverBoundFieldsNullUntilTheRuntimeIsReady() {
         PepeniumRuntime runtime = mock(PepeniumRuntime.class);
         when(runtime.getDriver()).thenReturn(null);
@@ -258,6 +279,9 @@ class PepeniumInjectionSupportTest {
             this.page = page;
             this.driver = driver;
         }
+    }
+
+    private interface CustomFlowContract {
     }
 
     private static final class CircularA {

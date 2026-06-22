@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -72,6 +73,17 @@ class ActionsWebTest {
             System.setProperty(ScreenshotPathResolver.SCREENSHOT_PATH_PROPERTY, previousScreenshotPath);
         }
         StepTracker.clear();
+    }
+
+    @Test
+    void implementsSharedWebActionsContract() {
+        when(driver.findElement(LOCATOR)).thenThrow(new NoSuchElementException("gone"));
+
+        WebActions actions = new ActionsWeb(driver);
+
+        assertSame(driver, actions.getDriver());
+        assertFalse(actions.isElementPresent(LOCATOR));
+        assertTrue(actions.waitGone(LOCATOR));
     }
 
     @Test
@@ -129,6 +141,17 @@ class ActionsWebTest {
     }
 
     @Test
+    void waitForAtLeastNElementsRejectsInvalidCount() {
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> actions.waitForAtLeastNElements(LOCATOR, 0));
+
+        assertTrue(error.getMessage().contains("at least 1"));
+        verifyNoInteractions(driver);
+    }
+
+    @Test
     void waitToBePresentReturnsLocatedElement() {
         when(driver.findElement(LOCATOR)).thenReturn(element);
 
@@ -169,6 +192,28 @@ class ActionsWebTest {
     }
 
     @Test
+    void typeRejectsNullTextBeforeTouchingDriver() {
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.type(LOCATOR, null));
+
+        assertEquals("text must not be null", error.getMessage());
+        verifyNoInteractions(driver);
+    }
+
+    @Test
+    void typeElementRejectsNullTextBeforeTouchingElement() {
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.type(element, null));
+
+        assertEquals("text must not be null", error.getMessage());
+        verifyNoInteractions(driver, element);
+    }
+
+    @Test
     void waitForElementTextReturnsTrueWhenElementMatches() {
         when(driver.findElement(LOCATOR)).thenReturn(element);
         when(element.getText()).thenReturn("ready");
@@ -176,6 +221,17 @@ class ActionsWebTest {
         ActionsWeb actions = new ActionsWeb(driver);
 
         assertTrue(actions.waitForElementText(LOCATOR, "ready"));
+    }
+
+    @Test
+    void waitForElementTextRejectsNullExpectedTextBeforeTouchingDriver() {
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> actions.waitForElementText(LOCATOR, null));
+
+        assertEquals("expectedText must not be null", error.getMessage());
+        verifyNoInteractions(driver);
     }
 
     @Test
@@ -245,15 +301,24 @@ class ActionsWebTest {
     @Test
     void waitUntilHiddenWaitsForElementToDisappear() {
         when(driver.findElement(LOCATOR))
-                .thenReturn(element)
                 .thenThrow(new NoSuchElementException("gone"));
-        when(element.isDisplayed()).thenReturn(true);
 
         ActionsWeb actions = new ActionsWeb(driver);
         actions.waitUntilHidden(LOCATOR);
 
         assertTrue(StepTracker.snapshot().getSteps().stream()
                 .anyMatch(step -> step.contains("Wait until hidden " + LOCATOR)));
+    }
+
+    @Test
+    void waitUntilHiddenReturnsImmediatelyWhenElementIsAlreadyHidden() {
+        when(driver.findElement(LOCATOR)).thenThrow(new NoSuchElementException("already gone"));
+
+        ActionsWeb actions = new ActionsWeb(driver);
+
+        actions.waitUntilHidden(LOCATOR);
+
+        verify(driver).findElement(LOCATOR);
     }
 
     @Test

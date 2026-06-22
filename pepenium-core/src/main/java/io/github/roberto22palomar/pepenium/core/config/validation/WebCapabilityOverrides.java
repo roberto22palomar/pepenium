@@ -1,12 +1,12 @@
 package io.github.roberto22palomar.pepenium.core.config.validation;
 
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.AbstractDriverOptions;
 
-import java.util.Locale;
 import java.util.function.Function;
 
 public final class WebCapabilityOverrides {
@@ -27,14 +27,7 @@ public final class WebCapabilityOverrides {
     }
 
     public static String systemPropertyOrEnv(String key) {
-        String value = System.getProperty(toSystemPropertyKey(key));
-        if (value == null || value.isBlank()) {
-            value = System.getProperty(key);
-        }
-        if (value == null || value.isBlank()) {
-            value = System.getenv(key);
-        }
-        return value;
+        return PepeniumConfig.get(key);
     }
 
     private static void applyCommon(Function<String, String> env,
@@ -99,9 +92,19 @@ public final class WebCapabilityOverrides {
 
     private static void applyGenericCapabilities(Function<String, String> env, AbstractDriverOptions<?> options) {
         String value = envValue(env, "PEPENIUM_WEB_CAPABILITIES");
-        if (value == null) {
+        if (value != null) {
+            applyLegacyCapabilities(value, options);
             return;
         }
+        applyStructuredCapabilities(PepeniumConfig.getCapabilities(), options);
+    }
+
+    static void applyStructuredCapabilities(java.util.Map<String, Object> capabilities,
+                                            AbstractDriverOptions<?> options) {
+        capabilities.forEach(options::setCapability);
+    }
+
+    private static void applyLegacyCapabilities(String value, AbstractDriverOptions<?> options) {
         for (String rawEntry : value.split(";")) {
             String entry = rawEntry == null ? null : rawEntry.trim();
             if (entry == null || entry.isBlank()) {
@@ -143,10 +146,6 @@ public final class WebCapabilityOverrides {
     private static String envValue(Function<String, String> env, String key) {
         String value = env.apply(key);
         return (value == null || value.isBlank()) ? null : value.trim();
-    }
-
-    private static String toSystemPropertyKey(String envKey) {
-        return envKey.toLowerCase(Locale.ROOT).replace('_', '.');
     }
 
     private static boolean parseBoolean(String key, String value) {

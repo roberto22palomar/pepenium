@@ -7,6 +7,8 @@ import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -17,11 +19,13 @@ import org.openqa.selenium.WebDriver;
  * <ul>
  *     <li>JUnit test instances use {@link TestInstance.Lifecycle#PER_CLASS}.</li>
  *     <li>When automatic lifecycle is enabled, Pepenium creates one managed driver session per test class.</li>
+ *     <li>Managed test methods run on the same thread because WebDriver sessions are not thread-safe.</li>
  *     <li>Per-test reporting and observability state is still reset around each test method.</li>
  *     <li>The protected fields and hooks in this type are intended for direct use by test subclasses.</li>
  * </ul>
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Execution(ExecutionMode.SAME_THREAD)
 @SuppressFBWarnings(
         value = "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
         justification = "These protected fields are exposed for test subclasses to use directly."

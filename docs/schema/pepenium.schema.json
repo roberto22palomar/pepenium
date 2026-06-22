@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/roberto22palomar/pepenium/main/docs/schema/pepenium.schema.json",
+  "title": "Pepenium configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "defaultProfile": { "$ref": "#/$defs/nonBlankString" },
+    "baseUrl": { "$ref": "#/$defs/httpUrl" },
+    "credentials": { "$ref": "#/$defs/credentials" },
+    "reporting": { "$ref": "#/$defs/reporting" },
+    "logging": { "$ref": "#/$defs/logging" },
+    "timeouts": { "$ref": "#/$defs/timeouts" },
+    "capabilities": { "$ref": "#/$defs/capabilities" },
+    "settings": { "$ref": "#/$defs/settings" },
+    "profiles": { "type": "object", "additionalProperties": { "$ref": "#/$defs/profile" } }
+  },
+  "required": ["schemaVersion"],
+  "$defs": {
+    "nonBlankString": { "type": "string", "minLength": 1, "pattern": ".*\\S.*" },
+    "httpUrl": {
+      "oneOf": [
+        { "type": "string", "pattern": "^https?://[^\\s]+$" },
+        { "$ref": "#/$defs/placeholder" }
+      ]
+    },
+    "placeholder": { "type": "string", "pattern": "^\\$\\{[A-Za-z_][A-Za-z0-9_]*}$" },
+    "duration": {
+      "oneOf": [
+        { "type": "integer", "minimum": 1 },
+        { "type": "string", "pattern": "^([1-9][0-9]*(ms|s|m)?|[Pp][Tt].+|\\$\\{[A-Za-z_][A-Za-z0-9_]*})$" }
+      ]
+    },
+    "credentials": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "username": { "$ref": "#/$defs/nonBlankString" },
+        "password": { "$ref": "#/$defs/nonBlankString" }
+      }
+    },
+    "reporting": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "directory": { "$ref": "#/$defs/nonBlankString" },
+        "screenshotPath": { "$ref": "#/$defs/nonBlankString" }
+      }
+    },
+    "logging": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "detailed": { "oneOf": [{ "type": "boolean" }, { "$ref": "#/$defs/placeholder" }] },
+        "stepLimit": { "oneOf": [{ "type": "integer", "minimum": 1 }, { "$ref": "#/$defs/placeholder" }] }
+      }
+    },
+    "timeouts": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "action": { "$ref": "#/$defs/duration" },
+        "longAction": { "$ref": "#/$defs/duration" },
+        "assertion": { "$ref": "#/$defs/duration" },
+        "sessionConnect": { "$ref": "#/$defs/duration" },
+        "sessionCommand": { "$ref": "#/$defs/duration" }
+      }
+    },
+    "browser": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "headless": { "oneOf": [{ "type": "boolean" }, { "$ref": "#/$defs/placeholder" }] },
+        "acceptInsecureCerts": { "oneOf": [{ "type": "boolean" }, { "$ref": "#/$defs/placeholder" }] },
+        "pageLoadStrategy": { "oneOf": [{ "enum": ["normal", "eager", "none"] }, { "$ref": "#/$defs/placeholder" }] },
+        "version": { "$ref": "#/$defs/nonBlankString" },
+        "binary": { "$ref": "#/$defs/nonBlankString" },
+        "arguments": { "type": "array", "items": { "$ref": "#/$defs/nonBlankString" } }
+      }
+    },
+    "device": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "udid": { "$ref": "#/$defs/nonBlankString" },
+        "name": { "$ref": "#/$defs/nonBlankString" },
+        "platformVersion": { "$ref": "#/$defs/nonBlankString" }
+      }
+    },
+    "app": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "path": { "$ref": "#/$defs/nonBlankString" },
+        "package": { "$ref": "#/$defs/nonBlankString" },
+        "activity": { "$ref": "#/$defs/nonBlankString" },
+        "bundleId": { "$ref": "#/$defs/nonBlankString" }
+      }
+    },
+    "capabilityValue": {
+      "oneOf": [
+        { "type": ["string", "number", "boolean", "null"] },
+        { "type": "array", "items": { "$ref": "#/$defs/capabilityValue" } },
+        { "type": "object", "additionalProperties": { "$ref": "#/$defs/capabilityValue" } }
+      ]
+    },
+    "capabilities": { "type": "object", "additionalProperties": { "$ref": "#/$defs/capabilityValue" } },
+    "settings": { "type": "object", "additionalProperties": { "$ref": "#/$defs/capabilityValue" } },
+    "profile": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "serverUrl": { "$ref": "#/$defs/httpUrl" },
+        "device": { "$ref": "#/$defs/device" },
+        "app": { "$ref": "#/$defs/app" },
+        "browser": { "$ref": "#/$defs/browser" },
+        "baseUrl": { "$ref": "#/$defs/httpUrl" },
+        "credentials": { "$ref": "#/$defs/credentials" },
+        "reporting": { "$ref": "#/$defs/reporting" },
+        "logging": { "$ref": "#/$defs/logging" },
+        "timeouts": { "$ref": "#/$defs/timeouts" },
+        "capabilities": { "$ref": "#/$defs/capabilities" },
+        "settings": { "$ref": "#/$defs/settings" }
+      }
+    }
+  }
+}

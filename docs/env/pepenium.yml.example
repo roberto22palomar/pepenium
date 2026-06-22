@@ -1,0 +1,106 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/roberto22palomar/pepenium/main/docs/schema/pepenium.schema.json
+schemaVersion: 1
+defaultProfile: local-android
+
+baseUrl: https://example.com
+
+reporting:
+  directory: target/pepenium-reports
+  screenshotPath: target/pepenium-screenshots
+
+logging:
+  detailed: false
+  stepLimit: 20
+
+timeouts:
+  action: 750ms
+  longAction: 30s
+  assertion: 10s
+  # TCP connection and Selenium/Appium command transport limits.
+  sessionConnect: 10s
+  sessionCommand: 3m
+
+# Escape hatch for custom DriverConfig implementations and private providers.
+# Built-in Pepenium options must remain in their typed sections above.
+settings:
+  TEAM_GRID_REGION: eu-west-1
+
+# Global capabilities apply to every selected profile. Profile capabilities
+# override matching values and merge nested vendor objects recursively.
+capabilities:
+  acceptInsecureCerts: false
+  vendor:options:
+    project: Pepenium
+    tags:
+      - smoke
+      - local
+
+profiles:
+  local-android:
+    serverUrl: http://127.0.0.1:4723
+    device:
+      udid: emulator-5554
+      name: Android Emulator
+    app:
+      path: ${APP_BINARY}
+    capabilities:
+      noReset: false
+      autoGrantPermissions: true
+      settings:
+        ignoreUnimportantViews: true
+        mjpegScalingFactor: 25
+
+  local-android-web:
+    serverUrl: http://127.0.0.1:4723
+    device:
+      udid: emulator-5554
+      name: Android Emulator
+
+  local-ios:
+    serverUrl: http://127.0.0.1:4723
+    device:
+      udid: ${IOS_UDID}
+      name: ${IOS_DEVICE_NAME}
+      platformVersion: ${IOS_PLATFORM_VERSION}
+    app:
+      path: ${IOS_APP_PATH}
+      # Use bundleId instead of path when the app is already installed.
+      # bundleId: com.example.app
+    capabilities:
+      autoAcceptAlerts: true
+      noReset: false
+
+  local-ios-web:
+    serverUrl: http://127.0.0.1:4723
+    device:
+      udid: ${IOS_UDID}
+      name: ${IOS_DEVICE_NAME}
+      platformVersion: ${IOS_PLATFORM_VERSION}
+
+  local-web:
+    browser:
+      headless: false
+      acceptInsecureCerts: false
+      pageLoadStrategy: normal
+      arguments:
+        - --incognito
+        - --window-size=1440,900
+    capabilities:
+      vendor:options:
+        browser: chrome
+
+  team-grid-web:
+    settings:
+      TEAM_GRID_REGION: eu-south-2
+      TEAM_GRID_TOKEN: ${TEAM_GRID_TOKEN}
+
+  # AWS receives device/app details from Device Farm. Only common settings and
+  # additional capabilities belong here.
+  aws-android:
+    capabilities:
+      newCommandTimeout: 300
+
+  # Credentials, platforms and bstack:options remain in BrowserStack's own YAML.
+  browserstack-windows-web:
+    capabilities:
+      acceptInsecureCerts: true

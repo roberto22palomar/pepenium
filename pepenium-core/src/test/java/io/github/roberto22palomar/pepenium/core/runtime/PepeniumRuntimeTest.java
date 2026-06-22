@@ -6,6 +6,7 @@ import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 import io.github.roberto22palomar.pepenium.core.execution.ExecutionProfile;
 import io.github.roberto22palomar.pepenium.core.execution.ExecutionProfileResolver;
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
+import io.github.roberto22palomar.pepenium.core.observability.PepeniumTimeline;
 import io.github.roberto22palomar.pepenium.core.observability.StepTracker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -15,10 +16,12 @@ import org.openqa.selenium.WebDriver;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PepeniumRuntimeTest {
@@ -26,6 +29,7 @@ class PepeniumRuntimeTest {
     @AfterEach
     void tearDown() {
         StepTracker.clear();
+        PepeniumTimeline.clear();
     }
 
     @Test
@@ -80,6 +84,8 @@ class PepeniumRuntimeTest {
                 .description("cleanup config")
                 .build(), TestTarget.WEB_DESKTOP);
         StepTracker.record("Something happened");
+        PepeniumTimeline.beginTest();
+        PepeniumTimeline.recordAction("Opened checkout");
 
         runtime.cleanupDriver();
 
@@ -87,6 +93,54 @@ class PepeniumRuntimeTest {
         assertNull(runtime.getSession());
         assertNull(runtime.getDriver());
         assertEquals(0, StepTracker.snapshot().getTotalRecorded());
+        assertTrue(PepeniumTimeline.snapshot().getEvents().isEmpty());
+        assertNull(PepeniumTimeline.snapshot().getStartedAt());
+    }
+
+    @Test
+    void rejectsOpeningAnotherSessionWithoutCleanup() throws Exception {
+        RecordingSessionFactory sessionFactory = new RecordingSessionFactory();
+        PepeniumRuntime runtime = new PepeniumRuntime(sessionFactory, new ExecutionProfileResolver());
+        DriverConfig config = () -> DriverRequest.builder()
+                .driverType(DriverType.LOCAL_CHROME)
+                .capabilities(capabilities())
+                .description("duplicate session")
+                .build();
+
+        runtime.initializeDriver(config, TestTarget.WEB_DESKTOP);
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> runtime.initializeDriver(config, TestTarget.WEB_DESKTOP)
+        );
+        assertTrue(error.getMessage().contains("already active"));
+    }
+
+    @Test
+    void closesPartiallyCreatedSessionAndDoesNotPublishIt() {
+        AtomicBoolean closed = new AtomicBoolean();
+        DriverSession incomplete = new DriverSession(null, DriverRequest.builder()
+                .driverType(DriverType.LOCAL_CHROME)
+                .description("incomplete")
+                .build()) {
+            @Override
+            public void close() {
+                closed.set(true);
+            }
+        };
+        PepeniumRuntime runtime = new PepeniumRuntime(request -> incomplete, new ExecutionProfileResolver());
+
+        assertThrows(NullPointerException.class, () -> runtime.initializeDriver(
+                () -> DriverRequest.builder()
+                        .driverType(DriverType.LOCAL_CHROME)
+                        .description("incomplete")
+                        .build(),
+                TestTarget.WEB_DESKTOP
+        ));
+
+        assertNull(runtime.getSession());
+        assertNull(runtime.getDriver());
+        assertTrue(closed.get());
     }
 
     private Capabilities capabilities() {

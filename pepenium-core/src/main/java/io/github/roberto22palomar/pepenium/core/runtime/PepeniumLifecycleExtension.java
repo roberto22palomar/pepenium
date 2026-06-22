@@ -35,15 +35,21 @@ final class PepeniumLifecycleExtension implements BeforeAllCallback, BeforeEachC
 
     @Override
     public void afterEach(ExtensionContext context) {
-        runtime.writeTestReport(context.getDisplayName(), context.getExecutionException().orElse(null));
-        runtime.clearPerTestState();
+        try {
+            runtime.writeTestReport(context.getDisplayName(), context.getExecutionException().orElse(null));
+        } finally {
+            runtime.clearPerTestState();
+        }
     }
 
     @Override
     public void afterAll(ExtensionContext context) {
         if (owner.useAutomaticLifecycle()) {
-            runtime.cleanupDriver();
-            owner.syncRuntimeState();
+            try {
+                runtime.cleanupDriver();
+            } finally {
+                owner.syncRuntimeState();
+            }
         }
     }
 

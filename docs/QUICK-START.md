@@ -68,6 +68,8 @@ The current iOS native example follows the same approach. It is intended to demo
 
 - `local-android`
 - `local-android-web`
+- `local-ios`
+- `local-ios-web`
 - `local-web`
 - `local-web-firefox`
 - `local-web-edge`

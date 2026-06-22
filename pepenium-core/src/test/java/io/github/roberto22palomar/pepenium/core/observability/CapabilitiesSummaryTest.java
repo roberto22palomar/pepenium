@@ -3,7 +3,10 @@ package io.github.roberto22palomar.pepenium.core.observability;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.MutableCapabilities;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CapabilitiesSummaryTest {
@@ -41,5 +44,23 @@ class CapabilitiesSummaryTest {
         assertTrue(description.indexOf("accessKey=***") < description.indexOf("platformName=ANDROID"));
         assertTrue(description.indexOf("bstack:options={deviceName=Pixel 9}") < description.indexOf("platformName=ANDROID"));
         assertTrue(description.indexOf("password=***") < description.indexOf("platformName=ANDROID"));
+    }
+
+    @Test
+    void describeRedactsSecretsInsideVendorCapabilities() {
+        MutableCapabilities capabilities = new MutableCapabilities();
+        capabilities.setCapability("vendor:options", Map.of(
+                "project", "Pepenium",
+                "accessKey", "nested-secret",
+                "metadata", Map.of("apiToken", "deeper-secret")
+        ));
+
+        String description = CapabilitiesSummary.describe(capabilities);
+
+        assertTrue(description.contains("accessKey=***"));
+        assertTrue(description.contains("apiToken=***"));
+        assertTrue(description.contains("project=Pepenium"));
+        assertFalse(description.contains("nested-secret"));
+        assertFalse(description.contains("deeper-secret"));
     }
 }

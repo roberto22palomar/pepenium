@@ -129,23 +129,37 @@ public class ScrollUtils {
         // By.id ->
         if (s.startsWith("By.id: ")) {
             String id = s.substring("By.id: ".length()).trim();
-            return Optional.of("new UiSelector().resourceId(\"" + id + "\")");
+            return Optional.of("new UiSelector().resourceId(\"" + escapeUiSelectorString(id) + "\")");
         }
         // XPath with @resource-id ->
         Matcher mId = Pattern.compile("@resource-id\\s*=\\s*'([^']+)'").matcher(s);
         if (mId.find()) {
-            return Optional.of("new UiSelector().resourceId(\"" + mId.group(1) + "\")");
+            return Optional.of("new UiSelector().resourceId(\"" + escapeUiSelectorString(mId.group(1)) + "\")");
         }
-        // XPath with text()/contains(text(), ...) ->
+        // XPath with text(), @text, contains(text(), ...) or contains(@text, ...) ->
+        Matcher mAttributeText = Pattern.compile("@text\\s*=\\s*'([^']+)'").matcher(s);
+        if (mAttributeText.find()) {
+            return Optional.of("new UiSelector().text(\"" + escapeUiSelectorString(mAttributeText.group(1)) + "\")");
+        }
         Matcher mText = Pattern.compile("text\\(\\)\\s*=\\s*'([^']+)'").matcher(s);
         if (mText.find()) {
-            return Optional.of("new UiSelector().text(\"" + mText.group(1) + "\")");
+            return Optional.of("new UiSelector().text(\"" + escapeUiSelectorString(mText.group(1)) + "\")");
+        }
+        Matcher mAttributeTextContains = Pattern.compile("contains\\(@text,\\s*'([^']+)'\\)").matcher(s);
+        if (mAttributeTextContains.find()) {
+            return Optional.of("new UiSelector().textContains(\""
+                    + escapeUiSelectorString(mAttributeTextContains.group(1)) + "\")");
         }
         Matcher mTextContains = Pattern.compile("contains\\(text\\(\\),\\s*'([^']+)'\\)").matcher(s);
         if (mTextContains.find()) {
-            return Optional.of("new UiSelector().textContains(\"" + mTextContains.group(1) + "\")");
+            return Optional.of("new UiSelector().textContains(\""
+                    + escapeUiSelectorString(mTextContains.group(1)) + "\")");
         }
         return Optional.empty();
+    }
+
+    private String escapeUiSelectorString(String value) {
+        return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     /** Swipes inside a central safe zone to avoid OS status and gesture bars. */
@@ -177,7 +191,8 @@ public class ScrollUtils {
 
     private int safePageHash() {
         try {
-            return driver.getPageSource().hashCode();
+            String pageSource = driver.getPageSource();
+            return pageSource == null ? ThreadLocalRandom.current().nextInt() : pageSource.hashCode();
         } catch (Throwable t) {
             return ThreadLocalRandom.current().nextInt();
         }

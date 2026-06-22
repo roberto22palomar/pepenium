@@ -2,13 +2,18 @@ package io.github.roberto22palomar.pepenium.core.config.yaml;
 
 import io.github.roberto22palomar.pepenium.core.config.browserstack.BrowserStackConfig;
 import io.github.roberto22palomar.pepenium.core.config.validation.ConfigValidationSupport;
+import io.github.roberto22palomar.pepenium.core.observability.SensitiveDataSanitizer;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class YamlLoader {
@@ -19,19 +24,36 @@ public final class YamlLoader {
     public static BrowserStackConfig load(String yamlPath) {
         Path resolvedPath = resolvePath(yamlPath);
         try (InputStream in = Files.newInputStream(resolvedPath)) {
-            BrowserStackConfig config = new Yaml().loadAs(in, BrowserStackConfig.class);
+            BrowserStackConfig config = loadAs(in, BrowserStackConfig.class);
             return ConfigValidationSupport.validateBrowserStackAppConfig(config, resolvedPath.toString());
         } catch (Exception e) {
-            throw ConfigValidationSupport.invalid(
-                    "Failed to load BrowserStack YAML from '" + resolvedPath + "': " + e.getMessage(), e);
+            throw loadFailure(resolvedPath, e);
         }
     }
 
+    static <T> T loadAs(InputStream input, Class<T> type) {
+        LoaderOptions options = new LoaderOptions();
+        options.setAllowDuplicateKeys(false);
+        options.setMaxAliasesForCollections(50);
+        options.setNestingDepthLimit(50);
+        options.setCodePointLimit(3 * 1024 * 1024);
+        return new Yaml(new Constructor(type, options)).loadAs(input, type);
+    }
+
+    static IllegalStateException loadFailure(Path path, Exception error) {
+        String message = "Failed to load BrowserStack YAML from '" + path + "': "
+                + SensitiveDataSanitizer.sanitizeText(error.getMessage());
+        return error instanceof IOException
+                ? ConfigValidationSupport.invalid(message, error)
+                : ConfigValidationSupport.invalid(message);
+    }
+
     static Path resolvePath(String yamlPath) {
-        Path directPath = Paths.get(yamlPath);
+        String normalizedYamlPath = requireYamlPath(yamlPath);
+        Path directPath = Paths.get(normalizedYamlPath);
         rejectPackagedRuntimeIntent(directPath);
         Path fileNamePath = directPath.getFileName();
-        String fileName = fileNamePath == null ? yamlPath : fileNamePath.toString();
+        String fileName = fileNamePath == null ? normalizedYamlPath : fileNamePath.toString();
         Path localConfigDir = Paths.get(".pepenium", "browserstack");
 
         List<Path> candidates = List.of(
@@ -56,6 +78,15 @@ public final class YamlLoader {
 
         rejectPackagedRuntimePath(resolved);
         return resolved;
+    }
+
+    private static String requireYamlPath(String yamlPath) {
+        Objects.requireNonNull(yamlPath, "yamlPath must not be null");
+        String normalizedYamlPath = yamlPath.trim();
+        if (normalizedYamlPath.isEmpty()) {
+            throw ConfigValidationSupport.invalid("BrowserStack YAML path must not be blank");
+        }
+        return normalizedYamlPath;
     }
 
     private static void rejectPackagedRuntimeIntent(Path requestedPath) {

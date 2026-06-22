@@ -9,6 +9,16 @@ profiles:
     description: Local Android mobile web
     configKey: LOCAL_ANDROID_WEB
 
+  - id: local-ios
+    target: IOS_NATIVE
+    description: Local iOS native app
+    configKey: LOCAL_IOS
+
+  - id: local-ios-web
+    target: IOS_WEB
+    description: Local iOS mobile web
+    configKey: LOCAL_IOS_WEB
+
   - id: local-web
     target: WEB_DESKTOP
     description: Local Chrome desktop web

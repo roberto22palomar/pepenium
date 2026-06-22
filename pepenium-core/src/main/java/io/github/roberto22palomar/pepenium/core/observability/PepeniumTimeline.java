@@ -83,12 +83,13 @@ public final class PepeniumTimeline {
             return;
         }
         ensureStarted();
+        String sanitizedMessage = SensitiveDataSanitizer.sanitizeText(message.trim());
         EVENTS.get().add(new Event(
                 Instant.now().toEpochMilli(),
                 LocalTime.now().format(TIME_FORMAT),
                 type,
                 status,
-                message.trim(),
+                sanitizedMessage,
                 screenshotPath
         ));
     }

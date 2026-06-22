@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -34,6 +36,33 @@ class YamlLoaderTest {
         Files.deleteIfExists(yaml);
         Files.deleteIfExists(localDir);
         Files.deleteIfExists(localDir.getParent());
+    }
+
+    @Test
+    void trimsConfiguredYamlPathBeforeResolving() {
+        Path resolvedPath = YamlLoader.resolvePath("  src/test/resources/browserstackIOS.yml  ");
+
+        assertTrue(resolvedPath.endsWith(Path.of("src", "main", "resources", "browserstackExamples", "browserstackIOS.yml.example")));
+    }
+
+    @Test
+    void rejectsNullYamlPathClearly() {
+        NullPointerException error = assertThrows(
+                NullPointerException.class,
+                () -> YamlLoader.resolvePath(null)
+        );
+
+        assertEquals("yamlPath must not be null", error.getMessage());
+    }
+
+    @Test
+    void rejectsBlankYamlPathClearly() {
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> YamlLoader.resolvePath("   ")
+        );
+
+        assertTrue(error.getMessage().contains("BrowserStack YAML path must not be blank"));
     }
 
     @Test
@@ -92,5 +121,28 @@ class YamlLoaderTest {
         );
 
         assertTrue(error.getMessage().contains("BrowserStack app is required"));
+    }
+
+    @Test
+    void rejectsDuplicateBrowserStackYamlKeys() throws Exception {
+        Path invalidYaml = Files.createTempFile("browserstack-duplicate", ".yml");
+        Files.writeString(invalidYaml, "userName: user\n"
+                + "accessKey: first-secret\n"
+                + "accessKey: second-secret\n"
+                + "app: bs://app\n"
+                + "platforms:\n"
+                + "  - platformName: Android\n"
+                + "    deviceName: Pixel 9\n"
+                + "    platformVersion: '15'\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> YamlLoader.load(invalidYaml.toString())
+        );
+
+        assertTrue(error.getMessage().contains("duplicate key accessKey"));
+        assertFalse(error.getMessage().contains("first-secret"));
+        assertFalse(error.getMessage().contains("second-secret"));
+        assertNull(error.getCause());
     }
 }

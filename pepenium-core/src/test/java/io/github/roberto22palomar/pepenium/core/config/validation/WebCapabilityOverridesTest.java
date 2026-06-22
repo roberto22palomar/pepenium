@@ -6,6 +6,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -106,5 +107,21 @@ class WebCapabilityOverridesTest {
         assertEquals(
                 "PEPENIUM_WEB_CAPABILITIES entries must follow key=value format and be separated with ';'.",
                 error.getMessage());
+    }
+
+    @Test
+    void appliesNestedStructuredCapabilitiesWithoutFlattening() {
+        ChromeOptions options = new ChromeOptions();
+        Map<String, Object> vendorOptions = Map.of(
+                "project", "Pepenium",
+                "tags", List.of("smoke", "chrome")
+        );
+
+        WebCapabilityOverrides.applyStructuredCapabilities(
+                Map.of("vendor:options", vendorOptions),
+                options
+        );
+
+        assertEquals(vendorOptions, options.getCapability("vendor:options"));
     }
 }

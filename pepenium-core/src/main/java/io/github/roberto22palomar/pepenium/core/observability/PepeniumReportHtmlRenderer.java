@@ -27,7 +27,7 @@ final class PepeniumReportHtmlRenderer {
                 .append(".keyvals{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:10px 16px;align-items:start;} .key{font-weight:700;color:#374151;} .keyvals div{word-break:break-word;} .report-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:18px;margin-top:24px;} .sidebar{display:flex;flex-direction:column;gap:0;align-self:start;position:sticky;top:18px;} @media (max-width:980px){.report-layout{grid-template-columns:1fr;}.sidebar{position:static;}}")
                 .append(".badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;margin-right:6px;} .badge-step{background:#eef2ff;color:#3730a3;} .badge-action{background:var(--action-bg);color:var(--action);} .badge-wait{background:var(--wait-bg);color:var(--wait);} .badge-assert{background:var(--assert-bg);color:var(--assert);} .badge-screenshot{background:var(--shot-bg);color:var(--shot);} .badge-error{background:var(--error-bg);color:var(--error);} .badge-pass{background:var(--pass-bg);color:var(--pass);} .badge-fail{background:var(--fail-bg);color:var(--fail);} .timeline{display:flex;flex-direction:column;gap:10px;} .timeline-card{padding:12px 14px;background:linear-gradient(180deg,#fff 0,#fbfcff 100%);} .timeline-card.is-failure{border-color:#ef9a9a;box-shadow:0 10px 24px rgba(207,34,46,.12);} .timeline-card.is-warning{border-color:#d8b4fe;box-shadow:0 10px 24px rgba(124,58,237,.10);} .timeline-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;} .timeline-time{font-size:11px;color:var(--muted);font-weight:700;} .timeline-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;} .timeline-pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:#eef2f8;color:#475467;font-size:10px;font-weight:700;} .timeline-message{margin-top:6px;font-size:14px;line-height:1.4;}")
                 .append(".attachments{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px;} .attachment{background:var(--surface-alt);border:1px dashed #c6d1e1;border-radius:12px;padding:10px;} .thumb{display:block;width:100%;max-height:180px;object-fit:cover;border-radius:10px;border:1px solid var(--border);margin-top:8px;background:#fff;} .path{margin-top:6px;font-size:11px;color:var(--muted);word-break:break-word;}")
-                .append(".list{display:flex;flex-direction:column;gap:10px;} .list-item{padding:12px 14px;border-radius:14px;background:var(--surface-alt);border:1px solid #e3e8f1;font-size:14px;line-height:1.45;} .stack{margin-top:12px;} details summary{cursor:pointer;font-weight:700;} pre{margin:10px 0 0;padding:16px;background:#0f172a;color:#e2e8f0;border-radius:16px;overflow:auto;white-space:pre-wrap;word-break:break-word;} .empty{padding:22px;border-radius:16px;border:1px dashed #c6d1e1;color:var(--muted);background:#fbfcfe;} .story-card{background:linear-gradient(135deg,#ffffff 0,#f7fbff 100%);border:1px solid var(--border);border-radius:18px;box-shadow:0 12px 24px rgba(16,24,40,.04);} .story-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:10px;} .story-body{font-size:15px;line-height:1.6;} .artifact-list,.focus-list{display:flex;flex-direction:column;gap:10px;} .artifact-link,.focus-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--surface-alt);border:1px solid #e3e8f1;font-size:14px;} .focus-item{align-items:flex-start;flex-direction:column;} .focus-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;} .focus-value{font-size:14px;line-height:1.5;word-break:break-word;} .story-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;} .story-metric{padding:14px 16px;border-radius:16px;border:1px solid #dce5f2;background:linear-gradient(180deg,#fff 0,#fbfdff 100%);} .story-metric:nth-child(1){background:linear-gradient(145deg,#ffffff 0,#f8fbff 60%,#eaf3ff 100%);} .story-metric:nth-child(2){background:linear-gradient(145deg,#ffffff 0,#fcf8ff 60%,#f3e8ff 100%);} .story-metric:nth-child(3){background:linear-gradient(145deg,#ffffff 0,#fff9f8 60%,#ffe9d6 100%);} .story-metric:nth-child(4){background:linear-gradient(145deg,#ffffff 0,#f8fff8 60%,#e6f7e8 100%);} .story-metric-label{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;} .story-metric-value{margin-top:8px;font-size:20px;font-weight:700;} .summary-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:16px;} @media (max-width:900px){.summary-grid{grid-template-columns:1fr;}} .hero-note{margin-top:14px;padding:12px 14px;border-radius:16px;background:#f6f9ff;border:1px solid #dbe8ff;color:#244f8f;font-size:13px;line-height:1.45;} .tech-details{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:14px 16px;box-shadow:0 10px 24px rgba(16,24,40,.04);} .tech-details summary{list-style:none;} .tech-details summary::-webkit-details-marker{display:none;} .tech-details summary:after{content:'Open';float:right;color:#0969da;font-size:12px;} .tech-details[open] summary:after{content:'Close';} .block-list{display:flex;flex-direction:column;gap:12px;} .block-card{padding:16px;border-radius:18px;border:1px solid #dce5f2;background:linear-gradient(180deg,#fff 0,#fbfdff 100%);border-left:6px solid #9ec5fe;} .block-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;} .block-title{font-size:16px;font-weight:700;} .block-subtitle{margin-top:4px;color:var(--muted);font-size:13px;} .block-kpis{display:flex;gap:8px;flex-wrap:wrap;} .chip{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#eef2f8;color:#475467;font-size:11px;font-weight:700;} .inline-list{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;} .inline-item{padding:6px 10px;border-radius:999px;background:#f5f8ff;border:1px solid #d9e4f5;font-size:12px;} .compact-details{margin-top:12px;} .compact-details summary{font-size:13px;} .timeline-details{margin-top:14px;} .timeline-details summary{padding:12px 14px;border:1px solid var(--border);border-radius:14px;background:#fff;} .remote-note{margin-top:12px;padding:12px 14px;border-radius:14px;background:#eef6ff;border:1px solid #cfe0ff;font-size:13px;line-height:1.5;color:#244f8f;} .timeline-preview{display:flex;flex-direction:column;gap:10px;} .more-link{margin-top:12px;padding:12px 14px;border-radius:14px;background:#f6f9ff;border:1px dashed #b9cdee;color:#244f8f;font-size:13px;font-weight:700;} .more-link summary{font-size:13px;} .block-card.is-failure{border-left-color:#ef4444;background:linear-gradient(180deg,#fff 0,#fff8f8 100%);} .block-card.is-wait-heavy{border-left-color:#8b5cf6;background:linear-gradient(180deg,#fff 0,#fcf9ff 100%);}")
+                .append(".list{display:flex;flex-direction:column;gap:10px;} .list-item{padding:12px 14px;border-radius:14px;background:var(--surface-alt);border:1px solid #e3e8f1;font-size:14px;line-height:1.45;} .stack{margin-top:12px;} details summary{cursor:pointer;font-weight:700;} pre{margin:10px 0 0;padding:16px;background:#0f172a;color:#e2e8f0;border-radius:16px;overflow:auto;white-space:pre-wrap;word-break:break-word;} .empty{padding:22px;border-radius:16px;border:1px dashed #c6d1e1;color:var(--muted);background:#fbfcfe;} .story-card{background:linear-gradient(135deg,#ffffff 0,#f7fbff 100%);border:1px solid var(--border);border-radius:18px;box-shadow:0 12px 24px rgba(16,24,40,.04);} .story-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:10px;} .story-body{font-size:15px;line-height:1.6;} .artifact-list,.focus-list{display:flex;flex-direction:column;gap:10px;} .artifact-link,.focus-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--surface-alt);border:1px solid #e3e8f1;font-size:14px;} .focus-item{align-items:flex-start;flex-direction:column;} .focus-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;} .focus-value{font-size:14px;line-height:1.5;word-break:break-word;} .story-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;} .story-metric{padding:14px 16px;border-radius:16px;border:1px solid #dce5f2;background:linear-gradient(180deg,#fff 0,#fbfdff 100%);} .story-metric:nth-child(1){background:linear-gradient(145deg,#ffffff 0,#f8fbff 60%,#eaf3ff 100%);} .story-metric:nth-child(2){background:linear-gradient(145deg,#ffffff 0,#fcf8ff 60%,#f3e8ff 100%);} .story-metric:nth-child(3){background:linear-gradient(145deg,#ffffff 0,#fff9f8 60%,#ffe9d6 100%);} .story-metric:nth-child(4){background:linear-gradient(145deg,#ffffff 0,#f8fff8 60%,#e6f7e8 100%);} .story-metric-label{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;} .story-metric-value{margin-top:8px;font-size:20px;font-weight:700;} .block-list{display:flex;flex-direction:column;gap:12px;} .block-card{padding:16px;border-radius:18px;border:1px solid #dce5f2;background:linear-gradient(180deg,#fff 0,#fbfdff 100%);border-left:6px solid #9ec5fe;} .block-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;} .block-title{font-size:16px;font-weight:700;} .block-subtitle{margin-top:4px;color:var(--muted);font-size:13px;} .block-kpis{display:flex;gap:8px;flex-wrap:wrap;} .chip{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#eef2f8;color:#475467;font-size:11px;font-weight:700;} .inline-list{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;} .inline-item{padding:6px 10px;border-radius:999px;background:#f5f8ff;border:1px solid #d9e4f5;font-size:12px;} .compact-details{margin-top:12px;} .compact-details summary{font-size:13px;} .timeline-details{margin-top:14px;} .timeline-details summary{padding:12px 14px;border:1px solid var(--border);border-radius:14px;background:#fff;} .remote-note{margin-top:12px;padding:12px 14px;border-radius:14px;background:#eef6ff;border:1px solid #cfe0ff;font-size:13px;line-height:1.5;color:#244f8f;} .timeline-preview{display:flex;flex-direction:column;gap:10px;} .more-link{margin-top:12px;padding:12px 14px;border-radius:14px;background:#f6f9ff;border:1px dashed #b9cdee;color:#244f8f;font-size:13px;font-weight:700;} .more-link summary{font-size:13px;} .block-card.is-failure{border-left-color:#ef4444;background:linear-gradient(180deg,#fff 0,#fff8f8 100%);} .block-card.is-wait-heavy{border-left-color:#8b5cf6;background:linear-gradient(180deg,#fff 0,#fcf9ff 100%);}")
                 .append("</style></head><body><div class=\"wrap\">");
 
         html.append("<section class=\"hero\"><div class=\"brand\"><div class=\"brand-title\">pepenium</div></div><div class=\"hero-top\"><div><span class=\"status ")
@@ -43,34 +43,35 @@ final class PepeniumReportHtmlRenderer {
                 .append(renderPill("Target", report.target))
                 .append(renderPill("Driver", report.driverType))
                 .append("</div></div><div class=\"metrics\">")
-                .append(renderMetric("Duration", report.duration))
-                .append(renderMetric("Flow Blocks", String.valueOf(report.flowBlocks.size())))
+                .append(renderMetric("Events", String.valueOf(report.totalEvents)))
+                .append(renderMetric("Actions", String.valueOf(report.actionCount)))
+                .append(renderMetric("Waits", String.valueOf(report.waitCount)))
+                .append(renderMetric("Key Signals", String.valueOf(report.keyEventCount)))
                 .append(renderAssertionMetric(report))
                 .append(renderMetric("Screenshots", String.valueOf(report.screenshotCount)))
+                .append(renderMetric("Errors", String.valueOf(report.errorCount)))
                 .append("</div></section>");
 
-        List<String> manualScreenshotHrefs = manualScreenshotHrefs(report);
-
-        html.append("<section class=\"section\"><h2>At a Glance</h2><div class=\"summary-grid\"><div class=\"story-card\"><div class=\"story-title\">What matters</div><div class=\"story-body\">")
+        html.append("<section class=\"section\"><h2>Execution Story</h2><div class=\"story-card\"><div class=\"story-title\">Quick Read</div><div class=\"story-body\">")
                 .append(PepeniumReportSupport.escapeHtml(executionStory(report)))
-                .append("</div></div><div class=\"story-card\"><div class=\"story-title\">Look first</div><div class=\"focus-list\">")
-                .append(renderFocusItem("Primary clue", primaryClue(report)))
-                .append(renderFocusItem("Best artifact", nextArtifact(report)))
-                .append(renderFocusItem("Final location", finalLocation(report)))
-                .append("</div></div></div></section>");
+                .append("</div></div></section>");
 
-        if (!manualScreenshotHrefs.isEmpty() || report.screenshotUri != null) {
-            html.append("<section class=\"section\"><h2>Evidence</h2><div class=\"artifact-card\"><div class=\"attachments\">");
-            int screenshotNumber = 1;
-            for (String screenshotHref : manualScreenshotHrefs) {
-                html.append(renderScreenshotAttachment("Screenshot " + screenshotNumber, screenshotHref));
-                screenshotNumber++;
-            }
-            if (report.screenshotUri != null) {
-                html.append(renderScreenshotAttachment("Final screenshot", report.screenshotUri));
-            }
-            html.append("</div></div></section>");
+        html.append("<section class=\"section\"><h2>Diagnostic Focus</h2><div class=\"story-card\"><div class=\"story-title\">Where to look first</div><div class=\"focus-list\">")
+                .append(renderFocusItem("Primary clue", primaryClue(report)))
+                .append(renderFocusItem("Next artifact to open", nextArtifact(report)))
+                .append(renderFocusItem("Execution fingerprint", executionFingerprint(report)))
+                .append("</div></div></section>");
+
+        html.append("<section class=\"section\"><h2>Visual Summary</h2><div class=\"story-grid\">")
+                .append(renderStoryMetric("Flow blocks", String.valueOf(report.flowBlocks.size())))
+                .append(renderStoryMetric("Key events", String.valueOf(report.keyEventCount)))
+                .append(renderStoryMetric("Remote provider", remoteProviderLabel(report)))
+                .append(renderStoryMetric("Final location", finalLocation(report)))
+                .append("</div>");
+        if (report.remoteContext.enabled) {
+            html.append("<div class=\"remote-note\">This HTML report is generated the same way for local, BrowserStack, and AWS runs. On remote providers you typically inspect it from the downloaded report artifacts, while provider-specific video, logs, and device details stay in the remote dashboard.</div>");
         }
+        html.append("</section>");
 
         html.append("<div class=\"report-layout\"><div>");
 
@@ -80,7 +81,7 @@ final class PepeniumReportHtmlRenderer {
         } else {
             html.append("<div class=\"block-list\">");
             for (PepeniumHtmlReportWriter.FlowBlock block : report.flowBlocks) {
-                html.append(renderFlowBlock(block, report.reportDir));
+                html.append(renderFlowBlock(block));
             }
             html.append("</div>");
         }
@@ -172,7 +173,7 @@ final class PepeniumReportHtmlRenderer {
         }
 
         html.append("</div><div class=\"sidebar\">");
-        html.append("<section class=\"section\"><h2>Technical Details</h2><details class=\"tech-details\"><summary>Execution context, capabilities and session</summary><div class=\"keyvals\" style=\"margin-top:14px;\">")
+        html.append("<section class=\"section\"><h2>Execution Context</h2><div class=\"panel\"><div class=\"keyvals\">")
                 .append(renderKeyValue("Description", report.description))
                 .append(renderKeyValue("Platform", report.deviceContext.platformName))
                 .append(renderKeyValue("Platform version", report.deviceContext.platformVersion))
@@ -187,10 +188,10 @@ final class PepeniumReportHtmlRenderer {
                 .append(renderKeyValue("Mobile activity", report.mobileActivity))
                 .append(renderKeyValue("Capabilities", report.capabilitiesSummary))
                 .append(renderKeyValue("Session", report.sessionId))
-                .append("</div></details></section>");
+                .append("</div></div></section>");
 
         if (report.remoteContext.enabled) {
-            html.append("<section class=\"section\"><h2>Remote Session</h2><details class=\"tech-details\"><summary>Provider details</summary><div class=\"keyvals\" style=\"margin-top:14px;\">")
+            html.append("<section class=\"section\"><h2>Remote Session</h2><div class=\"panel\"><div class=\"keyvals\">")
                     .append(renderKeyValue("Provider", report.remoteContext.provider))
                     .append(renderKeyValue("Server host", report.remoteContext.serverHost))
                     .append(renderKeyValue("Server URL", report.remoteContext.serverUrl))
@@ -198,8 +199,10 @@ final class PepeniumReportHtmlRenderer {
                     .append(renderKeyValue("Build", report.remoteContext.buildName))
                     .append(renderKeyValue("Remote session name", report.remoteContext.remoteSessionName))
                     .append(renderKeyValue("Remote local tunnel", report.remoteContext.localEnabled))
-                    .append("</div></details></section>");
+                    .append("</div></div></section>");
         }
+
+        List<String> manualScreenshotHrefs = manualScreenshotHrefs(report);
 
         html.append("<section class=\"section\"><h2>Artifacts</h2><div class=\"artifact-card\"><div class=\"artifact-list\">")
                 .append(renderArtifactLink("Suite index", "index.html"))
@@ -214,6 +217,22 @@ final class PepeniumReportHtmlRenderer {
             html.append(renderArtifactLink("Remote dashboard", report.remoteContext.dashboardUrl));
         }
         html.append("</div></div></section>");
+
+        if (!manualScreenshotHrefs.isEmpty()) {
+            html.append("<section class=\"section\"><h2>Screenshots</h2><div class=\"artifact-card\"><div class=\"attachments\">");
+            int screenshotNumber = 1;
+            for (String screenshotHref : manualScreenshotHrefs) {
+                html.append(renderScreenshotAttachment("Screenshot " + screenshotNumber, screenshotHref));
+                screenshotNumber++;
+            }
+            html.append("</div></div></section>");
+        }
+
+        if (report.screenshotUri != null) {
+            html.append("<section class=\"section\"><h2>Final Screenshot</h2><div class=\"artifact-card\"><a href=\"")
+                    .append(PepeniumReportSupport.escapeHtml(report.screenshotUri)).append("\">Open screenshot</a><img class=\"thumb\" src=\"")
+                    .append(PepeniumReportSupport.escapeHtml(report.screenshotUri)).append("\" alt=\"Final screenshot\"></div></section>");
+        }
 
         html.append("</div></div></div></body></html>");
         return html.toString();
@@ -274,14 +293,14 @@ final class PepeniumReportHtmlRenderer {
                 + PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(value)) + "</div>";
     }
 
-    private static String renderFlowBlock(PepeniumHtmlReportWriter.FlowBlock block, java.nio.file.Path reportDir) {
+    private static String renderFlowBlock(PepeniumHtmlReportWriter.FlowBlock block) {
         long blockDurationMillis = Math.max(0L, block.finishedEpochMillis - block.startedEpochMillis);
         StringBuilder html = new StringBuilder();
         html.append("<article class=\"block-card\"><div class=\"block-head\"><div><div class=\"block-title\">")
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(block.title)))
                 .append("</div><div class=\"block-subtitle\">Started ")
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportSupport.defaultValue(block.startedAt)))
-                .append(" - ")
+                .append(" &middot; ")
                 .append(PepeniumReportSupport.escapeHtml(PepeniumReportSupport.formatDurationMillis(blockDurationMillis)))
                 .append("</div></div><div class=\"block-kpis\">")
                 .append(renderChip(block.events.size() + (block.events.size() == 1 ? " event" : " events")))
@@ -304,17 +323,6 @@ final class PepeniumReportHtmlRenderer {
             }
             html.append("</div></details>");
         }
-        if (!screenshotEvents(block).isEmpty()) {
-            html.append("<details class=\"compact-details\"><summary>Screenshots (")
-                    .append(screenshotEvents(block).size()).append(")</summary><div class=\"attachments\">");
-            int screenshotNumber = 1;
-            for (PepeniumTimeline.Event screenshot : screenshotEvents(block)) {
-                String screenshotHref = PepeniumReportSupport.pathToHref(screenshot.getScreenshotPath(), reportDir);
-                html.append(renderScreenshotEventAttachment("Step screenshot " + screenshotNumber, screenshot, screenshotHref));
-                screenshotNumber++;
-            }
-            html.append("</div></details>");
-        }
         html.append("</article>");
         return html.toString();
     }
@@ -322,8 +330,8 @@ final class PepeniumReportHtmlRenderer {
     private static String renderWaitHotspot(PepeniumHtmlReportWriter.WaitHotspot hotspot) {
         return "<div class=\"list-item\"><strong>" + PepeniumReportSupport.escapeHtml(hotspot.message)
                 + "</strong><div class=\"path\">Seen " + hotspot.count + (hotspot.count == 1 ? " time" : " times")
-                + " - first " + PepeniumReportSupport.escapeHtml(hotspot.firstSeen)
-                + " - last " + PepeniumReportSupport.escapeHtml(hotspot.lastSeen) + "</div></div>";
+                + " &middot; first " + PepeniumReportSupport.escapeHtml(hotspot.firstSeen)
+                + " &middot; last " + PepeniumReportSupport.escapeHtml(hotspot.lastSeen) + "</div></div>";
     }
 
     private static String renderTimelineCard(PepeniumTimeline.Event anchor, Instant startedAt,
@@ -342,12 +350,6 @@ final class PepeniumReportHtmlRenderer {
             html.append("<span class=\"timeline-pill\">dt ").append(PepeniumReportSupport.escapeHtml(formatDelta(group))).append("</span>");
         }
         html.append("</div><div class=\"timeline-message\">").append(PepeniumReportSupport.escapeHtml(anchor.getMessage())).append("</div>");
-        if (anchor.getType() == PepeniumTimeline.EventType.SCREENSHOT && anchor.getScreenshotPath() != null) {
-            String screenshotUri = PepeniumReportSupport.pathToHref(anchor.getScreenshotPath(), reportDir);
-            html.append("<div class=\"attachments\">")
-                    .append(renderScreenshotEventAttachment("Screenshot evidence", anchor, screenshotUri))
-                    .append("</div>");
-        }
         if (group != null && !group.screenshots.isEmpty()) {
             html.append("<details><summary>Show ")
                     .append(group.screenshots.size())
@@ -355,7 +357,13 @@ final class PepeniumReportHtmlRenderer {
                     .append("</summary><div class=\"attachments\">");
             for (PepeniumTimeline.Event screenshot : group.screenshots) {
                 String screenshotUri = PepeniumReportSupport.pathToHref(screenshot.getScreenshotPath(), reportDir);
-                html.append(renderScreenshotEventAttachment("Screenshot preview", screenshot, screenshotUri));
+                html.append("<div class=\"attachment\"><div>")
+                        .append(renderEventTypeBadge(screenshot))
+                        .append("<span class=\"timeline-time\">").append(PepeniumReportSupport.escapeHtml(screenshot.getTime())).append("</span></div>")
+                        .append("<div class=\"timeline-message\">").append(PepeniumReportSupport.escapeHtml(screenshot.getMessage())).append("</div>")
+                        .append("<a href=\"").append(PepeniumReportSupport.escapeHtml(screenshotUri)).append("\">Open screenshot</a>")
+                        .append("<img class=\"thumb\" src=\"").append(PepeniumReportSupport.escapeHtml(screenshotUri)).append("\" alt=\"Screenshot preview\">")
+                        .append("<div class=\"path\">").append(PepeniumReportSupport.escapeHtml(screenshot.getScreenshotPath())).append("</div></div>");
             }
             html.append("</div></details>");
         }
@@ -398,16 +406,6 @@ final class PepeniumReportHtmlRenderer {
             }
         }
         return summaries;
-    }
-
-    private static java.util.List<PepeniumTimeline.Event> screenshotEvents(PepeniumHtmlReportWriter.FlowBlock block) {
-        java.util.List<PepeniumTimeline.Event> screenshots = new java.util.ArrayList<>();
-        for (PepeniumTimeline.Event event : block.events) {
-            if (event.getType() == PepeniumTimeline.EventType.SCREENSHOT && event.getScreenshotPath() != null) {
-                screenshots.add(event);
-            }
-        }
-        return screenshots;
     }
 
     private static boolean isKeyTimelineEvent(PepeniumTimeline.Event event) {
@@ -488,7 +486,7 @@ final class PepeniumReportHtmlRenderer {
         story.append("The test ended with ");
         story.append(PepeniumReportSupport.defaultValue(report.rootType));
         if (report.rootMessage != null) {
-            story.append(": ").append(conciseFailureMessage(report.rootMessage));
+            story.append(": ").append(report.rootMessage);
         }
         story.append(". ");
         if (report.lastStep != null) {
@@ -510,7 +508,7 @@ final class PepeniumReportHtmlRenderer {
     private static String primaryClue(PepeniumHtmlReportWriter.ReportContext report) {
         if (report.failed) {
             if (report.rootMessage != null) {
-                return conciseFailureMessage(report.rootMessage);
+                return report.rootMessage;
             }
             if (report.lastAssertion != null) {
                 return "Inspect the last assertion: " + report.lastAssertion;
@@ -527,33 +525,6 @@ final class PepeniumReportHtmlRenderer {
             return "Screenshots were captured; the latest one is usually the fastest way to understand the final UI state.";
         }
         return "Use the timeline and highlights to understand the main flow of the execution.";
-    }
-
-    private static String conciseFailureMessage(String message) {
-        if (message == null || message.isBlank()) {
-            return "Failure details were captured in the technical section.";
-        }
-        String cleaned = message;
-        cleaned = cutBefore(cleaned, "For documentation");
-        cleaned = cutBefore(cleaned, "Build info:");
-        cleaned = cutBefore(cleaned, "System info:");
-        cleaned = cutBefore(cleaned, "Driver info:");
-        cleaned = cutBefore(cleaned, "Command:");
-        cleaned = cutBefore(cleaned, "Capabilities ");
-        cleaned = cutBefore(cleaned, "Session ID:");
-        cleaned = cleaned.replace(System.lineSeparator(), " ").replace('\n', ' ').replace('\r', ' ').trim();
-        if (cleaned.length() > 260) {
-            return cleaned.substring(0, 257).trim() + "...";
-        }
-        return cleaned;
-    }
-
-    private static String cutBefore(String value, String marker) {
-        int index = value.indexOf(marker);
-        if (index < 0) {
-            return value;
-        }
-        return value.substring(0, index).trim();
     }
 
     private static String nextArtifact(PepeniumHtmlReportWriter.ReportContext report) {
@@ -586,17 +557,6 @@ final class PepeniumReportHtmlRenderer {
     private static String renderEventTypeBadge(PepeniumTimeline.Event event) {
         return "<span class=\"badge " + eventTypeBadgeClass(event.getType()) + "\">"
                 + PepeniumReportSupport.escapeHtml(event.getType().name()) + "</span>";
-    }
-
-    private static String renderScreenshotEventAttachment(String label, PepeniumTimeline.Event screenshot, String href) {
-        String safeHref = PepeniumReportSupport.escapeHtml(href);
-        return "<div class=\"attachment\"><div>"
-                + renderEventTypeBadge(screenshot)
-                + "<span class=\"timeline-time\">" + PepeniumReportSupport.escapeHtml(screenshot.getTime()) + "</span></div>"
-                + "<div class=\"timeline-message\">" + PepeniumReportSupport.escapeHtml(screenshot.getMessage()) + "</div>"
-                + "<a href=\"" + safeHref + "\">Open screenshot</a>"
-                + "<img class=\"thumb\" src=\"" + safeHref + "\" alt=\"" + PepeniumReportSupport.escapeHtml(label) + "\">"
-                + "<div class=\"path\">" + PepeniumReportSupport.escapeHtml(screenshot.getScreenshotPath()) + "</div></div>";
     }
 
     private static String renderEventStatusBadge(PepeniumTimeline.Event event) {

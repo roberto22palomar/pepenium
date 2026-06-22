@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ExecutionContractTest {
 
@@ -28,8 +27,8 @@ class ExecutionContractTest {
         );
         assertEquals("local-android", TestTarget.ANDROID_NATIVE.getDefaultProfileId());
         assertEquals("local-android-web", TestTarget.ANDROID_WEB.getDefaultProfileId());
-        assertNull(TestTarget.IOS_NATIVE.getDefaultProfileId());
-        assertNull(TestTarget.IOS_WEB.getDefaultProfileId());
+        assertEquals("local-ios", TestTarget.IOS_NATIVE.getDefaultProfileId());
+        assertEquals("local-ios-web", TestTarget.IOS_WEB.getDefaultProfileId());
         assertEquals("local-web", TestTarget.WEB_DESKTOP.getDefaultProfileId());
     }
 
@@ -38,6 +37,8 @@ class ExecutionContractTest {
         Map<String, TestTarget> expectedProfiles = new LinkedHashMap<>();
         expectedProfiles.put("local-android", TestTarget.ANDROID_NATIVE);
         expectedProfiles.put("local-android-web", TestTarget.ANDROID_WEB);
+        expectedProfiles.put("local-ios", TestTarget.IOS_NATIVE);
+        expectedProfiles.put("local-ios-web", TestTarget.IOS_WEB);
         expectedProfiles.put("local-web", TestTarget.WEB_DESKTOP);
         expectedProfiles.put("local-web-firefox", TestTarget.WEB_DESKTOP);
         expectedProfiles.put("local-web-edge", TestTarget.WEB_DESKTOP);
@@ -51,7 +52,7 @@ class ExecutionContractTest {
         expectedProfiles.put("browserstack-windows-web", TestTarget.WEB_DESKTOP);
         expectedProfiles.put("browserstack-mac-web", TestTarget.WEB_DESKTOP);
 
-        Map<String, TestTarget> actualProfiles = ExecutionProfiles.list().stream()
+        Map<String, TestTarget> actualProfiles = ExecutionProfiles.builtInList().stream()
                 .collect(Collectors.toMap(
                         ExecutionProfile::getId,
                         ExecutionProfile::getTarget,

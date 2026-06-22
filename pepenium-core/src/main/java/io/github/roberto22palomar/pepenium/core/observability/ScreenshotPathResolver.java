@@ -1,5 +1,7 @@
 package io.github.roberto22palomar.pepenium.core.observability;
 
+import io.github.roberto22palomar.pepenium.core.config.PepeniumConfig;
+
 import java.nio.file.Path;
 
 public final class ScreenshotPathResolver {
@@ -12,17 +14,14 @@ public final class ScreenshotPathResolver {
     }
 
     public static Path resolveBaseDir() {
-        String baseDir = System.getProperty(SCREENSHOT_PATH_PROPERTY);
-        if (isBlank(baseDir)) {
-            baseDir = System.getenv(SCREENSHOT_PATH_ENV);
-        }
+        String baseDir = PepeniumConfig.get(SCREENSHOT_PATH_ENV);
         if (isBlank(baseDir)) {
             baseDir = System.getenv(LEGACY_SCREENSHOT_PATH_ENV);
         }
         if (isBlank(baseDir)) {
             baseDir = System.getProperty("java.io.tmpdir");
         }
-        return Path.of(baseDir);
+        return Path.of(baseDir.trim());
     }
 
     private static boolean isBlank(String value) {
