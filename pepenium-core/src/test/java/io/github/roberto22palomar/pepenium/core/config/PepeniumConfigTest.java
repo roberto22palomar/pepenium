@@ -25,10 +25,12 @@ class PepeniumConfigTest {
                 + "  directory: target/reports\n"
                 + "timeouts:\n"
                 + "  action: 2s\n"
+                + "  sessionConnect: 15s\n"
                 + "profiles:\n"
                 + "  local-web:\n"
                 + "    timeouts:\n"
                 + "      action: 750ms\n"
+                + "      sessionCommand: 4m\n"
                 + "    browser:\n"
                 + "      headless: true\n"
                 + "      arguments: [--incognito, '--window-size=1280,720']\n"
@@ -42,6 +44,8 @@ class PepeniumConfigTest {
         assertEquals("target/reports", resolved.value("local-web", "PEPENIUM_REPORT_DIR"));
         assertEquals("750ms", resolved.value("local-web", "PEPENIUM_ACTION_TIMEOUT_SECONDS"));
         assertEquals("2s", resolved.value("other-profile", "PEPENIUM_ACTION_TIMEOUT_SECONDS"));
+        assertEquals("15s", resolved.value("local-web", "PEPENIUM_SESSION_CONNECT_TIMEOUT_SECONDS"));
+        assertEquals("4m", resolved.value("local-web", "PEPENIUM_SESSION_COMMAND_TIMEOUT_SECONDS"));
         assertEquals("true", resolved.value("local-web", "PEPENIUM_WEB_HEADLESS"));
         assertEquals("--incognito;--window-size=1280,720",
                 resolved.value("local-web", "PEPENIUM_WEB_ARGS"));
@@ -152,6 +156,77 @@ class PepeniumConfigTest {
 
         assertTrue(error.getMessage().contains("profiles.local-web.capabilities"));
         assertTrue(error.getMessage().contains("must be a YAML object"));
+    }
+
+    @Test
+    void resolvesOpenEndedSettingsWithProfileOverrides() throws Exception {
+        Path config = writeConfig("settings:\n"
+                + "  TEAM_GRID_REGION: eu-west-1\n"
+                + "  TEAM_GRID_TAGS: [smoke, regression]\n"
+                + "profiles:\n"
+                + "  team-grid-web:\n"
+                + "    settings:\n"
+                + "      TEAM_GRID_REGION: eu-south-2\n"
+                + "      TEAM_GRID_TOKEN: ${GRID_TOKEN}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of("GRID_TOKEN", "private-token")::get
+        );
+
+        assertEquals("eu-south-2", resolved.value("team-grid-web", "TEAM_GRID_REGION"));
+        assertEquals("eu-west-1", resolved.value("other-profile", "TEAM_GRID_REGION"));
+        assertEquals("smoke;regression", resolved.value("team-grid-web", "TEAM_GRID_TAGS"));
+        assertEquals("private-token", resolved.value("team-grid-web", "TEAM_GRID_TOKEN"));
+        resolved.validateResolvedProfile("team-grid-web");
+    }
+
+    @Test
+    void rejectsBuiltInKeysInsideOpenEndedSettings() throws Exception {
+        Path config = writeConfig("settings:\n"
+                + "  PEPENIUM_REPORT_DIR: build/reports\n");
+
+        IllegalStateException error = assertThrows(
+                IllegalStateException.class,
+                () -> PepeniumConfig.load(config, true, key -> null)
+        );
+
+        assertTrue(error.getMessage().contains("built-in setting"));
+        assertTrue(error.getMessage().contains("reporting.directory"));
+    }
+
+    @Test
+    void deeplyMergesStructuredSettingsAndReturnsImmutableValues() throws Exception {
+        Path config = writeConfig("settings:\n"
+                + "  teamGrid:\n"
+                + "    region: eu-west-1\n"
+                + "    retries: 2\n"
+                + "    labels: [smoke, android]\n"
+                + "profiles:\n"
+                + "  team-grid-web:\n"
+                + "    settings:\n"
+                + "      teamGrid:\n"
+                + "        retries: 4\n"
+                + "        tunnel:\n"
+                + "          name: ${TUNNEL_NAME}\n");
+        PepeniumConfig.ResolvedConfig resolved = PepeniumConfig.load(
+                config,
+                true,
+                Map.of("TUNNEL_NAME", "ci-tunnel")::get
+        );
+
+        Map<String, Object> settings = resolved.settings("team-grid-web");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> teamGrid = (Map<String, Object>) settings.get("teamGrid");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> tunnel = (Map<String, Object>) teamGrid.get("tunnel");
+
+        assertEquals("eu-west-1", teamGrid.get("region"));
+        assertEquals(4, teamGrid.get("retries"));
+        assertEquals(List.of("smoke", "android"), teamGrid.get("labels"));
+        assertEquals("ci-tunnel", tunnel.get("name"));
+        assertThrows(UnsupportedOperationException.class, () -> settings.put("other", true));
+        assertThrows(UnsupportedOperationException.class, () -> teamGrid.put("other", true));
     }
 
     @Test

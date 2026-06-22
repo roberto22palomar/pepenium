@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added an immutable structured-settings API with recursive global/profile merging for complex private-provider configuration.
+- Added open-ended global and per-profile YAML `settings` for private providers and custom driver configurations without weakening validation of built-in options.
+- Added configurable Selenium/Appium connection and command timeouts plus a fast local-endpoint preflight with actionable Appium diagnostics.
 - Added a checksum-pinned Maven 3.9.9 Wrapper so contributors and CI use the same build runtime without a global Maven installation.
 - Added first-class `local-ios` and `local-ios-web` execution profiles, YAML settings and starter generation for XCUITest native and Safari sessions.
 - Added a non-destructive `pepenium:init-config` Maven goal with schema-linked starters for local web, local Android and BrowserStack web adoption.
@@ -29,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/HISTORY.md` and `docs/es/HISTORY.es.md` to explain the historical evolution from early Appium/Selenium automation to the current open-source library direction.
 
 ### Changed
+- Made per-test and suite reporting atomic and safe across parallel test threads and forked JVMs sharing one report directory.
 - Redacted secrets when observability steps and timeline events are recorded, preventing manual messages from persisting credentials in reports.
 - Cleared timeline events and timestamps alongside step state after each test and session teardown to prevent cross-test retention in reused JUnit workers.
 - Updated stable build verification tooling (Enforcer, JaCoCo, Dependency Plugin and SpotBugs) without changing consumer runtime dependencies.

@@ -13,6 +13,7 @@
     "logging": { "$ref": "#/$defs/logging" },
     "timeouts": { "$ref": "#/$defs/timeouts" },
     "capabilities": { "$ref": "#/$defs/capabilities" },
+    "settings": { "$ref": "#/$defs/settings" },
     "profiles": { "type": "object", "additionalProperties": { "$ref": "#/$defs/profile" } }
   },
   "required": ["schemaVersion"],
@@ -57,7 +58,9 @@
       "properties": {
         "action": { "$ref": "#/$defs/duration" },
         "longAction": { "$ref": "#/$defs/duration" },
-        "assertion": { "$ref": "#/$defs/duration" }
+        "assertion": { "$ref": "#/$defs/duration" },
+        "sessionConnect": { "$ref": "#/$defs/duration" },
+        "sessionCommand": { "$ref": "#/$defs/duration" }
       }
     },
     "browser": {
@@ -96,6 +99,7 @@
       ]
     },
     "capabilities": { "type": "object", "additionalProperties": { "$ref": "#/$defs/capabilityValue" } },
+    "settings": { "type": "object", "additionalProperties": { "$ref": "#/$defs/capabilityValue" } },
     "profile": {
       "type": "object", "additionalProperties": false,
       "properties": {
@@ -108,7 +112,8 @@
         "reporting": { "$ref": "#/$defs/reporting" },
         "logging": { "$ref": "#/$defs/logging" },
         "timeouts": { "$ref": "#/$defs/timeouts" },
-        "capabilities": { "$ref": "#/$defs/capabilities" }
+        "capabilities": { "$ref": "#/$defs/capabilities" },
+        "settings": { "$ref": "#/$defs/settings" }
       }
     }
   }

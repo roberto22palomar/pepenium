@@ -1,9 +1,12 @@
 package io.github.roberto22palomar.pepenium.core.observability;
 
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -16,10 +19,27 @@ import java.util.stream.Stream;
 
 final class PepeniumReportIndexWriter {
 
+    private static final Object INDEX_WRITE_LOCK = new Object();
+
     private PepeniumReportIndexWriter() {
     }
 
     static Path writeIndex(Path reportDir) throws IOException {
+        synchronized (INDEX_WRITE_LOCK) {
+            Path normalizedReportDir = reportDir.toAbsolutePath().normalize();
+            Files.createDirectories(normalizedReportDir);
+            Path lockFile = normalizedReportDir.resolve(".pepenium-index.lock");
+            try (FileChannel lockChannel = FileChannel.open(
+                    lockFile,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.WRITE
+            ); FileLock ignored = lockChannel.lock()) {
+                return writeIndexLocked(normalizedReportDir);
+            }
+        }
+    }
+
+    private static Path writeIndexLocked(Path reportDir) throws IOException {
         List<Path> jsonFiles;
         try (Stream<Path> files = Files.list(reportDir)) {
             jsonFiles = files
@@ -37,13 +57,17 @@ final class PepeniumReportIndexWriter {
             }
         }
 
-        Files.writeString(
+        AtomicArtifactWriter.writeString(
                 reportDir.resolve("summary.json"),
                 PepeniumReportJsonRenderer.renderSuiteSummaryJson(summaries),
                 StandardCharsets.UTF_8
         );
         Path indexFile = reportDir.resolve("index.html");
-        Files.writeString(indexFile, renderIndexHtml(reportDir, summaries), StandardCharsets.UTF_8);
+        AtomicArtifactWriter.writeString(
+                indexFile,
+                renderIndexHtml(reportDir, summaries),
+                StandardCharsets.UTF_8
+        );
         return indexFile;
     }
 

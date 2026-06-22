@@ -7,8 +7,15 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PepeniumReportIndexWriterTest {
 
@@ -48,5 +55,48 @@ class PepeniumReportIndexWriterTest {
         assertTrue(summaryJson.contains("\"totalReports\": 2"));
         assertTrue(summaryJson.contains("\"passed\": 1"));
         assertTrue(summaryJson.contains("\"failed\": 1"));
+    }
+
+    @Test
+    void concurrentReportsProduceCompleteReadableSuiteArtifacts() throws Exception {
+        System.setProperty("pepenium.report.dir", reportDir.toString());
+        int reportCount = 24;
+        ExecutorService executor = Executors.newFixedThreadPool(8);
+        CountDownLatch start = new CountDownLatch(1);
+        List<Future<?>> reports = new ArrayList<>();
+
+        try {
+            for (int index = 0; index < reportCount; index++) {
+                final int reportIndex = index;
+                reports.add(executor.submit(() -> {
+                    start.await();
+                    PepeniumHtmlReportWriter.write("parallelReport" + reportIndex, null, null);
+                    return null;
+                }));
+            }
+            start.countDown();
+            for (Future<?> report : reports) {
+                report.get();
+            }
+        } finally {
+            executor.shutdownNow();
+        }
+
+        String summaryJson = Files.readString(reportDir.resolve("summary.json"));
+        String indexHtml = Files.readString(reportDir.resolve("index.html"));
+        long jsonReports;
+        try (java.util.stream.Stream<Path> files = Files.list(reportDir)) {
+            jsonReports = files
+                    .filter(path -> path.getFileName().toString().startsWith("report-"))
+                    .filter(path -> path.getFileName().toString().endsWith(".json"))
+                    .count();
+        }
+
+        assertEquals(reportCount, jsonReports);
+        assertTrue(summaryJson.contains("\"totalReports\": " + reportCount));
+        assertTrue(indexHtml.contains(reportCount + " report(s) visible"));
+        for (int index = 0; index < reportCount; index++) {
+            assertTrue(indexHtml.contains("parallelReport" + index));
+        }
     }
 }

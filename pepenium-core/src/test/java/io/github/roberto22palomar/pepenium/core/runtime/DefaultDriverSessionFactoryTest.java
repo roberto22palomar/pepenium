@@ -2,6 +2,7 @@ package io.github.roberto22palomar.pepenium.core.runtime;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.github.roberto22palomar.pepenium.core.execution.DriverRequest;
 import io.github.roberto22palomar.pepenium.core.execution.DriverType;
 import io.github.roberto22palomar.pepenium.core.execution.TestTarget;
@@ -18,6 +19,7 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.SessionId;
 
 import java.net.URL;
@@ -28,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DefaultDriverSessionFactoryTest {
@@ -39,7 +43,7 @@ class DefaultDriverSessionFactoryTest {
 
     @Test
     void createLocalChromeBuildsDriverSessionWithMergedOptions() throws Exception {
-        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory();
+        DefaultDriverSessionFactory factory = factoryWithoutPreflight();
         MutableCapabilities capabilities = new MutableCapabilities();
         capabilities.setCapability("browserName", "chrome");
         capabilities.setCapability("acceptInsecureCerts", true);
@@ -67,7 +71,7 @@ class DefaultDriverSessionFactoryTest {
 
     @Test
     void createLocalFirefoxBuildsDriverSessionWithMergedOptions() throws Exception {
-        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory();
+        DefaultDriverSessionFactory factory = factoryWithoutPreflight();
         MutableCapabilities capabilities = new MutableCapabilities();
         capabilities.setCapability("acceptInsecureCerts", true);
         DriverRequest request = DriverRequest.builder()
@@ -94,7 +98,7 @@ class DefaultDriverSessionFactoryTest {
 
     @Test
     void createLocalEdgeBuildsDriverSessionWithMergedOptions() throws Exception {
-        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory();
+        DefaultDriverSessionFactory factory = factoryWithoutPreflight();
         EdgeOptions capabilities = new EdgeOptions();
         capabilities.setCapability("acceptInsecureCerts", true);
         DriverRequest request = DriverRequest.builder()
@@ -120,7 +124,7 @@ class DefaultDriverSessionFactoryTest {
 
     @Test
     void createRemoteWebRequiresServerUrl() {
-        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory();
+        DefaultDriverSessionFactory factory = factoryWithoutPreflight();
         DriverRequest request = DriverRequest.builder()
                 .driverType(DriverType.REMOTE_WEB)
                 .description("remote web")
@@ -135,7 +139,7 @@ class DefaultDriverSessionFactoryTest {
 
     @Test
     void createRemoteWebRequiresCapabilities() throws Exception {
-        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory();
+        DefaultDriverSessionFactory factory = factoryWithoutPreflight();
         DriverRequest request = DriverRequest.builder()
                 .driverType(DriverType.REMOTE_WEB)
                 .description("remote web")
@@ -150,7 +154,7 @@ class DefaultDriverSessionFactoryTest {
 
     @Test
     void createRemoteWebBuildsRemoteDriverSession() throws Exception {
-        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory();
+        DefaultDriverSessionFactory factory = factoryWithoutPreflight();
         URL serverUrl = new URL("https://grid.example.test/wd/hub");
         MutableCapabilities capabilities = new MutableCapabilities();
         capabilities.setCapability("browserName", "firefox");
@@ -163,7 +167,7 @@ class DefaultDriverSessionFactoryTest {
                 .build();
 
         try (MockedConstruction<RemoteWebDriver> construction = mockConstruction(RemoteWebDriver.class, (mock, context) -> {
-            assertSame(serverUrl, context.arguments().get(0));
+            assertEquals(serverUrl, ((HttpCommandExecutor) context.arguments().get(0)).getAddressOfRemoteServer());
             assertSame(capabilities, context.arguments().get(1));
             when(mock.getSessionId()).thenReturn(new SessionId("remote-session"));
         })) {
@@ -176,7 +180,7 @@ class DefaultDriverSessionFactoryTest {
 
     @Test
     void createAndroidAppiumBuildsAndroidDriverSession() throws Exception {
-        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory();
+        DefaultDriverSessionFactory factory = factoryWithoutPreflight();
         URL serverUrl = new URL("http://127.0.0.1:4723");
         MutableCapabilities capabilities = new MutableCapabilities();
         capabilities.setCapability("platformName", "Android");
@@ -189,7 +193,7 @@ class DefaultDriverSessionFactoryTest {
                 .build();
 
         try (MockedConstruction<AndroidDriver> construction = mockConstruction(AndroidDriver.class, (mock, context) -> {
-            assertSame(serverUrl, context.arguments().get(0));
+            assertEquals(serverUrl, ((HttpCommandExecutor) context.arguments().get(0)).getAddressOfRemoteServer());
             assertSame(capabilities, context.arguments().get(1));
             when(mock.getSessionId()).thenReturn(new SessionId("android-session"));
         })) {
@@ -202,7 +206,7 @@ class DefaultDriverSessionFactoryTest {
 
     @Test
     void createIosAppiumBuildsIosDriverSession() throws Exception {
-        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory();
+        DefaultDriverSessionFactory factory = factoryWithoutPreflight();
         URL serverUrl = new URL("http://127.0.0.1:4723");
         MutableCapabilities capabilities = new MutableCapabilities();
         capabilities.setCapability("platformName", "iOS");
@@ -215,7 +219,7 @@ class DefaultDriverSessionFactoryTest {
                 .build();
 
         try (MockedConstruction<IOSDriver> construction = mockConstruction(IOSDriver.class, (mock, context) -> {
-            assertSame(serverUrl, context.arguments().get(0));
+            assertEquals(serverUrl, ((HttpCommandExecutor) context.arguments().get(0)).getAddressOfRemoteServer());
             assertSame(capabilities, context.arguments().get(1));
             when(mock.getSessionId()).thenReturn(new SessionId("ios-session"));
         })) {
@@ -224,5 +228,28 @@ class DefaultDriverSessionFactoryTest {
             assertSame(construction.constructed().get(0), session.getDriver());
             assertEquals("ios-session", MDC.get("sessionId"));
         }
+    }
+
+    @Test
+    void preflightFailureStopsOwnedAppiumService() throws Exception {
+        AppiumDriverLocalService service = mock(AppiumDriverLocalService.class);
+        DriverRequest request = DriverRequest.builder()
+                .driverType(DriverType.ANDROID_APPIUM)
+                .description("managed local Appium")
+                .serverUrl(new URL("http://127.0.0.1:4723"))
+                .capabilities(new MutableCapabilities())
+                .ownedService(service)
+                .build();
+        DefaultDriverSessionFactory factory = new DefaultDriverSessionFactory((ignored, timeout) -> {
+            throw new IllegalStateException("endpoint unavailable");
+        });
+
+        assertThrows(IllegalStateException.class, () -> factory.create(request));
+
+        verify(service).stop();
+    }
+
+    private static DefaultDriverSessionFactory factoryWithoutPreflight() {
+        return new DefaultDriverSessionFactory((request, timeout) -> { });
     }
 }
