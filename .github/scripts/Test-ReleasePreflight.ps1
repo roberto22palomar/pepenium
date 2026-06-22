@@ -50,17 +50,18 @@ if (-not $releaseHeading) {
 
 $null = $releaseHeading -match $changelogPattern
 $releaseDate = [DateTime]::ParseExact($Matches[1], "yyyy-MM-dd", [Globalization.CultureInfo]::InvariantCulture)
-$outputTimestampValue = $pom.project.properties.'project.build.outputTimestamp'
+$outputTimestampValue = [string]$pom.project.properties.'project.build.outputTimestamp'
 if ([string]::IsNullOrWhiteSpace($outputTimestampValue)) {
     throw "pom.xml must define project.build.outputTimestamp for reproducible release artifacts."
 }
 try {
-    $outputTimestamp = [DateTimeOffset]::Parse($outputTimestampValue, [Globalization.CultureInfo]::InvariantCulture)
+    $outputTimestamp = [DateTime]::Parse($outputTimestampValue, [Globalization.CultureInfo]::InvariantCulture)
 } catch {
     throw "project.build.outputTimestamp '$outputTimestampValue' must be a valid ISO-8601 timestamp."
 }
-if ($outputTimestamp.UtcDateTime.Date -ne $releaseDate.Date) {
-    throw "project.build.outputTimestamp date '$($outputTimestamp.UtcDateTime.ToString('yyyy-MM-dd'))' must match changelog release date '$($releaseDate.ToString('yyyy-MM-dd'))'."
+$outputTimestampUtc = $outputTimestamp.ToUniversalTime()
+if ($outputTimestampUtc.Date -ne $releaseDate.Date) {
+    throw "project.build.outputTimestamp date '$($outputTimestampUtc.ToString('yyyy-MM-dd'))' must match changelog release date '$($releaseDate.ToString('yyyy-MM-dd'))'."
 }
 
 if (-not ($changelogLines | Where-Object { $_ -eq "## [Unreleased]" })) {

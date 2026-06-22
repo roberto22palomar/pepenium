@@ -90,7 +90,7 @@ Dependencia tipica de consumo:
 <dependency>
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-toolkit</artifactId>
-    <version>0.9.7</version>
+    <version>0.9.8</version>
     <scope>test</scope>
 </dependency>
 ```

@@ -6,7 +6,7 @@
 
     <groupId>io.github.roberto22palomar</groupId>
     <artifactId>pepenium-parent</artifactId>
-    <version>0.9.7</version>
+    <version>0.9.8</version>
     <packaging>pom</packaging>
     <name>Pepenium</name>
     <description>Java automation framework for Android, iOS and Web built on Appium, Selenium and JUnit 5.</description>
@@ -44,7 +44,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>2026-04-07T00:00:00Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2026-06-22T00:00:00Z</project.build.outputTimestamp>
         <maven.compiler.release>11</maven.compiler.release>
 
         <selenium.bom.version>4.39.0</selenium.bom.version>
