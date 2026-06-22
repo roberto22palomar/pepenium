@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.8] - 2026-06-22
+
 ### Added
 - Added an immutable structured-settings API with recursive global/profile merging for complex private-provider configuration.
 - Added open-ended global and per-profile YAML `settings` for private providers and custom driver configurations without weakening validation of built-in options.
@@ -67,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Made BrowserStack YAML path resolution trim accidental whitespace while rejecting null or blank paths with clearer messages.
 
 ### Fixed
+- Made release timestamp validation work consistently in Windows PowerShell by parsing the POM value as text.
 - Prevented authenticated provider URLs, nested capability secrets and credential-bearing exception messages or stack traces from leaking into banners, logs or generated reports.
 - Kept built-in execution-profile contract checks independent from consumer profiles discovered through `ServiceLoader`, with explicit `builtInList()` introspection.
 - Added early validation for consumer-provided execution profile metadata, duplicate IDs, provider failures and null lazy configs.
