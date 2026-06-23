@@ -23,7 +23,7 @@ The point of these examples is not to maximize test count. It is to make the int
 
 ## Non-goals
 
-- it is not a published Maven consumer artifact
+- it is not a reusable Maven consumer artifact
 - it is not part of the public API compatibility contract
 - it is not where framework internals or reusable library features should live
 
@@ -31,7 +31,7 @@ The point of these examples is not to maximize test count. It is to make the int
 
 Examples are intentionally opt-in.
 
-Their tests stay skipped by default in normal reactor builds so the framework can be built and released without forcing live example execution.
+Their tests stay skipped by default in normal reactor builds so the framework can be validated without forcing live example execution.
 
 Run the desktop web showcase explicitly with:
 

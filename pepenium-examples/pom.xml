@@ -18,8 +18,6 @@
         <pepenium.module.name>io.github.roberto22palomar.pepenium.examples</pepenium.module.name>
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.install.skip>true</maven.install.skip>
-        <central.skipPublishing>true</central.skipPublishing>
-        <gpg.skip>true</gpg.skip>
     </properties>
 
     <dependencies>

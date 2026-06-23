@@ -22,6 +22,8 @@ final class PepeniumReportJsonRenderer {
         json.append("{\n");
         PepeniumReportSupport.appendJsonField(json, "schemaVersion", 1, true);
         PepeniumReportSupport.appendJsonField(json, "generatedAt", report.finishedAt.toString(), true);
+        PepeniumReportSupport.appendJsonField(json, "runId", PepeniumReportRun.id(), true);
+        PepeniumReportSupport.appendJsonField(json, "runStartedAt", PepeniumReportRun.startedAt().toString(), true);
         PepeniumReportSupport.appendJsonField(json, "htmlReport", htmlFileName, true);
         PepeniumReportSupport.appendJsonField(json, "outcome", report.outcome, true);
         PepeniumReportSupport.appendJsonField(json, "testName", report.testName, true);
@@ -128,6 +130,8 @@ final class PepeniumReportJsonRenderer {
                     PepeniumReportSupport.safe(data.get("target")),
                     PepeniumReportSupport.safe(data.get("driverType")),
                     PepeniumReportSupport.safe(data.get("htmlReport")),
+                    PepeniumReportSupport.safe(data.get("runId")),
+                    PepeniumReportSupport.safe(data.get("runStartedAt")),
                     PepeniumReportSupport.safe(data.get("generatedAt")),
                     PepeniumReportSupport.numberValue(timing.get("durationMillis")),
                     PepeniumReportSupport.safe(timing.get("durationDisplay")),
@@ -150,6 +154,8 @@ final class PepeniumReportJsonRenderer {
         StringBuilder json = new StringBuilder();
         json.append("{\n");
         PepeniumReportSupport.appendJsonField(json, "generatedAt", Instant.now().toString(), true);
+        PepeniumReportSupport.appendJsonField(json, "runId", PepeniumReportRun.id(), true);
+        PepeniumReportSupport.appendJsonField(json, "runStartedAt", PepeniumReportRun.startedAt().toString(), true);
         PepeniumReportSupport.appendJsonField(json, "totalReports", summaries.size(), true);
         PepeniumReportSupport.appendJsonField(json, "passed", passed, true);
         PepeniumReportSupport.appendJsonField(json, "failed", failed, true);

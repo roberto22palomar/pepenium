@@ -178,10 +178,11 @@ final class PepeniumReportSupport {
         }
         try {
             Path resolved = Path.of(path).normalize();
-            if (reportDir != null && resolved.isAbsolute()) {
+            if (reportDir != null) {
                 Path normalizedReportDir = reportDir.toAbsolutePath().normalize();
-                if (resolved.startsWith(normalizedReportDir)) {
-                    return normalizedReportDir.relativize(resolved).toString().replace('\\', '/');
+                Path normalizedResolved = resolved.toAbsolutePath().normalize();
+                if (normalizedResolved.startsWith(normalizedReportDir)) {
+                    return normalizedReportDir.relativize(normalizedResolved).toString().replace('\\', '/');
                 }
             }
             return resolved.isAbsolute() ? resolved.toUri().toString() : resolved.toString().replace('\\', '/');

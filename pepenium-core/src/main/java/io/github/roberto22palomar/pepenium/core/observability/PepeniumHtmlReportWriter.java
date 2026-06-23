@@ -198,6 +198,8 @@ public final class PepeniumHtmlReportWriter {
         final String driverType;
         final String htmlReport;
         final String jsonReport;
+        final String runId;
+        final String runStartedAt;
         final String generatedAt;
         final long durationMillis;
         final String durationDisplay;
@@ -212,6 +214,8 @@ public final class PepeniumHtmlReportWriter {
                 String target,
                 String driverType,
                 String htmlReport,
+                String runId,
+                String runStartedAt,
                 String generatedAt,
                 long durationMillis,
                 String durationDisplay,
@@ -226,6 +230,8 @@ public final class PepeniumHtmlReportWriter {
             this.driverType = driverType;
             this.htmlReport = htmlReport;
             this.jsonReport = htmlReport == null ? null : htmlReport.replaceAll("\\.html$", ".json");
+            this.runId = runId;
+            this.runStartedAt = runStartedAt;
             this.generatedAt = generatedAt;
             this.durationMillis = durationMillis;
             this.durationDisplay = durationDisplay;

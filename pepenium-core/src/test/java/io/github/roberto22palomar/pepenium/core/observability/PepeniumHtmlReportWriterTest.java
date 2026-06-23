@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PepeniumHtmlReportWriterTest {
@@ -28,6 +29,7 @@ class PepeniumHtmlReportWriterTest {
 
         assertTrue(Files.exists(reportDir.resolve("index.html")));
         assertTrue(Files.exists(reportDir.resolve("summary.json")));
+        assertTrue(Files.exists(reportDir.resolve("execution-summary.pdf")));
         Path reportFile = Files.list(reportDir)
                 .filter(path -> path.getFileName().toString().startsWith("report-"))
                 .filter(path -> path.getFileName().toString().endsWith(".html"))
@@ -47,7 +49,9 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("Highlights"));
         assertTrue(reportHtml.contains("Last Step"));
         assertTrue(reportHtml.contains("Last Assertion"));
-        assertTrue(reportHtml.contains("Visual Summary"));
+        assertTrue(reportHtml.contains("At a Glance"));
+        assertTrue(reportHtml.contains("What matters"));
+        assertTrue(reportHtml.contains("Look first"));
         assertTrue(reportHtml.contains("Execution Blocks"));
         assertTrue(reportHtml.contains("Key Timeline"));
         assertTrue(reportHtml.contains("Wait Hotspots"));
@@ -56,6 +60,7 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("&middot;"));
         assertTrue(indexHtml.contains("Total Reports"));
         assertTrue(indexHtml.contains("Passed"));
+        assertTrue(indexHtml.contains("Open PDF summary"));
         assertTrue(indexHtml.contains("Open suite summary JSON"));
         assertTrue(reportJson.contains("\"stats\""));
         assertTrue(reportJson.contains("\"events\""));
@@ -88,7 +93,7 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("Boom"));
         assertTrue(reportHtml.contains("Submit login form"));
         assertTrue(reportHtml.contains("Timeline"));
-        assertTrue(reportHtml.contains("Remote Session") || reportHtml.contains("Execution Context"));
+        assertTrue(reportHtml.contains("Technical Details"));
         assertTrue(reportHtml.contains("Screenshot saved"));
         assertTrue(reportHtml.contains("ASSERT"));
         assertTrue(reportHtml.contains("FAIL"));
@@ -97,5 +102,81 @@ class PepeniumHtmlReportWriterTest {
         assertTrue(reportHtml.contains("Open raw timeline"));
         assertTrue(reportJson.contains("\"failure\""));
         assertTrue(reportJson.contains("\"FAIL"));
+    }
+
+    @Test
+    void rendersScreenshotHrefRelativeToReportDirectory() {
+        Path reportDir = Path.of("target", "pepenium-reports");
+        String href = PepeniumReportSupport.pathToHref(
+                "target/pepenium-reports/screenshots/manual_123_screenshot.png",
+                reportDir
+        );
+
+        assertTrue(href.equals("screenshots/manual_123_screenshot.png"));
+    }
+
+    @Test
+    void linksScreenshotsFromExecutionBlocksAndTimeline() throws Exception {
+        Path reportDir = Files.createTempDirectory("pepenium-report-screenshot-test");
+        Path screenshotDir = reportDir.resolve("screenshots");
+        Files.createDirectories(screenshotDir);
+        Path screenshot = screenshotDir.resolve("captured-step.png");
+        Files.write(screenshot, new byte[]{1, 2, 3});
+
+        System.setProperty("pepenium.report.dir", reportDir.toString());
+        StepTracker.record("Capture dashboard evidence");
+        PepeniumTimeline.recordScreenshot("Dashboard after load", screenshot.toString());
+
+        PepeniumHtmlReportWriter.write("sampleScreenshotTest", null, null);
+
+        assertTrue(Files.exists(reportDir.resolve("execution-summary.pdf")));
+        Path reportFile = Files.list(reportDir)
+                .filter(path -> path.getFileName().toString().startsWith("report-"))
+                .filter(path -> path.getFileName().toString().endsWith(".html"))
+                .findFirst()
+                .orElseThrow();
+        String reportHtml = Files.readString(reportFile);
+
+        assertTrue(reportHtml.contains("Screenshots (1)"));
+        assertTrue(reportHtml.contains("Dashboard after load"));
+        assertTrue(reportHtml.contains("screenshots/"));
+    }
+
+    @Test
+    void indexOnlyShowsReportsFromCurrentExecution() throws Exception {
+        Path reportDir = Files.createTempDirectory("pepenium-report-current-run-test");
+        System.setProperty("pepenium.report.dir", reportDir.toString());
+        Files.writeString(reportDir.resolve("report-old.json"), oldReportJson(), java.nio.charset.StandardCharsets.UTF_8);
+
+        StepTracker.record("Open current page");
+        PepeniumHtmlReportWriter.write("currentExecutionTest", null, null);
+
+        String indexHtml = Files.readString(reportDir.resolve("index.html"));
+        String summaryJson = Files.readString(reportDir.resolve("summary.json"));
+
+        assertTrue(Files.exists(reportDir.resolve(PepeniumReportRun.indexFileName())));
+        assertTrue(indexHtml.contains("Execution Report"));
+        assertTrue(indexHtml.contains("currentExecutionTest"));
+        assertTrue(indexHtml.contains(PepeniumReportRun.indexFileName()));
+        assertFalse(indexHtml.contains("oldExecutionTest"));
+        assertTrue(summaryJson.contains("\"totalReports\": 1"));
+    }
+
+    private static String oldReportJson() {
+        return "{\n"
+                + "  \"schemaVersion\": 1,\n"
+                + "  \"generatedAt\": \"2026-01-01T00:00:00Z\",\n"
+                + "  \"runId\": \"old-run\",\n"
+                + "  \"runStartedAt\": \"2026-01-01T00:00:00Z\",\n"
+                + "  \"htmlReport\": \"report-old.html\",\n"
+                + "  \"outcome\": \"PASSED\",\n"
+                + "  \"testName\": \"oldExecutionTest\",\n"
+                + "  \"profileId\": \"local-web\",\n"
+                + "  \"target\": \"WEB_DESKTOP\",\n"
+                + "  \"driverType\": \"LOCAL_CHROME\",\n"
+                + "  \"timing\": {\"durationMillis\": 1, \"durationDisplay\": \"0s 001ms\"},\n"
+                + "  \"stats\": {\"screenshots\": 0},\n"
+                + "  \"remote\": {\"provider\": \"local\", \"enabled\": false}\n"
+                + "}\n";
     }
 }
